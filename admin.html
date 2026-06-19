@@ -1,0 +1,2323 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dapur Nusantara | Portal Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Poppins", "sans-serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+            boxShadow: {
+              warm: "0 10px 30px -10px rgba(234, 88, 12, 0.35)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .btn-primary {
+          @apply inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl px-5 py-2.5 shadow-warm hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none transition-all duration-200;
+        }
+        .btn-secondary {
+          @apply inline-flex items-center justify-center gap-2 bg-white border border-gray-200 text-slate-700 font-medium rounded-xl px-4 py-2.5 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200;
+        }
+        .btn-icon {
+          @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:bg-gray-100 hover:text-slate-600 transition-colors duration-200;
+        }
+        .btn-sm {
+          @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors duration-200;
+        }
+        .input-field {
+          @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[15px] text-slate-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition disabled:bg-gray-100 disabled:text-gray-500;
+        }
+        .label-field {
+          @apply block text-sm font-medium text-slate-600 mb-1.5;
+        }
+        .nav-link {
+          @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors duration-200 cursor-pointer;
+        }
+        .nav-link-active {
+          @apply bg-slate-800 text-orange-400 font-semibold;
+        }
+        .badge {
+          @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap;
+        }
+        .section-title {
+          @apply font-display font-semibold text-xl text-slate-800;
+        }
+        .th-cell {
+          @apply text-left text-xs font-semibold text-slate-400 uppercase tracking-wide px-4 py-3 whitespace-nowrap;
+        }
+        .td-cell {
+          @apply px-4 py-3.5 text-sm text-slate-700 align-middle;
+        }
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #63666d;
+        border-radius: 999px;
+      }
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background: white !important;
+        }
+        .print-area {
+          box-shadow: none !important;
+          border: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    x-data="adminApp()"
+    x-init="init()"
+    class="bg-gray-50 font-sans text-slate-800 antialiased"
+  >
+    <!-- ============ LOGIN PAGE ============ -->
+    <div x-show="!loggedIn" x-cloak class="min-h-screen flex">
+      <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div
+          class="absolute inset-0 bg-cover bg-center"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80&quot;);
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95"
+        ></div>
+        <div
+          class="relative z-10 flex flex-col justify-between p-12 text-white"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"
+            >
+              <i class="fa-solid fa-bowl-food text-xl"></i>
+            </div>
+            <span class="font-display font-bold text-2xl">Dapur Nusantara</span>
+          </div>
+          <div>
+            <span class="badge bg-white/10 text-orange-300 mb-4"
+              ><i class="fa-solid fa-shield-halved"></i> Akses Khusus Tim
+              Internal</span
+            >
+            <h1
+              class="font-display font-bold text-4xl xl:text-5xl leading-tight mb-4"
+            >
+              Kelola operasional<br />catering dari satu tempat.
+            </h1>
+            <p class="text-white/70 text-lg max-w-md">
+              Pantau pesanan masuk, kelola menu, dan verifikasi pembayaran
+              pelanggan dengan mudah.
+            </p>
+          </div>
+          <div class="flex items-center gap-8 text-sm text-white/70">
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Real-time</span
+              >Status Pesanan
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Terpusat</span
+              >Manajemen Menu
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Akurat</span
+              >Laporan Keuangan
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-gray-50"
+      >
+        <div class="w-full max-w-sm">
+          <div class="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <div
+              class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white"
+            >
+              <i class="fa-solid fa-bowl-food text-xl"></i>
+            </div>
+            <span class="font-display font-bold text-2xl text-slate-800"
+              >Dapur Nusantara</span
+            >
+          </div>
+
+          <h2 class="font-display font-bold text-2xl text-slate-800 mb-1">
+            Portal Admin
+          </h2>
+          <p class="text-slate-500 mb-8">
+            Masuk untuk mengelola sistem catering.
+          </p>
+
+          <form @submit.prevent="login()" class="space-y-4">
+            <div>
+              <label class="label-field">Username</label>
+              <div class="relative">
+                <i
+                  class="fa-solid fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  type="text"
+                  x-model="loginForm.username"
+                  placeholder="contoh: admin"
+                  class="input-field pl-11"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="label-field">Password</label>
+              <div class="relative">
+                <i
+                  class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  x-model="loginForm.password"
+                  placeholder="••••••••"
+                  class="input-field pl-11 pr-11"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600"
+                >
+                  <i
+                    :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                    class="fa-solid"
+                  ></i>
+                </button>
+              </div>
+            </div>
+
+            <p
+              x-show="loginError"
+              x-cloak
+              x-text="loginError"
+              class="text-sm text-red-500"
+            ></p>
+
+            <button type="submit" class="btn-primary w-full mt-2">
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+
+            <div class="flex items-center justify-between text-sm pt-1">
+              <button
+                type="button"
+                @click="openRegisterModal()"
+                class="font-medium text-orange-600 hover:underline"
+              >
+                Registrasi akun
+              </button>
+              <button
+                type="button"
+                @click="openForgotPasswordModal()"
+                class="font-medium text-slate-500 hover:text-slate-700 hover:underline"
+              >
+                Lupa password?
+              </button>
+            </div>
+
+            <div
+              class="bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 flex gap-2.5 items-start"
+            >
+              <i class="fa-solid fa-circle-info mt-0.5"></i>
+              <span
+                >Demo: isi username &amp; password apa saja lalu klik Login.
+                Akun registrasi tersimpan di browser ini.</span
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MAIN APP ============ -->
+    <div x-show="loggedIn" x-cloak class="flex h-screen overflow-hidden">
+      <div
+        x-show="mobileMenuOpen"
+        x-cloak
+        @click="mobileMenuOpen=false"
+        x-transition.opacity
+        class="fixed inset-0 bg-slate-900/60 z-40 md:hidden no-print"
+      ></div>
+
+      <!-- Sidebar -->
+      <aside
+        :class="[sidebarCollapsed ? 'md:w-20' : 'md:w-64', mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']"
+        class="fixed md:static inset-y-0 left-0 z-50 w-72 md:h-screen bg-slate-900 flex flex-col flex-shrink-0 transition-all duration-300 no-print"
+      >
+        <div
+          class="flex items-center justify-between px-4 h-16 border-b border-slate-800 flex-shrink-0"
+        >
+          <div class="flex items-center gap-2.5 overflow-hidden">
+            <div
+              class="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white flex-shrink-0"
+            >
+              <i class="fa-solid fa-bowl-food"></i>
+            </div>
+            <span
+              x-show="!sidebarCollapsed"
+              class="font-display font-bold text-lg text-white whitespace-nowrap"
+              >Dapur Nusantara</span
+            >
+          </div>
+          <button
+            @click="mobileMenuOpen=false"
+            class="md:hidden btn-icon !text-slate-400"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          <template x-for="item in navItems" :key="item.id">
+            <div>
+              <template x-if="!item.children">
+                <div
+                  @click="navigate(item.id)"
+                  class="nav-link"
+                  :class="currentView===item.id ? 'nav-link-active' : ''"
+                  :title="sidebarCollapsed ? item.label : ''"
+                >
+                  <i
+                    :class="item.icon"
+                    class="fa-solid w-5 text-center flex-shrink-0"
+                  ></i>
+                  <span
+                    x-show="!sidebarCollapsed"
+                    class="whitespace-nowrap"
+                    x-text="item.label"
+                  ></span>
+                </div>
+              </template>
+              <template x-if="item.children">
+                <div>
+                  <div
+                    @click="sidebarCollapsed ? navigate('dataMenu') : (menuManagementOpen = !menuManagementOpen)"
+                    class="nav-link justify-between"
+                    :class="(currentView==='kategoriMenu'||currentView==='dataMenu') ? 'nav-link-active' : ''"
+                  >
+                    <span class="flex items-center gap-3">
+                      <i
+                        :class="item.icon"
+                        class="fa-solid w-5 text-center flex-shrink-0"
+                      ></i>
+                      <span
+                        x-show="!sidebarCollapsed"
+                        class="whitespace-nowrap"
+                        x-text="item.label"
+                      ></span>
+                    </span>
+                    <i
+                      x-show="!sidebarCollapsed"
+                      class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+                      :class="menuManagementOpen ? 'rotate-180' : ''"
+                    ></i>
+                  </div>
+                  <div
+                    x-show="menuManagementOpen && !sidebarCollapsed"
+                    x-cloak
+                    class="pl-8 space-y-1 mt-1"
+                  >
+                    <template x-for="child in item.children" :key="child.id">
+                      <div
+                        @click="navigate(child.id)"
+                        class="nav-link !py-2 text-sm"
+                        :class="currentView===child.id ? 'nav-link-active' : ''"
+                        x-text="child.label"
+                      ></div>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </nav>
+
+        <div class="border-t border-slate-800 p-3 flex-shrink-0">
+          <div class="flex items-center gap-3 px-2 py-2 mb-1">
+            <img
+              :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(admin.name) + '&background=1e293b&color=fb923c&bold=true'"
+              class="w-9 h-9 rounded-full flex-shrink-0"
+              alt="avatar"
+            />
+            <div x-show="!sidebarCollapsed" class="overflow-hidden">
+              <p
+                class="text-sm font-semibold text-white truncate"
+                x-text="admin.name"
+              ></p>
+              <p
+                class="text-xs text-slate-400 truncate"
+                x-text="admin.role"
+              ></p>
+            </div>
+          </div>
+          <div
+            @click="logout()"
+            class="nav-link text-red-400 hover:bg-red-500/10 hover:text-red-400"
+          >
+            <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+            <span x-show="!sidebarCollapsed">Logout</span>
+          </div>
+          <button
+            @click="sidebarCollapsed = !sidebarCollapsed"
+            class="hidden md:flex items-center justify-center w-full mt-2 py-1.5 text-slate-500 hover:text-orange-400"
+          >
+            <i
+              class="fa-solid"
+              :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"
+            ></i>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main column -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        <header
+          class="md:hidden flex items-center justify-between bg-white border-b border-gray-100 px-4 h-16 flex-shrink-0 sticky top-0 z-20 no-print"
+        >
+          <button @click="mobileMenuOpen=true" class="btn-icon">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+          <span
+            class="font-display font-semibold text-slate-800"
+            x-text="pageTitle[currentView] || 'Dapur Nusantara'"
+          ></span>
+          <span class="w-9"></span>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <!-- ===== DASHBOARD ===== -->
+          <div x-show="currentView==='dashboard'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+              Dashboard
+            </h1>
+            <p class="text-slate-500 mb-6">
+              Ringkasan operasional Dapur Nusantara hari ini.
+            </p>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-receipt text-orange-500"></i>
+                </div>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="orders.length"
+                ></p>
+                <p class="text-sm text-slate-500">Total Pesanan Masuk</p>
+              </div>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-sack-dollar text-green-500"></i>
+                </div>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800 break-words"
+                  x-text="formatRp(todayRevenue)"
+                ></p>
+                <p class="text-sm text-slate-500">Pendapatan Hari Ini</p>
+              </div>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-clock text-yellow-500"></i>
+                </div>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="orders.filter(o => o.status==='Menunggu Verifikasi').length"
+                ></p>
+                <p class="text-sm text-slate-500">Menunggu Verifikasi</p>
+              </div>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-users text-blue-500"></i>
+                </div>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="customers.length"
+                ></p>
+                <p class="text-sm text-slate-500">Total Pelanggan</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div
+                class="flex items-center justify-between p-5 border-b border-gray-100"
+              >
+                <h2 class="section-title">Pesanan Terbaru</h2>
+                <span
+                  @click="navigate('transaksi')"
+                  class="text-orange-600 font-medium text-sm cursor-pointer hover:underline"
+                  >Lihat Semua</span
+                >
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100">
+                      <th class="th-cell">ID</th>
+                      <th class="th-cell">Pelanggan</th>
+                      <th class="th-cell">Tanggal</th>
+                      <th class="th-cell">Total</th>
+                      <th class="th-cell">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template
+                      x-for="order in orders.slice(0,5)"
+                      :key="order.id"
+                    >
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
+                        <td class="td-cell" x-text="order.customer"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
+                        <td class="td-cell">
+                          <span
+                            class="badge"
+                            :class="statusColor(order.status)"
+                            x-text="order.status"
+                          ></span>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== DATA PELANGGAN ===== -->
+          <div x-show="currentView==='pelanggan'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Data Pelanggan
+                </h1>
+                <p class="text-slate-500">
+                  Daftar pelanggan terdaftar (hanya lihat).
+                </p>
+              </div>
+              <div class="relative">
+                <i
+                  class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                ></i>
+                <input
+                  type="text"
+                  x-model="customerSearch"
+                  placeholder="Cari pelanggan..."
+                  class="input-field pl-10 !py-2 w-56"
+                />
+              </div>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">Pelanggan</th>
+                      <th class="th-cell">No. Telp</th>
+                      <th class="th-cell">Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="c in filteredCustomers()" :key="c.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td class="td-cell">
+                          <div class="flex items-center gap-3">
+                            <img
+                              :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(c.name) + '&background=FFEDD5&color=C2410C&bold=true'"
+                              class="w-9 h-9 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-800"
+                              x-text="c.name"
+                            ></span>
+                          </div>
+                        </td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="c.phone"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="c.email"
+                        ></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                x-show="filteredCustomers().length === 0"
+                class="text-center py-12 text-slate-400"
+              >
+                Tidak ada pelanggan yang cocok.
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== KATEGORI MENU ===== -->
+          <div x-show="currentView==='kategoriMenu'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Kategori Menu
+                </h1>
+                <p class="text-slate-500">
+                  Kelola jenis kategori makanan &amp; minuman.
+                </p>
+              </div>
+              <button @click="openAddCategory()" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> Tambah Kategori
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">Nama Kategori</th>
+                      <th class="th-cell">Jumlah Menu</th>
+                      <th class="th-cell">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="cat in categories" :key="cat.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-medium text-slate-800"
+                          x-text="cat.name"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="categoryCount(cat.name) + ' menu'"
+                        ></td>
+                        <td class="td-cell">
+                          <div class="flex gap-2">
+                            <button
+                              @click="openEditCategory(cat)"
+                              class="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            >
+                              <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button
+                              @click="deleteCategory(cat)"
+                              class="btn-sm bg-red-50 text-red-600 hover:bg-red-100"
+                            >
+                              <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== DATA MENU ===== -->
+          <div x-show="currentView==='dataMenu'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Data Menu
+                </h1>
+                <p class="text-slate-500">
+                  Kelola daftar menu makanan &amp; minuman.
+                </p>
+              </div>
+              <button @click="openAddMenu()" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> Tambah Menu
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">Gambar</th>
+                      <th class="th-cell">Nama Menu</th>
+                      <th class="th-cell">Kategori</th>
+                      <th class="th-cell">Harga</th>
+                      <th class="th-cell">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="item in menuItems" :key="item.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td class="td-cell">
+                          <img
+                            :src="item.image"
+                            onerror="
+                              this.src =
+                                'https://placehold.co/100x100/FFEDD5/C2410C?text=Menu'
+                            "
+                            class="w-12 h-12 rounded-lg object-cover"
+                          />
+                        </td>
+                        <td
+                          class="td-cell font-medium text-slate-800"
+                          x-text="item.name"
+                        ></td>
+                        <td class="td-cell">
+                          <span
+                            class="badge bg-orange-50 text-orange-600"
+                            x-text="item.category"
+                          ></span>
+                        </td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(item.price)"
+                        ></td>
+                        <td class="td-cell">
+                          <div class="flex gap-2">
+                            <button
+                              @click="openEditMenu(item)"
+                              class="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            >
+                              <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button
+                              @click="deleteMenu(item)"
+                              class="btn-sm bg-red-50 text-red-600 hover:bg-red-100"
+                            >
+                              <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== TRANSAKSI & PESANAN ===== -->
+          <div x-show="currentView==='transaksi'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+              Transaksi &amp; Pesanan
+            </h1>
+            <p class="text-slate-500 mb-6">
+              Verifikasi pembayaran dan kelola status pesanan masuk.
+            </p>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">ID Pesanan</th>
+                      <th class="th-cell">Pelanggan</th>
+                      <th class="th-cell">Tanggal</th>
+                      <th class="th-cell">Total</th>
+                      <th class="th-cell">Bayar</th>
+                      <th class="th-cell">Status</th>
+                      <th class="th-cell">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="order in orders" :key="order.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
+                        <td class="td-cell" x-text="order.customer"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.payment"
+                        ></td>
+                        <td class="td-cell">
+                          <span
+                            class="badge"
+                            :class="statusColor(order.status)"
+                            x-text="order.status"
+                          ></span>
+                        </td>
+                        <td class="td-cell">
+                          <div class="flex flex-wrap gap-2">
+                            <button
+                              x-show="nextStatusLabel(order.status)"
+                              @click="advanceStatus(order)"
+                              class="btn-sm bg-orange-50 text-orange-600 hover:bg-orange-100"
+                            >
+                              <i class="fa-solid fa-check"></i>
+                              <span
+                                x-text="nextStatusLabel(order.status)"
+                              ></span>
+                            </button>
+                            <button
+                              x-show="order.payment !== 'COD'"
+                              @click="viewProof(order)"
+                              class="btn-sm bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            >
+                              <i class="fa-solid fa-image"></i> Lihat Bukti
+                            </button>
+                            <button
+                              @click="contactWA(order)"
+                              class="btn-sm bg-green-50 text-green-600 hover:bg-green-100"
+                            >
+                              <i class="fa-brands fa-whatsapp"></i> Hubungi
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== LAPORAN KEUANGAN ===== -->
+          <div x-show="currentView==='laporan'">
+            <h1
+              class="font-display font-bold text-2xl text-slate-800 mb-1 print-area"
+            >
+              Laporan Keuangan
+            </h1>
+            <p class="text-slate-500 mb-6 no-print">
+              Rekap pesanan yang telah selesai diantar.
+            </p>
+
+            <div
+              class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white mb-6 max-w-sm print-area"
+            >
+              <p class="text-white/80 text-sm mb-1">
+                Total Pendapatan (Selesai)
+              </p>
+              <p
+                class="font-display font-bold text-3xl"
+                x-text="formatRp(totalRevenue())"
+              ></p>
+              <p
+                class="text-white/70 text-sm mt-1"
+                x-text="completedOrders().length + ' pesanan selesai'"
+              ></p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mb-5 no-print">
+              <button @click="printReport()" class="btn-secondary">
+                <i class="fa-solid fa-file-pdf"></i> Cetak PDF
+              </button>
+              <button @click="exportExcel()" class="btn-secondary">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+              </button>
+              <button @click="printReport()" class="btn-secondary">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden print-area"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">ID Pesanan</th>
+                      <th class="th-cell">Pelanggan</th>
+                      <th class="th-cell">Tanggal</th>
+                      <th class="th-cell">Metode Bayar</th>
+                      <th class="th-cell">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template
+                      x-for="order in completedOrders()"
+                      :key="order.id"
+                    >
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
+                        <td class="td-cell" x-text="order.customer"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.payment"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                x-show="completedOrders().length === 0"
+                class="text-center py-12 text-slate-400"
+              >
+                Belum ada pesanan yang selesai.
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== PROFIL AKUN ===== -->
+          <div x-show="currentView==='profilAkun'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Profil Akun
+                </h1>
+                <p class="text-slate-500">
+                  Data profil admin yang aktif saat ini.
+                </p>
+              </div>
+              <button @click="openEditProfile()" class="btn-primary">
+                <i class="fa-solid fa-pen"></i> Edit Profil
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
+                <div class="flex items-center gap-4">
+                  <img
+                    :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(admin.name) + '&background=FFEDD5&color=C2410C&bold=true'"
+                    class="w-20 h-20 rounded-2xl"
+                    alt="avatar"
+                  />
+                  <div>
+                    <p
+                      class="font-display font-bold text-xl text-slate-800"
+                      x-text="admin.name"
+                    ></p>
+                    <p class="text-slate-500" x-text="admin.role"></p>
+                    <p
+                      class="text-sm text-slate-400 mt-1"
+                      x-text="admin.username"
+                    ></p>
+                  </div>
+                </div>
+                <div
+                  class="mt-5 pt-5 border-t border-gray-100 space-y-2 text-sm"
+                >
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Username</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.username"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Email</span
+                    ><span
+                      class="font-medium text-slate-700 text-right"
+                      x-text="admin.email"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">No. HP</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.phone"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Bergabung</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.joinedAt"
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
+                <h2 class="section-title mb-4">Detail Profil</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Nama Lengkap</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.name"
+                    ></p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Username</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.username"
+                    ></p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Email</p>
+                    <p
+                      class="font-medium text-slate-800 break-all"
+                      x-text="admin.email"
+                    ></p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">No. HP</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.phone"
+                    ></p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Role</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.role"
+                    ></p>
+                  </div>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Alamat</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.address"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: KATEGORI ============ -->
+    <div
+      x-show="categoryModal.show"
+      x-cloak
+      @click.self="categoryModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3
+          class="font-display font-semibold text-lg mb-4"
+          x-text="categoryModal.mode==='add' ? 'Tambah Kategori' : 'Edit Kategori'"
+        ></h3>
+        <label class="label-field">Nama Kategori</label>
+        <input
+          type="text"
+          x-model="categoryModal.name"
+          placeholder="Contoh: Paket Hemat"
+          class="input-field mb-5"
+        />
+        <div class="flex gap-3">
+          <button @click="saveCategory()" class="btn-primary flex-1">
+            Simpan
+          </button>
+          <button
+            @click="categoryModal.show=false"
+            class="btn-secondary flex-1"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: MENU ============ -->
+    <div
+      x-show="menuModal.show"
+      x-cloak
+      @click.self="menuModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3
+          class="font-display font-semibold text-lg mb-4"
+          x-text="menuModal.mode==='add' ? 'Tambah Menu' : 'Edit Menu'"
+        ></h3>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Nama Menu</label>
+            <input
+              type="text"
+              x-model="menuModal.name"
+              placeholder="Contoh: Nasi Ayam Bakar"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Kategori</label>
+            <select x-model="menuModal.category" class="input-field">
+              <template x-for="cat in categories" :key="cat.id">
+                <option :value="cat.name" x-text="cat.name"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="label-field">Harga (Rp)</label>
+            <input
+              type="number"
+              x-model.number="menuModal.price"
+              placeholder="25000"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">URL Gambar (opsional)</label>
+            <input
+              type="text"
+              x-model="menuModal.image"
+              placeholder="https://..."
+              class="input-field"
+            />
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="saveMenu()" class="btn-primary flex-1">Simpan</button>
+          <button @click="menuModal.show=false" class="btn-secondary flex-1">
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: BUKTI BAYAR ============ -->
+    <div
+      x-show="proofModal.show"
+      x-cloak
+      @click.self="proofModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden"
+        x-transition
+      >
+        <template x-if="proofModal.order">
+          <div>
+            <div
+              class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 text-center"
+            >
+              <i
+                class="fa-solid fa-circle-check text-3xl text-green-400 mb-2"
+              ></i>
+              <p class="text-white/70 text-sm">Bukti Pembayaran</p>
+              <p
+                class="font-display font-bold text-2xl"
+                x-text="formatRp(proofModal.order.total)"
+              ></p>
+            </div>
+            <div class="p-6 space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Metode</span
+                ><span
+                  class="font-medium text-slate-700"
+                  x-text="proofModal.order.payment"
+                ></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Dari</span
+                ><span
+                  class="font-medium text-slate-700"
+                  x-text="proofModal.order.customer"
+                ></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Untuk</span
+                ><span class="font-medium text-slate-700"
+                  >Dapur Nusantara Catering</span
+                >
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">No. Referensi</span
+                ><span
+                  class="font-medium text-slate-700"
+                  x-text="'TRX' + proofModal.order.id.replace('ORD','')"
+                ></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Tanggal</span
+                ><span
+                  class="font-medium text-slate-700"
+                  x-text="proofModal.order.date"
+                ></span>
+              </div>
+              <div
+                class="border-t border-dashed border-gray-200 pt-3 flex justify-between"
+              >
+                <span class="text-slate-400">Status</span
+                ><span class="badge bg-green-100 text-green-700"
+                  >Pembayaran Diterima</span
+                >
+              </div>
+            </div>
+            <div class="px-6 pb-6 flex gap-3">
+              <button
+                @click="proofModal.show=false"
+                class="btn-secondary flex-1"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: REGISTRASI ============ -->
+    <div
+      x-show="registerModal.show"
+      x-cloak
+      @click.self="registerModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">Registrasi Akun</h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Buat akun admin baru tanpa mengubah tampilan yang sudah ada. Tentu
+          saja, drama tetap tidak terhindarkan.
+        </p>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Nama Lengkap</label>
+            <input
+              type="text"
+              x-model="registerModal.name"
+              placeholder="Contoh: Siti Rahma"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Username</label>
+            <input
+              type="text"
+              x-model="registerModal.username"
+              placeholder="Contoh: sitirahma"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="registerModal.email"
+              placeholder="contoh@email.com"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Password</label>
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              x-model="registerModal.password"
+              placeholder="Buat password baru"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Konfirmasi Password</label>
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              x-model="registerModal.confirmPassword"
+              placeholder="Ulangi password"
+              class="input-field"
+            />
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="registerUser()" class="btn-primary flex-1">
+            Daftar
+          </button>
+          <button
+            @click="registerModal.show=false"
+            class="btn-secondary flex-1"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: LUPA PASSWORD ============ -->
+    <div
+      x-show="forgotModal.show"
+      x-cloak
+      @click.self="forgotModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">Lupa Password</h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Masukkan username atau email akun yang sudah didaftarkan. Nanti
+          password sementara dibuat otomatis. Sungguh solusi elegan untuk
+          problem yang seharusnya dicegah dari awal.
+        </p>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Username / Email</label>
+            <input
+              type="text"
+              x-model="forgotModal.identifier"
+              placeholder="username atau email"
+              class="input-field"
+            />
+          </div>
+          <div
+            x-show="forgotModal.message"
+            x-cloak
+            class="rounded-xl bg-slate-100 border border-slate-200 px-4 py-3 text-sm text-slate-700"
+          >
+            <span x-text="forgotModal.message"></span>
+          </div>
+          <div
+            x-show="forgotModal.tempPassword"
+            x-cloak
+            class="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm text-orange-700"
+          >
+            Password sementara:
+            <span
+              class="font-semibold"
+              x-text="forgotModal.tempPassword"
+            ></span>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="resetPassword()" class="btn-primary flex-1">
+            Reset Password
+          </button>
+          <button @click="forgotModal.show=false" class="btn-secondary flex-1">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: EDIT PROFIL ============ -->
+    <div
+      x-show="profileModal.show"
+      x-cloak
+      @click.self="profileModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">
+          Edit Profil Akun
+        </h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Ubah data profil admin. Iya, akhirnya ada fitur yang benar-benar
+          menyimpan perubahan.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label-field">Nama Lengkap</label>
+            <input
+              type="text"
+              x-model="profileModal.name"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Username</label>
+            <input
+              type="text"
+              x-model="profileModal.username"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="profileModal.email"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">No. HP</label>
+            <input
+              type="text"
+              x-model="profileModal.phone"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Role</label>
+            <input
+              type="text"
+              x-model="profileModal.role"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Tanggal Bergabung</label>
+            <input
+              type="text"
+              x-model="profileModal.joinedAt"
+              class="input-field"
+            />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="label-field">Alamat</label>
+            <textarea
+              x-model="profileModal.address"
+              rows="3"
+              class="input-field"
+            ></textarea>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="saveProfile()" class="btn-primary flex-1">
+            Simpan Perubahan
+          </button>
+          <button @click="profileModal.show=false" class="btn-secondary flex-1">
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TOAST ============ -->
+    <div
+      x-show="toast.show"
+      x-cloak
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="fixed top-6 right-6 z-[80] bg-white rounded-xl shadow-2xl border border-gray-100 px-5 py-3.5 flex items-center gap-3 max-w-xs no-print"
+    >
+      <i
+        class="fa-solid text-lg"
+        :class="toast.type==='error' ? 'fa-circle-exclamation text-red-500' : 'fa-circle-check text-green-500'"
+      ></i>
+      <span
+        class="text-sm font-medium text-slate-700"
+        x-text="toast.message"
+      ></span>
+    </div>
+
+    <script>
+      function adminApp() {
+        return {
+          // ---------- AUTH ----------
+          loggedIn: false,
+          loginForm: { username: "", password: "" },
+          loginError: "",
+          showPassword: false,
+          registeredUsers: [],
+          registerModal: {
+            show: false,
+            name: "",
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          },
+          forgotModal: {
+            show: false,
+            identifier: "",
+            message: "",
+            tempPassword: "",
+          },
+          profileModal: {
+            show: false,
+            name: "",
+            username: "",
+            email: "",
+            phone: "",
+            role: "",
+            address: "",
+            joinedAt: "",
+          },
+
+          // ---------- NAVIGATION ----------
+          currentView: "dashboard",
+          pageTitle: {
+            dashboard: "Dashboard",
+            pelanggan: "Data Pelanggan",
+            kategoriMenu: "Kategori Menu",
+            dataMenu: "Data Menu",
+            transaksi: "Transaksi & Pesanan",
+            laporan: "Laporan Keuangan",
+            profilAkun: "Profil Akun",
+          },
+          sidebarCollapsed: false,
+          mobileMenuOpen: false,
+          menuManagementOpen: true,
+          navItems: [
+            { id: "dashboard", label: "Dashboard", icon: "fa-grip" },
+            { id: "pelanggan", label: "Data Pelanggan", icon: "fa-users" },
+            {
+              id: "menu",
+              label: "Manajemen Menu",
+              icon: "fa-utensils",
+              children: [
+                { id: "kategoriMenu", label: "Kategori Menu" },
+                { id: "dataMenu", label: "Data Menu" },
+              ],
+            },
+            {
+              id: "transaksi",
+              label: "Transaksi & Pesanan",
+              icon: "fa-receipt",
+            },
+            { id: "laporan", label: "Laporan Keuangan", icon: "fa-chart-line" },
+            { id: "profilAkun", label: "Profil Akun", icon: "fa-user-gear" },
+          ],
+
+          admin: {
+            name: "Siti Rahma",
+            username: "siti.rahma",
+            email: "siti.rahma@dapurnusantara.id",
+            phone: "0812-9000-1234",
+            role: "Administrator",
+            address: "Jl. Nusantara No. 12, Medan",
+            joinedAt: "1 Januari 2026",
+          },
+
+          // ---------- DATA PELANGGAN ----------
+          customerSearch: "",
+          customers: [
+            {
+              id: 1,
+              name: "Budi Santoso",
+              phone: "0812-1111-2222",
+              email: "budi.santoso@gmail.com",
+            },
+            {
+              id: 2,
+              name: "Citra Dewi",
+              phone: "0813-2222-3333",
+              email: "citra.dewi@gmail.com",
+            },
+            {
+              id: 3,
+              name: "Andi Saputra",
+              phone: "0812-3456-7890",
+              email: "andi.saputra@gmail.com",
+            },
+            {
+              id: 4,
+              name: "Rina Wulandari",
+              phone: "0857-4444-5555",
+              email: "rina.wulandari@gmail.com",
+            },
+            {
+              id: 5,
+              name: "Dedi Kurniawan",
+              phone: "0822-5555-6666",
+              email: "dedi.kurniawan@gmail.com",
+            },
+            {
+              id: 6,
+              name: "Maya Anggraini",
+              phone: "0838-6666-7777",
+              email: "maya.anggraini@gmail.com",
+            },
+            {
+              id: 7,
+              name: "Fajar Ramadhan",
+              phone: "0813-7777-8888",
+              email: "fajar.ramadhan@gmail.com",
+            },
+          ],
+
+          // ---------- MANAJEMEN MENU ----------
+          categories: [
+            { id: 1, name: "Makanan Berat" },
+            { id: 2, name: "Snack" },
+            { id: 3, name: "Minuman" },
+          ],
+          menuItems: [
+            {
+              id: 1,
+              name: "Nasi Ayam Bakar Madu",
+              category: "Makanan Berat",
+              price: 28000,
+              image:
+                "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 2,
+              name: "Nasi Rendang Sapi Premium",
+              category: "Makanan Berat",
+              price: 35000,
+              image:
+                "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 3,
+              name: "Nasi Ayam Geprek Sambal Matah",
+              category: "Makanan Berat",
+              price: 25000,
+              image:
+                "https://images.unsplash.com/photo-1626804475297-41608ea09aeb?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 4,
+              name: "Mie Goreng Seafood Spesial",
+              category: "Makanan Berat",
+              price: 27000,
+              image:
+                "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 5,
+              name: "Nasi Goreng Kampung",
+              category: "Makanan Berat",
+              price: 22000,
+              image:
+                "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 6,
+              name: "Nasi Bebek Goreng Mercon",
+              category: "Makanan Berat",
+              price: 32000,
+              image:
+                "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 7,
+              name: "Pisang Goreng Keju Coklat",
+              category: "Snack",
+              price: 15000,
+              image:
+                "https://images.unsplash.com/photo-1631206753348-db44968fd440?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 8,
+              name: "Risoles Mayo Smoked Beef",
+              category: "Snack",
+              price: 12000,
+              image:
+                "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 9,
+              name: "Lumpia Semarang Isi 5",
+              category: "Snack",
+              price: 18000,
+              image:
+                "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 10,
+              name: "Tahu Crispy Saus Thai",
+              category: "Snack",
+              price: 13000,
+              image:
+                "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 11,
+              name: "Es Teh Manis Segar",
+              category: "Minuman",
+              price: 6000,
+              image:
+                "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 12,
+              name: "Jus Alpukat Kocok",
+              category: "Minuman",
+              price: 14000,
+              image:
+                "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 13,
+              name: "Es Jeruk Peras",
+              category: "Minuman",
+              price: 8000,
+              image:
+                "https://images.unsplash.com/photo-1621263764928-df1444c5e859?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 14,
+              name: "Air Mineral Botol 600ml",
+              category: "Minuman",
+              price: 5000,
+              image:
+                "https://images.unsplash.com/photo-1560023907-5f339617ea30?auto=format&fit=crop&w=300&q=80",
+            },
+          ],
+          categoryModal: { show: false, mode: "add", id: null, name: "" },
+          menuModal: {
+            show: false,
+            mode: "add",
+            id: null,
+            name: "",
+            category: "",
+            price: 0,
+            image: "",
+          },
+
+          // ---------- TRANSAKSI & PESANAN ----------
+          orders: [
+            {
+              id: "ORD2010",
+              customer: "Budi Santoso",
+              customerPhone: "0852-9679-5689",
+              date: "19 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 2 },
+                { name: "Es Teh Manis Segar", qty: 2 },
+              ],
+              total: 95000,
+              payment: "Transfer Bank",
+              status: "Menunggu Verifikasi",
+            },
+            {
+              id: "ORD2009",
+              customer: "Citra Dewi",
+              customerPhone: "0852-9679-5689",
+              date: "19 Juni 2026",
+              items: [
+                { name: "Nasi Rendang Sapi Premium", qty: 3 },
+                { name: "Jus Alpukat Kocok", qty: 2 },
+              ],
+              total: 142000,
+              payment: "QRIS",
+              status: "Menunggu Verifikasi",
+            },
+            {
+              id: "ORD2008",
+              customer: "Andi Saputra",
+              customerPhone: "0852-9679-5689",
+              date: "18 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 2 },
+                { name: "Es Teh Manis Segar", qty: 2 },
+              ],
+              total: 78000,
+              payment: "Transfer Bank",
+              status: "Diproses",
+            },
+            {
+              id: "ORD2007",
+              customer: "Rina Wulandari",
+              customerPhone: "0852-9679-5689",
+              date: "18 Juni 2026",
+              items: [{ name: "Mie Goreng Seafood Spesial", qty: 2 }],
+              total: 56000,
+              payment: "COD",
+              status: "Dikirim",
+            },
+            {
+              id: "ORD2006",
+              customer: "Dedi Kurniawan",
+              customerPhone: "0852-9679-5689",
+              date: "17 Juni 2026",
+              items: [
+                { name: "Nasi Bebek Goreng Mercon", qty: 4 },
+                { name: "Es Jeruk Peras", qty: 4 },
+              ],
+              total: 210000,
+              payment: "Transfer Bank",
+              status: "Dikirim",
+            },
+            {
+              id: "ORD2005",
+              customer: "Maya Anggraini",
+              customerPhone: "0852-9679-5689",
+              date: "15 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Geprek Sambal Matah", qty: 3 },
+                { name: "Lumpia Semarang Isi 5", qty: 1 },
+              ],
+              total: 88000,
+              payment: "QRIS",
+              status: "Selesai",
+            },
+            {
+              id: "ORD2004",
+              customer: "Fajar Ramadhan",
+              customerPhone: "0852-9679-5689",
+              date: "12 Juni 2026",
+              items: [
+                { name: "Nasi Rendang Sapi Premium", qty: 3 },
+                { name: "Pisang Goreng Keju Coklat", qty: 2 },
+              ],
+              total: 134000,
+              payment: "Transfer Bank",
+              status: "Selesai",
+            },
+            {
+              id: "ORD2003",
+              customer: "Budi Santoso",
+              customerPhone: "0852-9679-5689",
+              date: "8 Juni 2026",
+              items: [{ name: "Nasi Goreng Kampung", qty: 3 }],
+              total: 67000,
+              payment: "COD",
+              status: "Selesai",
+            },
+            {
+              id: "ORD2002",
+              customer: "Citra Dewi",
+              customerPhone: "0852-9679-5689",
+              date: "3 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 3 },
+                { name: "Air Mineral Botol 600ml", qty: 3 },
+              ],
+              total: 99000,
+              payment: "Transfer Bank",
+              status: "Selesai",
+            },
+          ],
+          proofModal: { show: false, order: null },
+          todayRevenue: 487000,
+
+          // ---------- TOAST ----------
+          toast: { show: false, message: "", type: "success" },
+
+          // ---------- INIT ----------
+          init() {
+            this.loadRegisteredUsers();
+            this.loadAdminProfile();
+          },
+
+          // ---------- AUTH ACTIONS ----------
+          loadRegisteredUsers() {
+            try {
+              const raw = localStorage.getItem("dapurNusantaraUsers");
+              this.registeredUsers = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+              this.registeredUsers = [];
+            }
+          },
+          saveRegisteredUsers() {
+            localStorage.setItem(
+              "dapurNusantaraUsers",
+              JSON.stringify(this.registeredUsers),
+            );
+          },
+          loadAdminProfile() {
+            try {
+              const raw = localStorage.getItem("dapurNusantaraAdminProfile");
+              if (raw) Object.assign(this.admin, JSON.parse(raw));
+            } catch (e) {
+              // ignore
+            }
+          },
+          saveAdminProfile() {
+            localStorage.setItem(
+              "dapurNusantaraAdminProfile",
+              JSON.stringify(this.admin),
+            );
+          },
+          openRegisterModal() {
+            this.registerModal = {
+              show: true,
+              name: "",
+              username: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
+            };
+            this.loginError = "";
+          },
+          openForgotPasswordModal() {
+            this.forgotModal = {
+              show: true,
+              identifier: "",
+              message: "",
+              tempPassword: "",
+            };
+            this.loginError = "";
+          },
+          login() {
+            const username = this.loginForm.username.trim();
+            const password = this.loginForm.password.trim();
+
+            if (!username || !password) {
+              this.loginError = "Username dan password wajib diisi.";
+              return;
+            }
+
+            const registered = this.registeredUsers.find(
+              (u) => u.username.toLowerCase() === username.toLowerCase(),
+            );
+            if (registered) {
+              if (registered.password !== password) {
+                this.loginError = "Password salah untuk akun terdaftar.";
+                return;
+              }
+            }
+
+            this.loggedIn = true;
+            this.loginError = "";
+            this.showPassword = false;
+          },
+          registerUser() {
+            const name = this.registerModal.name.trim();
+            const username = this.registerModal.username.trim();
+            const email = this.registerModal.email.trim();
+            const password = this.registerModal.password.trim();
+            const confirmPassword = this.registerModal.confirmPassword.trim();
+
+            if (!name || !username || !email || !password || !confirmPassword) {
+              this.showToast("Semua field registrasi wajib diisi", "error");
+              return;
+            }
+            if (password !== confirmPassword) {
+              this.showToast("Password dan konfirmasi tidak sama", "error");
+              return;
+            }
+            const usernameTaken = this.registeredUsers.some(
+              (u) => u.username.toLowerCase() === username.toLowerCase(),
+            );
+            const emailTaken = this.registeredUsers.some(
+              (u) => u.email.toLowerCase() === email.toLowerCase(),
+            );
+            if (usernameTaken) {
+              this.showToast("Username sudah dipakai", "error");
+              return;
+            }
+            if (emailTaken) {
+              this.showToast("Email sudah terdaftar", "error");
+              return;
+            }
+
+            this.registeredUsers.push({
+              id: Date.now(),
+              name,
+              username,
+              email,
+              password,
+            });
+            this.saveRegisteredUsers();
+            this.loginForm.username = username;
+            this.loginForm.password = "";
+            this.registerModal.show = false;
+            this.showToast(
+              "Registrasi berhasil. Silakan login dengan akun baru.",
+            );
+          },
+          resetPassword() {
+            const identifier = this.forgotModal.identifier.trim().toLowerCase();
+            if (!identifier) {
+              this.showToast("Username atau email harus diisi", "error");
+              return;
+            }
+
+            const user = this.registeredUsers.find(
+              (u) =>
+                u.username.toLowerCase() === identifier ||
+                u.email.toLowerCase() === identifier,
+            );
+            if (!user) {
+              this.forgotModal.message =
+                "Akun tidak ditemukan. Daftar dulu, baru panik.";
+              this.forgotModal.tempPassword = "";
+              return;
+            }
+
+            const tempPassword =
+              "Temp" + Math.random().toString(36).slice(2, 8).toUpperCase();
+            user.password = tempPassword;
+            this.saveRegisteredUsers();
+            this.forgotModal.message =
+              "Password berhasil direset. Pakai password sementara di bawah ini untuk login.";
+            this.forgotModal.tempPassword = tempPassword;
+            this.loginForm.username = user.username;
+            this.loginForm.password = tempPassword;
+            this.showToast("Password sementara berhasil dibuat");
+          },
+          openEditProfile() {
+            this.profileModal = {
+              show: true,
+              name: this.admin.name || "",
+              username: this.admin.username || "",
+              email: this.admin.email || "",
+              phone: this.admin.phone || "",
+              role: this.admin.role || "",
+              address: this.admin.address || "",
+              joinedAt: this.admin.joinedAt || "",
+            };
+          },
+          saveProfile() {
+            const name = this.profileModal.name.trim();
+            const username = this.profileModal.username.trim();
+            const email = this.profileModal.email.trim();
+
+            if (!name || !username || !email) {
+              this.showToast("Nama, username, dan email wajib diisi", "error");
+              return;
+            }
+
+            Object.assign(this.admin, {
+              name,
+              username,
+              email,
+              phone: this.profileModal.phone.trim(),
+              role: this.profileModal.role.trim() || "Administrator",
+              address: this.profileModal.address.trim(),
+              joinedAt: this.profileModal.joinedAt.trim(),
+            });
+
+            this.saveAdminProfile();
+            this.profileModal.show = false;
+            this.showToast("Profil admin berhasil diperbarui");
+          },
+          logout() {
+            this.loggedIn = false;
+            this.currentView = "dashboard";
+            this.loginForm = { username: "", password: "" };
+            this.mobileMenuOpen = false;
+            this.showPassword = false;
+          },
+
+          // ---------- NAVIGATION ----------
+          navigate(view) {
+            this.currentView = view;
+            this.mobileMenuOpen = false;
+            this.$nextTick(() => window.scrollTo(0, 0));
+          },
+
+          // ---------- DATA PELANGGAN ----------
+          filteredCustomers() {
+            const q = this.customerSearch.trim().toLowerCase();
+            if (!q) return this.customers;
+            return this.customers.filter(
+              (c) =>
+                c.name.toLowerCase().includes(q) ||
+                c.email.toLowerCase().includes(q) ||
+                c.phone.includes(q),
+            );
+          },
+
+          // ---------- KATEGORI ----------
+          categoryCount(name) {
+            return this.menuItems.filter((m) => m.category === name).length;
+          },
+          openAddCategory() {
+            this.categoryModal = {
+              show: true,
+              mode: "add",
+              id: null,
+              name: "",
+            };
+          },
+          openEditCategory(cat) {
+            this.categoryModal = {
+              show: true,
+              mode: "edit",
+              id: cat.id,
+              name: cat.name,
+            };
+          },
+          saveCategory() {
+            if (!this.categoryModal.name.trim()) {
+              this.showToast("Nama kategori wajib diisi", "error");
+              return;
+            }
+            if (this.categoryModal.mode === "add") {
+              this.categories.push({
+                id: Date.now(),
+                name: this.categoryModal.name.trim(),
+              });
+              this.showToast("Kategori berhasil ditambahkan");
+            } else {
+              const cat = this.categories.find(
+                (c) => c.id === this.categoryModal.id,
+              );
+              if (cat) {
+                this.menuItems.forEach((m) => {
+                  if (m.category === cat.name)
+                    m.category = this.categoryModal.name.trim();
+                });
+                cat.name = this.categoryModal.name.trim();
+              }
+              this.showToast("Kategori berhasil diperbarui");
+            }
+            this.categoryModal.show = false;
+          },
+          deleteCategory(cat) {
+            if (confirm('Hapus kategori "' + cat.name + '"?')) {
+              this.categories = this.categories.filter((c) => c.id !== cat.id);
+              this.showToast("Kategori dihapus");
+            }
+          },
+
+          // ---------- DATA MENU ----------
+          openAddMenu() {
+            this.menuModal = {
+              show: true,
+              mode: "add",
+              id: null,
+              name: "",
+              category: this.categories[0] ? this.categories[0].name : "",
+              price: 0,
+              image: "",
+            };
+          },
+          openEditMenu(item) {
+            this.menuModal = {
+              show: true,
+              mode: "edit",
+              id: item.id,
+              name: item.name,
+              category: item.category,
+              price: item.price,
+              image: item.image,
+            };
+          },
+          saveMenu() {
+            if (!this.menuModal.name.trim() || !this.menuModal.price) {
+              this.showToast("Nama dan harga menu wajib diisi", "error");
+              return;
+            }
+            const image =
+              this.menuModal.image.trim() ||
+              "https://placehold.co/400x300/FFEDD5/C2410C?text=" +
+                encodeURIComponent(this.menuModal.name.trim());
+            if (this.menuModal.mode === "add") {
+              this.menuItems.push({
+                id: Date.now(),
+                name: this.menuModal.name.trim(),
+                category: this.menuModal.category,
+                price: this.menuModal.price,
+                image,
+              });
+              this.showToast("Menu berhasil ditambahkan");
+            } else {
+              const item = this.menuItems.find(
+                (m) => m.id === this.menuModal.id,
+              );
+              if (item)
+                Object.assign(item, {
+                  name: this.menuModal.name.trim(),
+                  category: this.menuModal.category,
+                  price: this.menuModal.price,
+                  image,
+                });
+              this.showToast("Menu berhasil diperbarui");
+            }
+            this.menuModal.show = false;
+          },
+          deleteMenu(item) {
+            if (confirm('Hapus menu "' + item.name + '"?')) {
+              this.menuItems = this.menuItems.filter((m) => m.id !== item.id);
+              this.showToast("Menu dihapus");
+            }
+          },
+
+          // ---------- TRANSAKSI & PESANAN ----------
+          statusColor(status) {
+            const map = {
+              "Menunggu Verifikasi": "bg-yellow-100 text-yellow-700",
+              Diproses: "bg-blue-100 text-blue-700",
+              Dikirim: "bg-purple-100 text-purple-700",
+              Selesai: "bg-green-100 text-green-700",
+            };
+            return map[status] || "bg-gray-100 text-gray-700";
+          },
+          nextStatusLabel(status) {
+            const map = {
+              "Menunggu Verifikasi": "Verifikasi",
+              Diproses: "Tandai Dikirim",
+              Dikirim: "Tandai Selesai",
+            };
+            return map[status] || null;
+          },
+          nextStatus(status) {
+            const map = {
+              "Menunggu Verifikasi": "Diproses",
+              Diproses: "Dikirim",
+              Dikirim: "Selesai",
+            };
+            return map[status] || status;
+          },
+          advanceStatus(order) {
+            order.status = this.nextStatus(order.status);
+            this.showToast(
+              "Status " +
+                order.id +
+                ' diperbarui menjadi "' +
+                order.status +
+                '"',
+            );
+          },
+          viewProof(order) {
+            this.proofModal = { show: true, order: order };
+          },
+          contactWA(order) {
+            let digits = order.customerPhone.replace(/\D/g, "");
+            if (digits.startsWith("0")) digits = "62" + digits.slice(1);
+            const msg = encodeURIComponent(
+              "Halo " +
+                order.customer +
+                ", kami dari Dapur Nusantara ingin mengonfirmasi pesanan " +
+                order.id +
+                ".",
+            );
+            window.open("https://wa.me/" + digits + "?text=" + msg, "_blank");
+          },
+
+          // ---------- LAPORAN ----------
+          completedOrders() {
+            return this.orders.filter((o) => o.status === "Selesai");
+          },
+          totalRevenue() {
+            return this.completedOrders().reduce((s, o) => s + o.total, 0);
+          },
+          exportExcel() {
+            const rows = [
+              ["ID Pesanan", "Pelanggan", "Tanggal", "Metode Bayar", "Total"],
+            ];
+            this.completedOrders().forEach((o) =>
+              rows.push([o.id, o.customer, o.date, o.payment, o.total]),
+            );
+            const csv = rows
+              .map((r) =>
+                r
+                  .map((v) => '"' + String(v).replace(/"/g, '""') + '"')
+                  .join(","),
+              )
+              .join("\n");
+            const blob = new Blob(["\uFEFF" + csv], {
+              type: "text/csv;charset=utf-8;",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "laporan-keuangan-dapur-nusantara.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.showToast("Laporan berhasil diexport (CSV)");
+          },
+          printReport() {
+            window.print();
+          },
+
+          // ---------- FORMAT ----------
+          formatRp(num) {
+            return "Rp" + Number(num).toLocaleString("id-ID");
+          },
+
+          // ---------- TOAST ----------
+          showToast(message, type = "success") {
+            this.toast = { show: true, message, type };
+            setTimeout(() => {
+              this.toast.show = false;
+            }, 3000);
+          },
+        };
+      }
+    </script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </body>
+</html>

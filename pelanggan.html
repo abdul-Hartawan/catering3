@@ -1,0 +1,2179 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dapur Nusantara | Portal Pelanggan</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Poppins", "sans-serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+            boxShadow: {
+              warm: "0 10px 30px -10px rgba(234, 88, 12, 0.35)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+      @layer components {
+        .btn-primary {
+          @apply inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl px-5 py-2.5 shadow-warm hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0 transition-all duration-200;
+        }
+        .btn-secondary {
+          @apply inline-flex items-center justify-center gap-2 bg-white border border-gray-200 text-slate-700 font-medium rounded-xl px-5 py-2.5 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200;
+        }
+        .btn-icon {
+          @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:bg-gray-100 hover:text-slate-600 transition-colors duration-200;
+        }
+        .input-field {
+          @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[15px] text-slate-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed;
+        }
+        .label-field {
+          @apply block text-sm font-medium text-slate-600 mb-1.5;
+        }
+        .nav-link {
+          @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium text-slate-500 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-200 cursor-pointer;
+        }
+        .nav-link-active {
+          @apply bg-orange-50 text-orange-600 font-semibold;
+        }
+        .compact-card {
+          @apply bg-white rounded-2xl shadow-md shadow-gray-200/70 overflow-hidden border border-gray-100 hover:shadow-xl hover:shadow-orange-100 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col;
+        }
+        .badge {
+          @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+        }
+        .pill {
+          @apply px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer;
+        }
+        .section-title {
+          @apply font-display font-semibold text-xl text-slate-800;
+        }
+        .pay-card {
+          @apply flex items-center gap-3 rounded-xl border-2 border-gray-200 px-4 py-3 cursor-pointer transition-all duration-200 hover:border-orange-300;
+        }
+        .pay-card-active {
+          @apply border-orange-500 bg-orange-50;
+        }
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #fdba8c;
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #fb923c;
+      }
+      .fab-pulse::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        background: #25d366;
+        animation: fabping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      }
+      @keyframes fabping {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+        }
+      }
+      .map-isolate {
+        isolation: isolate;
+      }
+    </style>
+  </head>
+  <body
+    x-data="pelangganApp()"
+    x-init="init()"
+    class="bg-gray-50 font-sans text-slate-800 antialiased"
+  >
+    <!-- ============ LOGIN PAGE ============ -->
+    <div x-show="!loggedIn" x-cloak class="min-h-screen flex">
+      <!-- Left branding panel -->
+      <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div
+          class="absolute inset-0 bg-cover bg-center"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80&quot;);
+          "
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-orange-600/90 via-red-500/85 to-orange-700/90"
+        ></div>
+        <div
+          class="relative z-10 flex flex-col justify-between p-12 text-white"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-11 h-11 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center"
+            >
+              <i class="fa-solid fa-bowl-food text-xl"></i>
+            </div>
+            <span class="font-display font-bold text-2xl">Dapur Nusantara</span>
+          </div>
+          <div>
+            <h1
+              class="font-display font-bold text-4xl xl:text-5xl leading-tight mb-4"
+            >
+              Catering hangat,<br />siap antar ke meja Anda.
+            </h1>
+            <p class="text-white/85 text-lg max-w-md">
+              Pesan menu favorit untuk acara keluarga, kantor, hingga hajatan
+              besar — semua dalam satu portal pelanggan.
+            </p>
+          </div>
+          <div class="flex items-center gap-8 text-sm text-white/80">
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >500+</span
+              >Pelanggan Aktif
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >40+</span
+              >Menu Pilihan
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >4.9★</span
+              >Rating Layanan
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right login form panel -->
+      <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+        <div class="w-full max-w-sm">
+          <div class="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <div
+              class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white"
+            >
+              <i class="fa-solid fa-bowl-food text-xl"></i>
+            </div>
+            <span class="font-display font-bold text-2xl text-slate-800"
+              >Dapur Nusantara</span
+            >
+          </div>
+
+          <h2 class="font-display font-bold text-2xl text-slate-800 mb-1">
+            Selamat Datang Kembali
+          </h2>
+          <p class="text-slate-500 mb-8">
+            Masuk untuk mulai memesan menu favorit Anda.
+          </p>
+
+          <form @submit.prevent="login()" class="space-y-4">
+            <div>
+              <label class="label-field">Username</label>
+              <div class="relative">
+                <i
+                  class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  type="text"
+                  x-model="loginForm.username"
+                  placeholder="contoh: andi.saputra"
+                  class="input-field pl-11"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="label-field">Password</label>
+              <div class="relative">
+                <i
+                  class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  x-model="loginForm.password"
+                  placeholder="••••••••"
+                  class="input-field pl-11 pr-11"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600"
+                >
+                  <i
+                    :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                    class="fa-solid"
+                  ></i>
+                </button>
+              </div>
+            </div>
+
+            <p
+              x-show="loginError"
+              x-cloak
+              x-text="loginError"
+              class="text-sm text-red-500 flex items-center gap-1.5"
+            ></p>
+
+            <div class="flex items-center justify-between gap-3 text-sm pt-1">
+              <label class="flex items-center gap-2 text-slate-500">
+                <input
+                  type="checkbox"
+                  class="rounded border-gray-300 text-orange-500 focus:ring-orange-400"
+                />
+                Ingat saya
+              </label>
+              <div class="flex items-center gap-4 flex-shrink-0">
+                <button
+                  type="button"
+                  @click="openForgotPassword()"
+                  class="text-orange-600 font-medium hover:underline"
+                >
+                  Lupa password?
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary w-full mt-2">
+              <i class="fa-solid fa-right-to-bracket"></i> Login
+            </button>
+
+            <div
+              class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-slate-600 flex gap-2.5 items-start"
+            >
+              <i class="fa-solid fa-circle-info mt-0.5"></i>
+              <span
+                >Belum Punya Akun? Klik
+                <button
+                  type="button"
+                  @click="openRegister()"
+                  class="text-orange-700 font-medium hover:underline"
+                >
+                  Disini
+                </button></span
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MAIN APP ============ -->
+    <div x-show="loggedIn" x-cloak class="flex h-screen overflow-hidden">
+      <!-- Mobile backdrop -->
+      <div
+        x-show="mobileMenuOpen"
+        x-cloak
+        @click="mobileMenuOpen=false"
+        x-transition.opacity
+        class="fixed inset-0 bg-slate-900/50 z-40 md:hidden"
+      ></div>
+
+      <!-- Sidebar (unified: drawer on mobile, static collapsible on desktop) -->
+      <aside
+        :class="[sidebarCollapsed ? 'md:w-20' : 'md:w-64', mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']"
+        class="fixed md:static inset-y-0 left-0 z-50 w-72 md:h-screen bg-white border-r border-gray-100 flex flex-col flex-shrink-0 transition-all duration-300"
+      >
+        <!-- Logo + collapse toggle -->
+        <div
+          class="flex items-center justify-between px-4 h-16 border-b border-gray-100 flex-shrink-0"
+        >
+          <div class="flex items-center gap-2.5 overflow-hidden">
+            <div
+              class="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white flex-shrink-0"
+            >
+              <i class="fa-solid fa-bowl-food"></i>
+            </div>
+            <span
+              x-show="!sidebarCollapsed"
+              class="font-display font-bold text-lg text-slate-800 whitespace-nowrap"
+              >Dapur Nusantara</span
+            >
+          </div>
+          <button @click="mobileMenuOpen=false" class="md:hidden btn-icon">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          <template x-for="item in navItems" :key="item.id">
+            <div
+              @click="navigate(item.id)"
+              class="nav-link relative"
+              :class="(currentView===item.id || (item.id==='menu' && currentView==='menuDetail') || (item.id==='cart' && currentView==='checkout')) ? 'nav-link-active' : ''"
+              :title="sidebarCollapsed ? item.label : ''"
+            >
+              <i
+                :class="item.icon"
+                class="fa-solid w-5 text-center flex-shrink-0"
+              ></i>
+              <span
+                x-show="!sidebarCollapsed"
+                class="whitespace-nowrap"
+                x-text="item.label"
+              ></span>
+              <span
+                x-show="item.id==='cart' && cartCount() > 0"
+                x-cloak
+                class="ml-auto bg-red-500 text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center"
+                :class="sidebarCollapsed ? 'absolute -top-1 -right-1 ml-0' : ''"
+                x-text="cartCount()"
+              ></span>
+            </div>
+          </template>
+        </nav>
+
+        <!-- User mini profile + logout -->
+        <div class="border-t border-gray-100 p-3 flex-shrink-0">
+          <div
+            @click="navigate('profile')"
+            class="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 cursor-pointer mb-1"
+          >
+            <div
+              class="w-9 h-9 rounded-full bg-orange-500 text-white flex items-center justify-center flex-shrink-0 font-bold"
+              x-text="user.name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .substring(0,2)
+    .toUpperCase()"
+            ></div>
+            <div x-show="!sidebarCollapsed" class="overflow-hidden">
+              <p
+                class="text-sm font-semibold text-slate-700 truncate"
+                x-text="user.name"
+              ></p>
+              <p class="text-xs text-slate-400 truncate">Lihat profil</p>
+            </div>
+          </div>
+          <div
+            @click="logout()"
+            class="nav-link text-red-500 hover:bg-red-50 hover:text-red-600"
+          >
+            <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+            <span x-show="!sidebarCollapsed">Logout</span>
+          </div>
+          <button
+            @click="sidebarCollapsed = !sidebarCollapsed"
+            class="hidden md:flex items-center justify-center w-full mt-2 py-1.5 text-gray-400 hover:text-orange-500"
+          >
+            <i
+              class="fa-solid"
+              :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"
+            ></i>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main column -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        <!-- Mobile top bar -->
+        <header
+          class="md:hidden flex items-center justify-between bg-white border-b border-gray-100 px-4 h-16 flex-shrink-0 sticky top-0 z-20"
+        >
+          <button @click="mobileMenuOpen=true" class="btn-icon">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+          <span
+            class="font-display font-semibold text-slate-800"
+            x-text="pageTitle[currentView] || 'Dapur Nusantara'"
+          ></span>
+          <div @click="navigate('cart')" class="relative btn-icon">
+            <i class="fa-solid fa-cart-shopping text-lg"></i>
+            <span
+              x-show="cartCount() > 0"
+              x-cloak
+              class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center"
+              x-text="cartCount()"
+            ></span>
+          </div>
+        </header>
+
+        <!-- Scrollable content -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <!-- ===== DASHBOARD ===== -->
+          <div x-show="currentView==='dashboard'">
+            <div
+              class="relative overflow-hidden rounded-3xl mb-8 bg-gradient-to-br from-orange-500 via-orange-500 to-red-500 px-6 sm:px-10 py-8 sm:py-10 text-white"
+            >
+              <div
+                class="absolute -right-10 -top-10 w-56 h-56 rounded-full bg-white/10"
+              ></div>
+              <div
+                class="absolute right-16 bottom-0 w-32 h-32 rounded-full bg-white/10"
+              ></div>
+              <div class="relative z-10 max-w-lg">
+                <p class="text-white/80 font-medium mb-1">
+                  Halo, <span x-text="user.name.split(' ')[0]"></span> 👋
+                </p>
+                <h1 class="font-display font-bold text-2xl sm:text-3xl mb-3">
+                  Mau pesan apa hari ini?
+                </h1>
+                <p class="text-white/85 mb-5">
+                  Jelajahi menu andalan kami dan pesan langsung untuk diantar ke
+                  lokasi Anda.
+                </p>
+                <button
+                  @click="navigate('menu')"
+                  class="bg-white text-orange-600 font-semibold rounded-xl px-5 py-2.5 hover:bg-orange-50 transition-colors inline-flex items-center gap-2"
+                >
+                  Lihat Daftar Menu <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <template x-for="stat in dashboardStats()" :key="stat.label">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+                >
+                  <div
+                    class="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                    :class="stat.bg"
+                  >
+                    <i :class="[stat.icon, stat.color]" class="fa-solid"></i>
+                  </div>
+                  <p
+                    class="text-2xl font-display font-bold text-slate-800"
+                    x-text="stat.value"
+                  ></p>
+                  <p class="text-sm text-slate-500" x-text="stat.label"></p>
+                </div>
+              </template>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="section-title">Menu Rekomendasi</h2>
+              <span
+                @click="navigate('menu')"
+                class="text-orange-600 font-medium text-sm cursor-pointer hover:underline"
+                >Lihat Semua <i class="fa-solid fa-chevron-right text-xs"></i
+              ></span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <template x-for="item in menuItems.slice(0,4)" :key="item.id">
+                <div @click="openDetail(item)" class="compact-card">
+                  <div class="aspect-[4/3] overflow-hidden">
+                    <img
+                      :src="item.image"
+                      onerror="
+                        this.src =
+                          'https://placehold.co/400x300/FFEDD5/C2410C?text=Foto+Menu'
+                      "
+                      class="w-full h-full object-cover"
+                      :alt="item.name"
+                    />
+                  </div>
+                  <div class="p-4 flex flex-col flex-1">
+                    <span
+                      class="text-xs font-medium text-orange-500 mb-1"
+                      x-text="item.category"
+                    ></span>
+                    <h3
+                      class="font-semibold text-slate-800 mb-1 line-clamp-1"
+                      x-text="item.name"
+                    ></h3>
+                    <p
+                      class="text-orange-600 font-bold mt-auto"
+                      x-text="formatRp(item.price)"
+                    ></p>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- ===== MENU LIST ===== -->
+          <div x-show="currentView==='menu'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+              Daftar Menu
+            </h1>
+            <p class="text-slate-500 mb-5">
+              Pilih menu favorit Anda dari kategori berikut.
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-6">
+              <template x-for="cat in categories" :key="cat">
+                <button
+                  @click="menuCategoryFilter = cat"
+                  class="pill"
+                  :class="menuCategoryFilter===cat ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-warm' : 'bg-white border border-gray-200 text-slate-600 hover:border-orange-300'"
+                  x-text="cat"
+                ></button>
+              </template>
+            </div>
+
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+            >
+              <template x-for="item in filteredMenu()" :key="item.id">
+                <div class="compact-card">
+                  <div
+                    @click="openDetail(item)"
+                    class="aspect-[4/3] overflow-hidden"
+                  >
+                    <img
+                      :src="item.image"
+                      onerror="
+                        this.src =
+                          'https://placehold.co/400x300/FFEDD5/C2410C?text=Foto+Menu'
+                      "
+                      class="w-full h-full object-cover"
+                      :alt="item.name"
+                    />
+                  </div>
+                  <div class="p-4 flex flex-col flex-1">
+                    <span
+                      class="text-xs font-medium text-orange-500 mb-1"
+                      x-text="item.category"
+                    ></span>
+                    <h3
+                      @click="openDetail(item)"
+                      class="font-semibold text-slate-800 mb-1 line-clamp-1"
+                      x-text="item.name"
+                    ></h3>
+                    <p
+                      class="text-sm text-slate-500 line-clamp-2 mb-3"
+                      x-text="item.desc"
+                    ></p>
+                    <div class="flex items-center justify-between mt-auto">
+                      <span
+                        class="text-orange-600 font-bold"
+                        x-text="formatRp(item.price)"
+                      ></span>
+                      <button
+                        @click="openDetail(item)"
+                        class="text-sm font-semibold text-orange-600 hover:text-orange-700 flex items-center gap-1"
+                      >
+                        Detail <i class="fa-solid fa-chevron-right text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+            <div
+              x-show="filteredMenu().length === 0"
+              class="text-center py-16 text-slate-400"
+            >
+              <i class="fa-solid fa-bowl-food text-4xl mb-3"></i>
+              <p>Tidak ada menu pada kategori ini.</p>
+            </div>
+          </div>
+
+          <!-- ===== MENU DETAIL ===== -->
+          <div x-show="currentView==='menuDetail' && selectedMenuItem">
+            <button
+              @click="navigate('menu')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-5 inline-flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu
+            </button>
+
+            <template x-if="selectedMenuItem">
+              <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                <div
+                  class="rounded-3xl overflow-hidden shadow-lg aspect-square lg:aspect-[4/3]"
+                >
+                  <img
+                    :src="selectedMenuItem.image"
+                    onerror="
+                      this.src =
+                        'https://placehold.co/600x500/FFEDD5/C2410C?text=Foto+Menu'
+                    "
+                    class="w-full h-full object-cover"
+                    :alt="selectedMenuItem.name"
+                  />
+                </div>
+                <div>
+                  <span
+                    class="badge bg-orange-100 text-orange-700 mb-3"
+                    x-text="selectedMenuItem.category"
+                  ></span>
+                  <h1
+                    class="font-display font-bold text-2xl sm:text-3xl text-slate-800 mb-2"
+                    x-text="selectedMenuItem.name"
+                  ></h1>
+                  <p
+                    class="text-2xl font-bold text-orange-600 mb-4"
+                    x-text="formatRp(selectedMenuItem.price)"
+                  ></p>
+                  <p
+                    class="text-slate-600 leading-relaxed mb-6"
+                    x-text="selectedMenuItem.desc"
+                  ></p>
+
+                  <div class="border-t border-gray-100 pt-6">
+                    <label class="label-field">Jumlah (Qty)</label>
+                    <div class="flex items-center gap-4 mb-6">
+                      <div
+                        class="flex items-center border border-gray-200 rounded-xl overflow-hidden"
+                      >
+                        <button
+                          @click="if(detailQty>1) detailQty--"
+                          class="w-11 h-11 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                        >
+                          <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span
+                          class="w-12 text-center font-semibold text-lg"
+                          x-text="detailQty"
+                        ></span>
+                        <button
+                          @click="detailQty++"
+                          class="w-11 h-11 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                        >
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </div>
+                      <p class="text-slate-500">
+                        Subtotal:
+                        <span
+                          class="font-semibold text-slate-800"
+                          x-text="formatRp(selectedMenuItem.price * detailQty)"
+                        ></span>
+                      </p>
+                    </div>
+
+                    <button
+                      @click="addToCart()"
+                      class="btn-primary w-full sm:w-auto px-8"
+                    >
+                      <i class="fa-solid fa-cart-plus"></i> Tambah ke Keranjang
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- ===== CART ===== -->
+          <!-- <div x-show="currentView==='cart'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-6">
+              Keranjang Saya
+            </h1>
+
+            <div
+              x-show="cart.length === 0"
+              class="text-center py-20 bg-white rounded-2xl border border-gray-100"
+            >
+              <i
+                class="fa-solid fa-cart-shopping text-5xl text-gray-200 mb-4"
+              ></i>
+              <p class="text-slate-500 mb-5">Keranjang Anda masih kosong.</p>
+              <button @click="navigate('menu')" class="btn-primary">
+                Mulai Pilih Menu
+              </button>
+            </div>
+
+            <div x-show="cart.length > 0" class="grid lg:grid-cols-3 gap-8">
+              <div class="lg:col-span-2 space-y-3">
+                <template x-for="item in cart" :key="item.id">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-4"
+                  >
+                    <img
+                      :src="item.image"
+                      onerror="
+                        this.src =
+                          'https://placehold.co/100x100/FFEDD5/C2410C?text=Menu'
+                      "
+                      class="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                    />
+                    <div class="flex-1 min-w-0">
+                      <p
+                        class="font-semibold text-slate-800 truncate"
+                        x-text="item.name"
+                      ></p>
+                      <p
+                        class="text-orange-600 font-medium text-sm"
+                        x-text="formatRp(item.price)"
+                      ></p>
+                    </div>
+                    <div
+                      class="flex items-center border border-gray-200 rounded-lg overflow-hidden flex-shrink-0"
+                    >
+                      <button
+                        @click="if(item.qty>1) item.qty--"
+                        class="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                      >
+                        <i class="fa-solid fa-minus text-xs"></i>
+                      </button>
+                      <span
+                        class="w-8 text-center text-sm font-semibold"
+                        x-text="item.qty"
+                      ></span>
+                      <button
+                        @click="item.qty++"
+                        class="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                      >
+                        <i class="fa-solid fa-plus text-xs"></i>
+                      </button>
+                    </div>
+                    <p
+                      class="font-semibold text-slate-800 w-24 text-right hidden sm:block"
+                      x-text="formatRp(item.price * item.qty)"
+                    ></p>
+                    <button
+                      @click="removeFromCart(item.id)"
+                      class="text-gray-300 hover:text-red-500 flex-shrink-0 w-8 h-8 flex items-center justify-center"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </template>
+              </div>
+
+              <div class="lg:col-span-1">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 p-6 sticky top-4"
+                >
+                  <h3 class="font-display font-semibold text-lg mb-4">
+                    Ringkasan
+                  </h3>
+                  <div class="flex justify-between text-slate-500 mb-2">
+                    <span>Total Item</span><span x-text="cartCount()"></span>
+                  </div>
+                  <div
+                    class="flex justify-between font-semibold text-slate-800 text-lg border-t border-gray-100 pt-3 mt-1"
+                  >
+                    <span>Subtotal</span
+                    ><span x-text="formatRp(cartSubtotal())"></span>
+                  </div>
+                  <button
+                    @click="navigate('checkout')"
+                    class="btn-primary w-full mt-5"
+                  >
+                    Checkout <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- ===== CART ===== -->
+          <div x-show="currentView==='cart'">
+            <h1
+              class="font-display font-bold text-xl sm:text-2xl text-slate-800 mb-6"
+            >
+              Keranjang Saya
+            </h1>
+
+            <div
+              x-show="cart.length === 0"
+              class="text-center py-20 bg-white rounded-2xl border border-gray-100"
+            >
+              <i
+                class="fa-solid fa-cart-shopping text-5xl text-gray-200 mb-4"
+              ></i>
+              <p class="text-slate-500 mb-5">Keranjang Anda masih kosong.</p>
+              <button @click="navigate('menu')" class="btn-primary">
+                Mulai Pilih Menu
+              </button>
+            </div>
+
+            <div
+              x-show="cart.length > 0"
+              class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+            >
+              <div class="lg:col-span-2 space-y-3">
+                <template x-for="item in cart" :key="item.id">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col sm:flex-row sm:items-center gap-4"
+                  >
+                    <img
+                      :src="item.image"
+                      onerror="
+                        this.src =
+                          'https://placehold.co/100x100/FFEDD5/C2410C?text=Menu'
+                      "
+                      class="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                    />
+
+                    <div class="flex-1 min-w-0 w-full">
+                      <p
+                        class="font-semibold text-slate-800 break-words sm:truncate"
+                        x-text="item.name"
+                      ></p>
+                      <p
+                        class="text-orange-600 font-medium text-sm mt-1"
+                        x-text="formatRp(item.price)"
+                      ></p>
+
+                      <!-- subtotal item tampil di mobile -->
+                      <p
+                        class="font-semibold text-slate-800 mt-2 sm:hidden"
+                        x-text="formatRp(item.price * item.qty)"
+                      ></p>
+                    </div>
+
+                    <div
+                      class="flex items-center justify-between sm:justify-start gap-3 w-full sm:w-auto"
+                    >
+                      <div
+                        class="flex items-center border border-gray-200 rounded-lg overflow-hidden flex-shrink-0"
+                      >
+                        <button
+                          @click="if(item.qty>1) item.qty--"
+                          class="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                        >
+                          <i class="fa-solid fa-minus text-xs"></i>
+                        </button>
+                        <span
+                          class="w-8 text-center text-sm font-semibold"
+                          x-text="item.qty"
+                        ></span>
+                        <button
+                          @click="item.qty++"
+                          class="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-gray-50"
+                        >
+                          <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                      </div>
+
+                      <button
+                        @click="removeFromCart(item.id)"
+                        class="text-gray-300 hover:text-red-500 flex-shrink-0 w-8 h-8 flex items-center justify-center"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+
+                    <p
+                      class="font-semibold text-slate-800 w-24 text-right hidden sm:block flex-shrink-0"
+                      x-text="formatRp(item.price * item.qty)"
+                    ></p>
+                  </div>
+                </template>
+              </div>
+
+              <div class="lg:col-span-1">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 p-6 lg:sticky lg:top-4"
+                >
+                  <h3 class="font-display font-semibold text-lg mb-4">
+                    Ringkasan
+                  </h3>
+                  <div class="flex justify-between text-slate-500 mb-2">
+                    <span>Total Item</span><span x-text="cartCount()"></span>
+                  </div>
+                  <div
+                    class="flex justify-between font-semibold text-slate-800 text-lg border-t border-gray-100 pt-3 mt-1"
+                  >
+                    <span>Subtotal</span
+                    ><span x-text="formatRp(cartSubtotal())"></span>
+                  </div>
+                  <button
+                    @click="navigate('checkout')"
+                    class="btn-primary w-full mt-5"
+                  >
+                    Checkout <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== CHECKOUT ===== -->
+          <div x-show="currentView==='checkout'">
+            <button
+              @click="navigate('cart')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-5 inline-flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrow-left"></i> Kembali ke Keranjang
+            </button>
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-6">
+              Checkout Pesanan
+            </h1>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+              <!-- Form kiri -->
+              <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-100 p-6">
+                  <h3 class="font-display font-semibold text-lg mb-4">
+                    Data Pemesan
+                  </h3>
+                  <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="label-field">Nama Lengkap</label>
+                      <input
+                        type="text"
+                        :value="user.name"
+                        disabled
+                        class="input-field"
+                      />
+                    </div>
+                    <div>
+                      <label class="label-field">No. HP</label>
+                      <input
+                        type="text"
+                        :value="user.phone"
+                        disabled
+                        class="input-field"
+                      />
+                    </div>
+                    <div>
+                      <label class="label-field">Tanggal Pesanan</label>
+                      <input
+                        type="text"
+                        :value="todayLabel"
+                        disabled
+                        class="input-field"
+                      />
+                    </div>
+                    <div>
+                      <label class="label-field">Jadwal Pengiriman</label>
+                      <input
+                        type="datetime-local"
+                        x-model="checkoutForm.deliveryDateTime"
+                        :min="minDateTime"
+                        class="input-field"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 p-6 map-isolate"
+                >
+                  <h3 class="font-display font-semibold text-lg mb-1">
+                    Lokasi Pengiriman
+                  </h3>
+                  <p class="text-sm text-slate-500 mb-4">
+                    <i class="fa-solid fa-location-dot text-orange-500"></i>
+                    Klik atau geser pin pada peta untuk menentukan titik
+                    pengiriman.
+                  </p>
+                  <div
+                    id="checkoutMap"
+                    class="w-full h-72 rounded-xl border border-gray-200 relative z-0"
+                  ></div>
+                  <div class="flex flex-wrap gap-4 mt-4 text-sm">
+                    <span class="badge bg-blue-50 text-blue-600"
+                      ><i class="fa-solid fa-route"></i> Jarak:
+                      <span x-text="distanceKm.toFixed(1)"></span> km</span
+                    >
+                    <span class="badge bg-green-50 text-green-600"
+                      ><i class="fa-solid fa-truck"></i> Ongkir:
+                      <span x-text="formatRp(ongkir)"></span
+                    ></span>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-6">
+                  <h3 class="font-display font-semibold text-lg mb-4">
+                    Metode Pembayaran
+                  </h3>
+                  <div class="grid sm:grid-cols-3 gap-3">
+                    <div
+                      @click="checkoutForm.paymentMethod='transfer'"
+                      class="pay-card"
+                      :class="checkoutForm.paymentMethod==='transfer' ? 'pay-card-active' : ''"
+                    >
+                      <i
+                        class="fa-solid fa-building-columns text-xl text-orange-500"
+                      ></i>
+                      <span class="font-medium text-sm">Transfer Bank</span>
+                    </div>
+                    <div
+                      @click="checkoutForm.paymentMethod='qris'"
+                      class="pay-card"
+                      :class="checkoutForm.paymentMethod==='qris' ? 'pay-card-active' : ''"
+                    >
+                      <i class="fa-solid fa-qrcode text-xl text-orange-500"></i>
+                      <span class="font-medium text-sm">QRIS</span>
+                    </div>
+                    <div
+                      @click="checkoutForm.paymentMethod='cod'"
+                      class="pay-card"
+                      :class="checkoutForm.paymentMethod==='cod' ? 'pay-card-active' : ''"
+                    >
+                      <i
+                        class="fa-solid fa-money-bill-wave text-xl text-orange-500"
+                      ></i>
+                      <span class="font-medium text-sm">COD</span>
+                    </div>
+                  </div>
+
+                  <!-- Transfer Bank -->
+                  <div
+                    x-show="checkoutForm.paymentMethod==='transfer'"
+                    x-cloak
+                    class="mt-5 bg-orange-50 border border-orange-100 rounded-xl p-4"
+                  >
+                    <p class="text-sm text-slate-500 mb-1">
+                      Transfer ke rekening berikut:
+                    </p>
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <p class="font-semibold text-slate-800">
+                          BCA — 1234567890
+                        </p>
+                        <p class="text-sm text-slate-500">
+                          a.n. Dapur Nusantara Catering
+                        </p>
+                      </div>
+                      <button
+                        @click="copyRekening()"
+                        class="btn-secondary !px-3 !py-2 text-sm"
+                      >
+                        <i class="fa-solid fa-copy"></i>
+                        <span x-text="copied ? 'Tersalin!' : 'Salin'"></span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- QRIS -->
+                  <div
+                    x-show="checkoutForm.paymentMethod==='qris'"
+                    x-cloak
+                    class="mt-5 bg-orange-50 border border-orange-100 rounded-xl p-4 flex flex-col items-center"
+                  >
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DapurNusantara-QRIS-Payment"
+                      onerror="
+                        this.src =
+                          'https://placehold.co/180x180/ffffff/1F2937?text=QRIS'
+                      "
+                      class="w-36 h-36 rounded-lg bg-white p-2"
+                      alt="QRIS"
+                    />
+                    <p class="text-sm text-slate-500 mt-3">
+                      Pindai kode QR untuk membayar via QRIS
+                    </p>
+                  </div>
+
+                  <!-- Upload bukti (transfer/qris) -->
+                  <div
+                    x-show="checkoutForm.paymentMethod!=='cod'"
+                    x-cloak
+                    class="mt-5"
+                  >
+                    <label class="label-field">Upload Bukti Transfer</label>
+                    <label
+                      class="flex items-center gap-3 border-2 border-dashed border-gray-200 rounded-xl px-4 py-4 cursor-pointer hover:border-orange-300 transition-colors"
+                    >
+                      <i class="fa-solid fa-upload text-orange-500 text-lg"></i>
+                      <span class="text-sm text-slate-500"
+                        >Klik untuk pilih gambar bukti pembayaran</span
+                      >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        @change="handleProofUpload($event)"
+                      />
+                    </label>
+                    <div
+                      x-show="checkoutForm.proofPreview"
+                      x-cloak
+                      class="mt-3 flex items-center gap-3"
+                    >
+                      <img
+                        :src="checkoutForm.proofPreview"
+                        class="w-20 h-20 rounded-lg object-cover border border-gray-200"
+                      />
+                      <span class="text-sm text-green-600 font-medium"
+                        ><i class="fa-solid fa-circle-check"></i> Bukti siap
+                        diunggah</span
+                      >
+                    </div>
+                  </div>
+
+                  <!-- COD note -->
+                  <div
+                    x-show="checkoutForm.paymentMethod==='cod'"
+                    x-cloak
+                    class="mt-5 bg-green-50 border border-green-100 rounded-xl p-4 text-sm text-green-700 flex gap-2.5"
+                  >
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <span
+                      >Pembayaran dilakukan tunai saat pesanan tiba di lokasi
+                      Anda.</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ringkasan kanan -->
+              <div class="lg:col-span-1">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 p-6 sticky top-4"
+                >
+                  <h3 class="font-display font-semibold text-lg mb-4">
+                    Ringkasan Pesanan
+                  </h3>
+                  <div class="space-y-2 max-h-48 overflow-y-auto pr-1 mb-4">
+                    <template x-for="item in cart" :key="item.id">
+                      <div class="flex justify-between text-sm">
+                        <span class="text-slate-600 truncate pr-2"
+                          ><span x-text="item.qty"></span>x
+                          <span x-text="item.name"></span
+                        ></span>
+                        <span
+                          class="text-slate-800 font-medium flex-shrink-0"
+                          x-text="formatRp(item.price*item.qty)"
+                        ></span>
+                      </div>
+                    </template>
+                  </div>
+                  <div class="border-t border-gray-100 pt-3 space-y-2">
+                    <div class="flex justify-between text-slate-500 text-sm">
+                      <span>Subtotal</span
+                      ><span x-text="formatRp(cartSubtotal())"></span>
+                    </div>
+                    <div class="flex justify-between text-slate-500 text-sm">
+                      <span>Ongkos Kirim</span
+                      ><span x-text="formatRp(ongkir)"></span>
+                    </div>
+                    <div
+                      class="flex justify-between font-bold text-slate-800 text-lg border-t border-gray-100 pt-3 mt-1"
+                    >
+                      <span>Grand Total</span
+                      ><span
+                        class="text-orange-600"
+                        x-text="formatRp(grandTotal())"
+                      ></span>
+                    </div>
+                  </div>
+                  <button
+                    @click="placeOrder()"
+                    :disabled="!canPlaceOrder()"
+                    class="btn-primary w-full mt-5"
+                  >
+                    <i class="fa-solid fa-bag-shopping"></i> Pesan Sekarang
+                  </button>
+                  <p
+                    x-show="!canPlaceOrder()"
+                    class="text-xs text-slate-400 text-center mt-2"
+                  >
+                    Lengkapi jadwal pengiriman &amp; bukti pembayaran terlebih
+                    dahulu.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== PESANAN SAYA ===== -->
+          <div x-show="currentView==='orders'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-6">
+              Pesanan Saya
+            </h1>
+
+            <div class="flex gap-2 mb-6 bg-gray-100 rounded-xl p-1 w-fit">
+              <button
+                @click="activeOrderTab='aktif'"
+                class="pill !rounded-lg"
+                :class="activeOrderTab==='aktif' ? 'bg-white shadow text-orange-600' : 'text-slate-500'"
+              >
+                Pesanan Aktif
+              </button>
+              <button
+                @click="activeOrderTab='selesai'"
+                class="pill !rounded-lg"
+                :class="activeOrderTab==='selesai' ? 'bg-white shadow text-orange-600' : 'text-slate-500'"
+              >
+                Riwayat Selesai
+              </button>
+            </div>
+
+            <div class="space-y-4">
+              <template
+                x-for="order in (activeOrderTab==='aktif' ? activeOrders() : completedOrders())"
+                :key="order.id"
+              >
+                <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-2 mb-3"
+                  >
+                    <div>
+                      <p
+                        class="font-semibold text-slate-800"
+                        x-text="order.id"
+                      ></p>
+                      <p class="text-xs text-slate-400" x-text="order.date"></p>
+                    </div>
+                    <span
+                      class="badge"
+                      :class="statusColor(order.status)"
+                      x-text="order.status"
+                    ></span>
+                  </div>
+                  <div class="text-sm text-slate-500 mb-3 line-clamp-1">
+                    <template x-for="(it, idx) in order.items" :key="idx">
+                      <span
+                        x-text="it.qty + 'x ' + it.name + (idx < order.items.length-1 ? ', ' : '')"
+                      ></span>
+                    </template>
+                  </div>
+                  <div
+                    class="flex items-center justify-between border-t border-gray-100 pt-3"
+                  >
+                    <span class="text-sm text-slate-500">Total Pembayaran</span>
+                    <span
+                      class="font-bold text-orange-600"
+                      x-text="formatRp(order.total)"
+                    ></span>
+                  </div>
+                </div>
+              </template>
+              <div
+                x-show="(activeOrderTab==='aktif' ? activeOrders() : completedOrders()).length === 0"
+                class="text-center py-16 bg-white rounded-2xl border border-gray-100 text-slate-400"
+              >
+                <i class="fa-solid fa-receipt text-4xl mb-3"></i>
+                <p>Belum ada pesanan pada kategori ini.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== PROFIL ===== -->
+          <div x-show="currentView==='profile'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-6">
+              Profil Saya
+            </h1>
+            <div
+              class="bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 max-w-2xl"
+            >
+              <div class="flex items-center gap-4 mb-6">
+                <div
+                  class="w-20 h-20 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-2xl"
+                  x-text="user.name
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .substring(0,2)
+    .toUpperCase()"
+                ></div>
+                <div>
+                  <p
+                    class="font-display font-bold text-xl text-slate-800"
+                    x-text="user.name"
+                  ></p>
+                  <p class="text-slate-400 text-sm">Pelanggan sejak Jan 2025</p>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label class="label-field">Nama Lengkap</label>
+                  <input
+                    type="text"
+                    x-model="user.name"
+                    :disabled="!profileEditing"
+                    class="input-field"
+                  />
+                </div>
+                <div>
+                  <label class="label-field">No. HP</label>
+                  <input
+                    type="text"
+                    x-model="user.phone"
+                    :disabled="!profileEditing"
+                    class="input-field"
+                  />
+                </div>
+                <div>
+                  <label class="label-field">Email</label>
+                  <input
+                    type="email"
+                    x-model="user.email"
+                    :disabled="!profileEditing"
+                    class="input-field"
+                  />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="label-field">Alamat</label>
+                  <input
+                    type="text"
+                    x-model="user.address"
+                    :disabled="!profileEditing"
+                    class="input-field"
+                  />
+                </div>
+              </div>
+
+              <div class="flex gap-3" x-show="!profileEditing">
+                <button @click="toggleEditProfile()" class="btn-primary">
+                  <i class="fa-solid fa-pen"></i> Edit Profil
+                </button>
+              </div>
+              <div class="flex gap-3" x-show="profileEditing" x-cloak>
+                <button @click="saveProfile()" class="btn-primary">
+                  <i class="fa-solid fa-floppy-disk"></i> Simpan
+                </button>
+                <button @click="cancelEditProfile()" class="btn-secondary">
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ============ FAB WHATSAPP ============ -->
+    <a
+      x-show="loggedIn"
+      x-cloak
+      href="https://wa.me/6285296795689?text=Halo%20Dapur%20Nusantara%2C%20saya%20ingin%20bertanya%20tentang%20pesanan%20saya"
+      target="_blank"
+      rel="noopener"
+      class="fixed w-14 h-14 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+      style="
+        right: calc(1.5rem + env(safe-area-inset-right));
+        bottom: calc(1.5rem + env(safe-area-inset-bottom));
+        z-index: 70;
+      "
+    >
+      <span class="fab-pulse absolute inset-0 -z-10"></span>
+      <i class="fa-brands fa-whatsapp text-2xl relative z-10"></i>
+    </a>
+
+    <!-- ============ MODALS AUTH ============ -->
+    <div
+      x-show="showRegisterModal"
+      x-cloak
+      class="fixed inset-0 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        @click="closeRegisterModal()"
+        class="absolute inset-0 bg-slate-900/50"
+      ></div>
+      <div
+        x-transition
+        class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
+      >
+        <div class="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <h3 class="font-display font-bold text-2xl text-slate-800">
+              Registrasi Akun
+            </h3>
+            <p class="text-slate-500 text-sm mt-1">
+              Buat akun pelanggan baru untuk masuk ke portal.
+            </p>
+          </div>
+          <button
+            type="button"
+            @click="closeRegisterModal()"
+            class="btn-icon flex-shrink-0"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form @submit.prevent="registerAccount()" class="space-y-4">
+          <div>
+            <label class="label-field">Nama Lengkap</label>
+            <input
+              type="text"
+              x-model="registerForm.name"
+              class="input-field"
+              placeholder="Nama sesuai identitas"
+            />
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="label-field">Username</label>
+              <input
+                type="text"
+                x-model="registerForm.username"
+                class="input-field"
+                placeholder="username baru"
+              />
+            </div>
+            <div>
+              <label class="label-field">No. HP</label>
+              <input
+                type="text"
+                x-model="registerForm.phone"
+                class="input-field"
+                placeholder="08xxxxxxxxxx"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="registerForm.email"
+              class="input-field"
+              placeholder="nama@email.com"
+            />
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="label-field">Password</label>
+              <input
+                type="password"
+                x-model="registerForm.password"
+                class="input-field"
+                placeholder="Password baru"
+              />
+            </div>
+            <div>
+              <label class="label-field">Konfirmasi Password</label>
+              <input
+                type="password"
+                x-model="registerForm.confirmPassword"
+                class="input-field"
+                placeholder="Ulangi password"
+              />
+            </div>
+          </div>
+
+          <p
+            x-show="registerError"
+            x-cloak
+            x-text="registerError"
+            class="text-sm text-red-500"
+          ></p>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button
+              type="button"
+              @click="closeRegisterModal()"
+              class="btn-secondary w-full sm:w-auto"
+            >
+              Batal
+            </button>
+            <button type="submit" class="btn-primary w-full sm:flex-1">
+              Daftar Sekarang
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      x-show="showForgotModal"
+      x-cloak
+      class="fixed inset-0 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        @click="closeForgotPassword()"
+        class="absolute inset-0 bg-slate-900/50"
+      ></div>
+      <div
+        x-transition
+        class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-8"
+      >
+        <div class="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <h3 class="font-display font-bold text-2xl text-slate-800">
+              Lupa Password
+            </h3>
+            <p class="text-slate-500 text-sm mt-1">
+              Masukkan email untuk menerima tautan reset password.
+            </p>
+          </div>
+          <button
+            type="button"
+            @click="closeForgotPassword()"
+            class="btn-icon flex-shrink-0"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form @submit.prevent="sendResetPassword()" class="space-y-4">
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="forgotForm.email"
+              class="input-field"
+              placeholder="nama@email.com"
+            />
+          </div>
+
+          <div
+            class="bg-orange-50 border border-orange-100 rounded-xl px-4 py-3 text-sm text-orange-700 flex gap-2.5 items-start"
+          >
+            <i class="fa-solid fa-circle-info mt-0.5"></i>
+            <span
+              >Fitur ini bersifat demo frontend. Sistem akan menampilkan
+              notifikasi reset password.</span
+            >
+          </div>
+
+          <p
+            x-show="forgotError"
+            x-cloak
+            x-text="forgotError"
+            class="text-sm text-red-500"
+          ></p>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button
+              type="button"
+              @click="closeForgotPassword()"
+              class="btn-secondary w-full sm:w-auto"
+            >
+              Batal
+            </button>
+            <button type="submit" class="btn-primary w-full sm:flex-1">
+              Kirim Reset Link
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ TOAST ============ -->
+    <div
+      x-show="toast.show"
+      x-cloak
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="fixed top-6 right-6 z-[60] bg-white rounded-xl shadow-2xl border border-gray-100 px-5 py-3.5 flex items-center gap-3 max-w-xs"
+    >
+      <i
+        class="fa-solid text-lg"
+        :class="toast.type==='error' ? 'fa-circle-exclamation text-red-500' : 'fa-circle-check text-green-500'"
+      ></i>
+      <span
+        class="text-sm font-medium text-slate-700"
+        x-text="toast.message"
+      ></span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      function pelangganApp() {
+        return {
+          // ---------- AUTH ----------
+          loggedIn: false,
+          loginForm: { username: "", password: "" },
+          loginError: "",
+          showPassword: false,
+          showRegisterModal: false,
+          showForgotModal: false,
+          registerError: "",
+          forgotError: "",
+          registerForm: {
+            name: "",
+            email: "",
+            phone: "",
+            username: "",
+            password: "",
+            confirmPassword: "",
+          },
+          forgotForm: { email: "" },
+
+          // ---------- NAVIGATION ----------
+          currentView: "dashboard",
+          pageTitle: {
+            dashboard: "Dashboard",
+            menu: "Daftar Menu",
+            menuDetail: "Detail Menu",
+            cart: "Keranjang",
+            checkout: "Checkout",
+            orders: "Pesanan Saya",
+            profile: "Profil",
+          },
+          sidebarCollapsed: false,
+          mobileMenuOpen: false,
+          navItems: [
+            { id: "dashboard", label: "Dashboard", icon: "fa-grip" },
+            { id: "menu", label: "Daftar Menu", icon: "fa-utensils" },
+            { id: "cart", label: "Keranjang", icon: "fa-cart-shopping" },
+            { id: "orders", label: "Pesanan Saya", icon: "fa-receipt" },
+            { id: "profile", label: "Profil", icon: "fa-user" },
+          ],
+
+          // ---------- USER ----------
+          user: {
+            name: "Andi Saputra",
+            phone: "0812-3456-7890",
+            email: "andi.saputra@gmail.com",
+            address: "Jl. Merdeka No. 45, Medan, Sumatera Utara",
+          },
+          profileEditing: false,
+          profileBackup: null,
+
+          // ---------- MENU ----------
+          categories: ["Semua", "Makanan Berat", "Snack", "Minuman"],
+          menuCategoryFilter: "Semua",
+          menuItems: [
+            {
+              id: 1,
+              name: "Nasi Ayam Bakar Madu",
+              category: "Makanan Berat",
+              price: 28000,
+              image:
+                "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=500&q=80",
+              desc: "Ayam bakar bermarinasi madu dan rempah pilihan, disajikan dengan nasi hangat, lalapan segar, dan sambal khas rumahan.",
+            },
+            {
+              id: 2,
+              name: "Nasi Rendang Sapi Premium",
+              category: "Makanan Berat",
+              price: 35000,
+              image:
+                "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80",
+              desc: "Potongan daging sapi empuk dimasak berjam-jam dengan bumbu rendang otentik hingga meresap sempurna.",
+            },
+            {
+              id: 3,
+              name: "Nasi Ayam Geprek Sambal Matah",
+              category: "Makanan Berat",
+              price: 25000,
+              image:
+                "https://images.unsplash.com/photo-1626804475297-41608ea09aeb?auto=format&fit=crop&w=500&q=80",
+              desc: "Ayam goreng renyah digeprek dengan sambal matah segar, cocok untuk pecinta rasa pedas menggigit.",
+            },
+            {
+              id: 4,
+              name: "Mie Goreng Seafood Spesial",
+              category: "Makanan Berat",
+              price: 27000,
+              image:
+                "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=500&q=80",
+              desc: "Mie goreng dengan campuran udang, cumi, dan bakso ikan, dimasak dengan bumbu khas yang gurih.",
+            },
+            {
+              id: 5,
+              name: "Nasi Goreng Kampung",
+              category: "Makanan Berat",
+              price: 22000,
+              image:
+                "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?auto=format&fit=crop&w=500&q=80",
+              desc: "Nasi goreng sederhana dengan cita rasa rumahan, lengkap dengan telur mata sapi dan kerupuk.",
+            },
+            {
+              id: 6,
+              name: "Nasi Bebek Goreng Mercon",
+              category: "Makanan Berat",
+              price: 32000,
+              image:
+                "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=500&q=80",
+              desc: "Bebek goreng renyah disiram sambal mercon super pedas, untuk yang menyukai tantangan rasa.",
+            },
+            {
+              id: 7,
+              name: "Pisang Goreng Keju Coklat",
+              category: "Snack",
+              price: 15000,
+              image:
+                "https://images.unsplash.com/photo-1631206753348-db44968fd440?auto=format&fit=crop&w=500&q=80",
+              desc: "Pisang goreng renyah dengan taburan keju parut dan saus coklat melimpah.",
+            },
+            {
+              id: 8,
+              name: "Risoles Mayo Smoked Beef",
+              category: "Snack",
+              price: 12000,
+              image:
+                "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=500&q=80",
+              desc: "Risoles lembut berisi smoked beef, sayuran, dan saus mayones creamy.",
+            },
+            {
+              id: 9,
+              name: "Lumpia Semarang Isi 5",
+              category: "Snack",
+              price: 18000,
+              image:
+                "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=500&q=80",
+              desc: "Lumpia khas Semarang berisi rebung dan ayam cincang, disajikan dengan saus manis kental.",
+            },
+            {
+              id: 10,
+              name: "Tahu Crispy Saus Thai",
+              category: "Snack",
+              price: 13000,
+              image:
+                "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=500&q=80",
+              desc: "Tahu goreng garing dipadukan dengan saus Thailand asam pedas yang menyegarkan.",
+            },
+            {
+              id: 11,
+              name: "Es Teh Manis Segar",
+              category: "Minuman",
+              price: 6000,
+              image:
+                "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80",
+              desc: "Teh hitam pilihan diseduh segar dan disajikan dingin dengan gula sesuai selera.",
+            },
+            {
+              id: 12,
+              name: "Jus Alpukat Kocok",
+              category: "Minuman",
+              price: 14000,
+              image:
+                "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=500&q=80",
+              desc: "Alpukat mentega pilihan dikocok lembut dengan susu dan coklat di atasnya.",
+            },
+            {
+              id: 13,
+              name: "Es Jeruk Peras",
+              category: "Minuman",
+              price: 8000,
+              image:
+                "https://images.unsplash.com/photo-1621263764928-df1444c5e859?auto=format&fit=crop&w=500&q=80",
+              desc: "Perasan jeruk segar tanpa pengawet, kaya vitamin C dan menyegarkan dahaga.",
+            },
+            {
+              id: 14,
+              name: "Air Mineral Botol 600ml",
+              category: "Minuman",
+              price: 5000,
+              image:
+                "https://images.unsplash.com/photo-1560023907-5f339617ea30?auto=format&fit=crop&w=500&q=80",
+              desc: "Air mineral kemasan botol siap minum, pilihan praktis mendampingi santap siang.",
+            },
+          ],
+          selectedMenuItem: null,
+          detailQty: 1,
+
+          // ---------- CART ----------
+          cart: [],
+
+          // ---------- CHECKOUT ----------
+          checkoutForm: {
+            deliveryDateTime: "",
+            paymentMethod: "transfer",
+            proofPreview: null,
+          },
+          todayLabel: "",
+          minDateTime: "",
+          copied: false,
+          map: null,
+          marker: null,
+          restaurantLatLng: [3.5952, 98.6722],
+          deliveryLatLng: [3.5952, 98.6722],
+          distanceKm: 0,
+          ongkir: 8000,
+
+          // ---------- ORDERS ----------
+          orderIdCounter: 1002,
+          orders: [
+            {
+              id: "ORD1001",
+              date: "15 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 2 },
+                { name: "Es Teh Manis Segar", qty: 2 },
+              ],
+              subtotal: 68000,
+              ongkir: 10000,
+              total: 78000,
+              status: "Diproses",
+            },
+            {
+              id: "ORD1000",
+              date: "10 Juni 2026",
+              items: [{ name: "Nasi Rendang Sapi Premium", qty: 3 }],
+              subtotal: 105000,
+              ongkir: 12000,
+              total: 117000,
+              status: "Selesai",
+            },
+            {
+              id: "ORD0999",
+              date: "2 Juni 2026",
+              items: [
+                { name: "Mie Goreng Seafood Spesial", qty: 1 },
+                { name: "Jus Alpukat Kocok", qty: 1 },
+              ],
+              subtotal: 41000,
+              ongkir: 9000,
+              total: 50000,
+              status: "Selesai",
+            },
+          ],
+          activeOrderTab: "aktif",
+
+          // ---------- TOAST ----------
+          toast: { show: false, message: "", type: "success" },
+
+          // ---------- INIT ----------
+          init() {
+            const now = new Date();
+            this.todayLabel = now.toLocaleDateString("id-ID", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            });
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60);
+            this.minDateTime = now.toISOString().slice(0, 16);
+          },
+
+          // ---------- AUTH ACTIONS ----------
+          login() {
+            if (
+              this.loginForm.username.trim() &&
+              this.loginForm.password.trim()
+            ) {
+              this.loggedIn = true;
+              this.loginError = "";
+            } else {
+              this.loginError = "Username dan password wajib diisi.";
+            }
+          },
+          logout() {
+            this.loggedIn = false;
+            this.currentView = "dashboard";
+            this.loginForm = { username: "", password: "" };
+            this.mobileMenuOpen = false;
+          },
+
+          // ---------- AUTH MODALS ----------
+          openRegister() {
+            this.registerError = "";
+            this.registerForm = {
+              name: this.user.name,
+              email: this.user.email,
+              phone: this.user.phone,
+              username: this.loginForm.username || "",
+              password: "",
+              confirmPassword: "",
+            };
+            this.showRegisterModal = true;
+          },
+          closeRegisterModal() {
+            this.showRegisterModal = false;
+            this.registerError = "";
+          },
+          registerAccount() {
+            const f = this.registerForm;
+            if (
+              !f.name.trim() ||
+              !f.username.trim() ||
+              !f.email.trim() ||
+              !f.phone.trim() ||
+              !f.password.trim() ||
+              !f.confirmPassword.trim()
+            ) {
+              this.registerError = "Semua field registrasi wajib diisi.";
+              return;
+            }
+            if (f.password !== f.confirmPassword) {
+              this.registerError =
+                "Password dan konfirmasi password tidak sama.";
+              return;
+            }
+            this.loginForm.username = f.username.trim();
+            this.loginForm.password = f.password;
+            this.showRegisterModal = false;
+            this.registerError = "";
+            this.showToast(
+              "Registrasi berhasil. Silakan login menggunakan akun baru.",
+            );
+          },
+          openForgotPassword() {
+            this.forgotError = "";
+            this.forgotForm = {
+              email: this.loginForm.username.includes("@")
+                ? this.loginForm.username
+                : "",
+            };
+            this.showForgotModal = true;
+          },
+          closeForgotPassword() {
+            this.showForgotModal = false;
+            this.forgotError = "";
+          },
+          sendResetPassword() {
+            if (!this.forgotForm.email.trim()) {
+              this.forgotError = "Email wajib diisi.";
+              return;
+            }
+            this.showForgotModal = false;
+            this.forgotError = "";
+            this.showToast(
+              "Tautan reset password telah dikirim ke " + this.forgotForm.email,
+            );
+          },
+
+          // ---------- NAVIGATION ----------
+          navigate(view) {
+            this.currentView = view;
+            this.mobileMenuOpen = false;
+            this.$nextTick(() => window.scrollTo(0, 0));
+            if (view === "checkout") {
+              this.$nextTick(() => {
+                if (!this.map) this.initMap();
+                else this.map.invalidateSize();
+              });
+            }
+          },
+
+          // ---------- MENU ----------
+          filteredMenu() {
+            return this.menuCategoryFilter === "Semua"
+              ? this.menuItems
+              : this.menuItems.filter(
+                  (m) => m.category === this.menuCategoryFilter,
+                );
+          },
+          openDetail(item) {
+            this.selectedMenuItem = item;
+            this.detailQty = 1;
+            this.navigate("menuDetail");
+          },
+
+          // ---------- CART ----------
+          addToCart() {
+            const existing = this.cart.find(
+              (c) => c.id === this.selectedMenuItem.id,
+            );
+            if (existing) existing.qty += this.detailQty;
+            else
+              this.cart.push({ ...this.selectedMenuItem, qty: this.detailQty });
+            this.showToast(
+              this.selectedMenuItem.name + " ditambahkan ke keranjang",
+            );
+          },
+          removeFromCart(id) {
+            this.cart = this.cart.filter((i) => i.id !== id);
+          },
+          cartCount() {
+            return this.cart.reduce((s, i) => s + i.qty, 0);
+          },
+          cartSubtotal() {
+            return this.cart.reduce((s, i) => s + i.qty * i.price, 0);
+          },
+
+          // ---------- FORMAT ----------
+          formatRp(num) {
+            return "Rp" + Number(num).toLocaleString("id-ID");
+          },
+
+          // ---------- MAP / ONGKIR ----------
+          initMap() {
+            this.map = L.map("checkoutMap").setView(this.restaurantLatLng, 13);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: "&copy; OpenStreetMap contributors",
+              maxZoom: 19,
+            }).addTo(this.map);
+
+            const restIcon = L.divIcon({
+              html: '<div style="background:#1F2937;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 2px #1F2937"></div>',
+              className: "",
+              iconSize: [14, 14],
+            });
+            L.marker(this.restaurantLatLng, { icon: restIcon })
+              .addTo(this.map)
+              .bindPopup("Dapur Pusat — Dapur Nusantara");
+
+            const homeIcon = L.divIcon({
+              html: '<div style="background:#EA580C;width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>',
+              className: "",
+              iconSize: [18, 18],
+            });
+            this.marker = L.marker(this.deliveryLatLng, {
+              draggable: true,
+              icon: homeIcon,
+            })
+              .addTo(this.map)
+              .bindPopup("Lokasi Pengiriman Anda")
+              .openPopup();
+
+            this.map.on("click", (e) => this.setDeliveryLocation(e.latlng));
+            this.marker.on("dragend", () =>
+              this.setDeliveryLocation(this.marker.getLatLng()),
+            );
+            setTimeout(() => this.map.invalidateSize(), 200);
+          },
+          setDeliveryLocation(latlng) {
+            this.deliveryLatLng = [latlng.lat, latlng.lng];
+            this.marker.setLatLng(latlng);
+            this.distanceKm = this.haversine(
+              this.restaurantLatLng,
+              this.deliveryLatLng,
+            );
+            this.ongkir = Math.max(
+              5000,
+              Math.round((8000 + this.distanceKm * 2500) / 500) * 500,
+            );
+          },
+          haversine(a, b) {
+            const R = 6371;
+            const dLat = ((b[0] - a[0]) * Math.PI) / 180;
+            const dLon = ((b[1] - a[1]) * Math.PI) / 180;
+            const lat1 = (a[0] * Math.PI) / 180,
+              lat2 = (b[0] * Math.PI) / 180;
+            const h =
+              Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+          },
+          grandTotal() {
+            return this.cartSubtotal() + this.ongkir;
+          },
+
+          // ---------- CHECKOUT ACTIONS ----------
+          copyRekening() {
+            this.copied = true;
+            setTimeout(() => (this.copied = false), 1500);
+          },
+          handleProofUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              this.checkoutForm.proofPreview = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+          },
+          canPlaceOrder() {
+            if (this.cart.length === 0) return false;
+            if (!this.checkoutForm.deliveryDateTime) return false;
+            if (
+              this.checkoutForm.paymentMethod !== "cod" &&
+              !this.checkoutForm.proofPreview
+            )
+              return false;
+            return true;
+          },
+          placeOrder() {
+            if (!this.canPlaceOrder()) {
+              this.showToast("Lengkapi data terlebih dahulu", "error");
+              return;
+            }
+            const newOrder = {
+              id: "ORD" + this.orderIdCounter++,
+              date: new Date().toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              }),
+              items: this.cart.map((i) => ({ name: i.name, qty: i.qty })),
+              subtotal: this.cartSubtotal(),
+              ongkir: this.ongkir,
+              total: this.grandTotal(),
+              status: "Menunggu Konfirmasi",
+            };
+            this.orders.unshift(newOrder);
+            this.cart = [];
+            this.checkoutForm = {
+              deliveryDateTime: "",
+              paymentMethod: "transfer",
+              proofPreview: null,
+            };
+            this.activeOrderTab = "aktif";
+            this.showToast("Pesanan berhasil dibuat!");
+            this.navigate("orders");
+          },
+
+          // ---------- ORDERS ----------
+          activeOrders() {
+            return this.orders.filter((o) => o.status !== "Selesai");
+          },
+          completedOrders() {
+            return this.orders.filter((o) => o.status === "Selesai");
+          },
+          statusColor(status) {
+            const map = {
+              "Menunggu Konfirmasi": "bg-yellow-100 text-yellow-700",
+              Diproses: "bg-blue-100 text-blue-700",
+              Dikirim: "bg-purple-100 text-purple-700",
+              Selesai: "bg-green-100 text-green-700",
+            };
+            return map[status] || "bg-gray-100 text-gray-700";
+          },
+          dashboardStats() {
+            return [
+              {
+                label: "Pesanan Aktif",
+                value: this.activeOrders().length,
+                icon: "fa-receipt",
+                color: "text-orange-500",
+                bg: "bg-orange-50",
+              },
+              {
+                label: "Menunggu Konfirmasi",
+                value: this.orders.filter(
+                  (o) => o.status === "Menunggu Konfirmasi",
+                ).length,
+                icon: "fa-clock",
+                color: "text-yellow-500",
+                bg: "bg-yellow-50",
+              },
+              {
+                label: "Dikirim",
+                value: this.orders.filter((o) => o.status === "Dikirim").length,
+                icon: "fa-truck",
+                color: "text-purple-500",
+                bg: "bg-purple-50",
+              },
+              {
+                label: "Selesai",
+                value: this.completedOrders().length,
+                icon: "fa-circle-check",
+                color: "text-green-500",
+                bg: "bg-green-50",
+              },
+            ];
+          },
+
+          // ---------- PROFILE ----------
+          toggleEditProfile() {
+            this.profileBackup = { ...this.user };
+            this.profileEditing = true;
+          },
+          cancelEditProfile() {
+            this.user = { ...this.profileBackup };
+            this.profileEditing = false;
+          },
+          saveProfile() {
+            this.profileEditing = false;
+            this.showToast("Profil berhasil disimpan");
+          },
+
+          // ---------- TOAST ----------
+          showToast(message, type = "success") {
+            this.toast = { show: true, message, type };
+            setTimeout(() => {
+              this.toast.show = false;
+            }, 3000);
+          },
+        };
+      }
+    </script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </body>
+</html>
