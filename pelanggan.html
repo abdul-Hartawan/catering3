@@ -19,6 +19,10 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
+    />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -116,6 +120,15 @@
       }
       .map-isolate {
         isolation: isolate;
+      }
+      .leaflet-routing-container,
+      .leaflet-routing-alt,
+      .leaflet-routing-geocoder,
+      .leaflet-routing-container-hide {
+        display: none !important;
+      }
+      .proof-thumb {
+        aspect-ratio: 4 / 3;
       }
     </style>
   </head>
@@ -333,7 +346,7 @@
             <div
               @click="navigate(item.id)"
               class="nav-link relative"
-              :class="(currentView===item.id || (item.id==='menu' && currentView==='menuDetail') || (item.id==='cart' && currentView==='checkout')) ? 'nav-link-active' : ''"
+              :class="(currentView===item.id || (item.id==='menu' && currentView==='menuDetail') || (item.id==='cart' && currentView==='checkout') || (item.id==='orders' && currentView==='orderDetail')) ? 'nav-link-active' : ''"
               :title="sidebarCollapsed ? item.label : ''"
             >
               <i
@@ -473,6 +486,70 @@
                   <p class="text-sm text-slate-500" x-text="stat.label"></p>
                 </div>
               </template>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-8">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h2 class="section-title">Panduan Penggunaan</h2>
+                  <p class="text-sm text-slate-500">
+                    Ikuti langkah berikut untuk menggunakan portal pelanggan.
+                  </p>
+                </div>
+                <span class="badge bg-orange-50 text-orange-600">
+                  5 panduan cepat
+                </span>
+              </div>
+
+              <div class="space-y-3">
+                <template
+                  x-for="(guide, index) in userGuides"
+                  :key="guide.title"
+                >
+                  <div
+                    class="rounded-xl border border-gray-100 overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      @click="openGuideIndex = openGuideIndex === index ? null : index"
+                      class="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-orange-50/60 transition-colors"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="w-9 h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0"
+                        >
+                          <i :class="guide.icon" class="fa-solid text-sm"></i>
+                        </div>
+                        <div>
+                          <p
+                            class="font-semibold text-slate-800"
+                            x-text="guide.title"
+                          ></p>
+                          <p
+                            class="text-xs text-slate-500"
+                            x-text="guide.short"
+                          ></p>
+                        </div>
+                      </div>
+                      <i
+                        class="fa-solid text-slate-400 transition-transform duration-200"
+                        :class="openGuideIndex === index ? 'fa-chevron-up rotate-180 text-orange-500' : 'fa-chevron-down'"
+                      ></i>
+                    </button>
+                    <div
+                      x-show="openGuideIndex === index"
+                      x-cloak
+                      x-transition
+                      class="px-4 pb-4"
+                    >
+                      <div
+                        class="pl-12 text-sm text-slate-600 leading-relaxed"
+                        x-text="guide.detail"
+                      ></div>
+                    </div>
+                  </div>
+                </template>
+              </div>
             </div>
 
             <div class="flex items-center justify-between mb-4">
@@ -974,22 +1051,50 @@
                   </h3>
                   <p class="text-sm text-slate-500 mb-4">
                     <i class="fa-solid fa-location-dot text-orange-500"></i>
-                    Klik atau geser pin pada peta untuk menentukan titik
-                    pengiriman.
+                    Telusuri alamat di peta atau geser pin ke titik rumah Anda.
                   </p>
+
+                  <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                    <input
+                      type="text"
+                      x-model="checkoutForm.mapSearchQuery"
+                      class="input-field flex-1"
+                      placeholder="Telusuri Maps, contoh: Jl. Bunga Lau No.17, Medan"
+                      @keydown.enter.prevent="searchCheckoutLocation()"
+                    />
+                    <button
+                      type="button"
+                      @click="searchCheckoutLocation()"
+                      class="btn-primary sm:shrink-0"
+                    >
+                      <i class="fa-solid fa-magnifying-glass"></i> Telusuri Maps
+                    </button>
+                  </div>
+
                   <div
                     id="checkoutMap"
                     class="w-full h-72 rounded-xl border border-gray-200 relative z-0"
                   ></div>
+
                   <div class="flex flex-wrap gap-4 mt-4 text-sm">
                     <span class="badge bg-blue-50 text-blue-600"
-                      ><i class="fa-solid fa-route"></i> Jarak:
+                      ><i class="fa-solid fa-route"></i> Jarak Rute:
                       <span x-text="distanceKm.toFixed(1)"></span> km</span
                     >
                     <span class="badge bg-green-50 text-green-600"
                       ><i class="fa-solid fa-truck"></i> Ongkir:
                       <span x-text="formatRp(ongkir)"></span
                     ></span>
+                  </div>
+
+                  <div class="mt-4">
+                    <label class="label-field">Alamat Lengkap / Patokan</label>
+                    <textarea
+                      x-model="checkoutForm.addressNote"
+                      rows="3"
+                      class="input-field resize-none"
+                      placeholder="Contoh: Rumah cat hijau, pagar besi hitam dekat masjid"
+                    ></textarea>
                   </div>
                 </div>
 
@@ -1241,13 +1346,23 @@
                     </template>
                   </div>
                   <div
-                    class="flex items-center justify-between border-t border-gray-100 pt-3"
+                    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-gray-100 pt-3"
                   >
-                    <span class="text-sm text-slate-500">Total Pembayaran</span>
-                    <span
-                      class="font-bold text-orange-600"
-                      x-text="formatRp(order.total)"
-                    ></span>
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <span class="text-sm text-slate-500"
+                        >Total Pembayaran</span
+                      >
+                      <span
+                        class="font-bold text-orange-600"
+                        x-text="formatRp(order.total)"
+                      ></span>
+                    </div>
+                    <button
+                      @click="openOrderDetail(order)"
+                      class="btn-secondary !px-3 !py-2 text-sm self-start sm:self-auto"
+                    >
+                      Detail Pesanan
+                    </button>
                   </div>
                 </div>
               </template>
@@ -1259,6 +1374,463 @@
                 <p>Belum ada pesanan pada kategori ini.</p>
               </div>
             </div>
+          </div>
+
+          <!-- ===== DETAIL PESANAN ===== -->
+          <!-- <div x-show="currentView==='orderDetail' && selectedOrder">
+            <button
+              @click="navigate('orders')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-5 inline-flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrow-left"></i> Kembali ke Pesanan Saya
+            </button>
+
+            <template x-if="selectedOrder">
+              <div class="grid lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                  <div class="bg-white rounded-2xl border border-gray-100 p-6">
+                    <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
+                      <div>
+                        <p class="text-sm text-slate-400">Informasi Nota</p>
+                        <h1 class="font-display font-bold text-2xl text-slate-800" x-text="selectedOrder.id"></h1>
+                        <p class="text-sm text-slate-500 mt-1">
+                          Pemesanan tanggal <span class="font-medium text-slate-700" x-text="selectedOrder.date"></span>
+                        </p>
+                      </div>
+                      <span
+                        class="badge"
+                        :class="statusColor(selectedOrder.status)"
+                        x-text="selectedOrder.status"
+                      ></span>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Nama Pelanggan</p>
+                        <p class="font-semibold text-slate-800" x-text="selectedOrder.customerName || user.name"></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Nomor HP</p>
+                        <p class="font-semibold text-slate-800" x-text="selectedOrder.customerPhone || user.phone"></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Jadwal Pengiriman</p>
+                        <p class="font-semibold text-slate-800" x-text="formatDateTime(selectedOrder.deliveryDateTime)"></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Metode Pembayaran</p>
+                        <p class="font-semibold text-slate-800" x-text="paymentLabel(selectedOrder.paymentMethod)"></p>
+                      </div>
+                    </div>
+
+                    <div class="mt-5 overflow-x-auto">
+                      <table class="w-full min-w-[640px]">
+                        <thead>
+                          <tr class="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-gray-100">
+                            <th class="py-3 pr-3">Produk</th>
+                            <th class="py-3 pr-3 text-center">Qty</th>
+                            <th class="py-3 pr-3 text-right">Harga Satuan</th>
+                            <th class="py-3 text-right">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template x-for="(it, idx) in orderDisplayItems(selectedOrder)" :key="idx">
+                            <tr class="border-b border-gray-50 last:border-b-0">
+                              <td class="py-3 pr-3">
+                                <div class="flex items-center gap-3">
+                                  <img
+                                    :src="it.image"
+                                    onerror="this.src='https://placehold.co/80x80/FFEDD5/C2410C?text=Menu'"
+                                    class="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                                    alt="Foto produk"
+                                  />
+                                  <div>
+                                    <p class="font-semibold text-slate-800" x-text="it.name"></p>
+                                    <p class="text-xs text-slate-400" x-text="it.category || 'Menu'"></p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td class="py-3 pr-3 text-center font-medium text-slate-700" x-text="it.qty"></td>
+                              <td class="py-3 pr-3 text-right text-slate-600" x-text="formatRp(it.price)"></td>
+                              <td class="py-3 text-right font-semibold text-slate-800" x-text="formatRp(it.price * it.qty)"></td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 mt-4">
+                      <div class="text-sm text-slate-500">
+                        <p><span class="font-medium text-slate-700">ID Transaksi:</span> <span x-text="selectedOrder.id"></span></p>
+                        <p><span class="font-medium text-slate-700">Status:</span> <span x-text="selectedOrder.status"></span></p>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="text-sm text-slate-500">Total Pembayaran</span>
+                        <span class="text-2xl font-display font-bold text-orange-600" x-text="formatRp(selectedOrder.total)"></span>
+                      </div>
+                    </div>
+
+                    <div class="mt-5" x-show="canCancelOrder(selectedOrder.status)">
+                      <button @click="cancelSelectedOrder()" class="btn-primary !bg-gradient-to-r !from-red-500 !to-rose-600 !shadow-none w-full sm:w-auto">
+                        <i class="fa-solid fa-ban"></i> Batalkan Pesanan
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-6 map-isolate"
+                  >
+                    <h3 class="font-display font-semibold text-lg mb-1">
+                      Peta Logistik
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                      Peta terkunci pada tujuan pesanan, tetapi Anda masih bisa pan dan zoom.
+                    </p>
+                    <div
+                      id="orderDetailMap"
+                      class="w-full h-72 rounded-xl border border-gray-200 relative z-0"
+                    ></div>
+                    <div class="flex flex-wrap gap-4 mt-4 text-sm">
+                      <span class="badge bg-blue-50 text-blue-600">
+                        <i class="fa-solid fa-route"></i> Jarak:
+                        <span x-text="selectedOrder.distanceKm ? selectedOrder.distanceKm.toFixed(1) : '0.0'"></span> km
+                      </span>
+                      <span class="badge bg-green-50 text-green-600">
+                        <i class="fa-solid fa-truck"></i> Ongkir:
+                        <span x-text="formatRp(selectedOrder.ongkir || 0)"></span>
+                      </span>
+                    </div>
+                    <div class="mt-4">
+                      <label class="label-field">Alamat Lengkap / Patokan</label>
+                      <div class="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm text-slate-600 leading-relaxed" x-text="selectedOrder.deliveryAddressNote || user.address"></div>
+                      <p class="text-xs text-slate-400 mt-2" x-text="selectedOrder.deliveryLocationLabel || 'Lokasi tersimpan dari checkout'"></p>
+                    </div>
+                  </div>
+
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-6"
+                    x-show="selectedOrder.proofPreview && selectedOrder.paymentMethod !== 'cod'"
+                  >
+                    <h3 class="font-display font-semibold text-lg mb-1">
+                      Bukti Pembayaran
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                      Klik gambar untuk melihat ukuran besar.
+                    </p>
+                    <button type="button" @click="openProofModal(selectedOrder.proofPreview)" class="block w-full">
+                      <img
+                        :src="selectedOrder.proofPreview"
+                        class="proof-thumb w-full object-cover rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                        alt="Bukti pembayaran"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div> -->
+          <!-- ===== DETAIL PESANAN ===== -->
+          <div
+            x-show="currentView==='orderDetail' && selectedOrder"
+            class="space-y-4 sm:space-y-6"
+          >
+            <button
+              @click="navigate('orders')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-2 sm:mb-5 inline-flex items-center gap-2 text-sm sm:text-base"
+            >
+              <i class="fa-solid fa-arrow-left"></i> Kembali ke Pesanan Saya
+            </button>
+
+            <template x-if="selectedOrder">
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6"
+                  >
+                    <div
+                      class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-5"
+                    >
+                      <div>
+                        <p class="text-sm text-slate-400">Informasi Nota</p>
+                        <h1
+                          class="font-display font-bold text-xl sm:text-2xl text-slate-800 break-words"
+                          x-text="selectedOrder.id"
+                        ></h1>
+                        <p class="text-sm text-slate-500 mt-1">
+                          Pemesanan tanggal
+                          <span
+                            class="font-medium text-slate-700"
+                            x-text="selectedOrder.date"
+                          ></span>
+                        </p>
+                      </div>
+                      <span
+                        class="badge self-start sm:self-auto"
+                        :class="statusColor(selectedOrder.status)"
+                        x-text="selectedOrder.status"
+                      ></span>
+                    </div>
+
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-sm"
+                    >
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Nama Pelanggan</p>
+                        <p
+                          class="font-semibold text-slate-800 break-words"
+                          x-text="selectedOrder.customerName || user.name"
+                        ></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Nomor HP</p>
+                        <p
+                          class="font-semibold text-slate-800 break-words"
+                          x-text="selectedOrder.customerPhone || user.phone"
+                        ></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Jadwal Pengiriman</p>
+                        <p
+                          class="font-semibold text-slate-800 break-words"
+                          x-text="formatDateTime(selectedOrder.deliveryDateTime)"
+                        ></p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-4">
+                        <p class="text-slate-400 mb-1">Metode Pembayaran</p>
+                        <p
+                          class="font-semibold text-slate-800 break-words"
+                          x-text="paymentLabel(selectedOrder.paymentMethod)"
+                        ></p>
+                      </div>
+                    </div>
+
+                    <!-- Desktop table -->
+                    <div class="mt-5 overflow-x-auto hidden sm:block">
+                      <table class="w-full min-w-[640px]">
+                        <thead>
+                          <tr
+                            class="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-gray-100"
+                          >
+                            <th class="py-3 pr-3">Produk</th>
+                            <th class="py-3 pr-3 text-center">Qty</th>
+                            <th class="py-3 pr-3 text-right">Harga Satuan</th>
+                            <th class="py-3 text-right">Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template
+                            x-for="(it, idx) in orderDisplayItems(selectedOrder)"
+                            :key="idx"
+                          >
+                            <tr class="border-b border-gray-50 last:border-b-0">
+                              <td class="py-3 pr-3">
+                                <div class="flex items-center gap-3">
+                                  <img
+                                    :src="it.image"
+                                    onerror="
+                                      this.src =
+                                        'https://placehold.co/80x80/FFEDD5/C2410C?text=Menu'
+                                    "
+                                    class="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                                    alt="Foto produk"
+                                  />
+                                  <div>
+                                    <p
+                                      class="font-semibold text-slate-800"
+                                      x-text="it.name"
+                                    ></p>
+                                    <p
+                                      class="text-xs text-slate-400"
+                                      x-text="it.category || 'Menu'"
+                                    ></p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td
+                                class="py-3 pr-3 text-center font-medium text-slate-700"
+                                x-text="it.qty"
+                              ></td>
+                              <td
+                                class="py-3 pr-3 text-right text-slate-600"
+                                x-text="formatRp(it.price)"
+                              ></td>
+                              <td
+                                class="py-3 text-right font-semibold text-slate-800"
+                                x-text="formatRp(it.price * it.qty)"
+                              ></td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- Mobile cards -->
+                    <div class="mt-5 space-y-3 sm:hidden">
+                      <template
+                        x-for="(it, idx) in orderDisplayItems(selectedOrder)"
+                        :key="idx"
+                      >
+                        <div
+                          class="rounded-xl border border-gray-100 bg-gray-50 p-4"
+                        >
+                          <div class="flex items-start gap-3">
+                            <img
+                              :src="it.image"
+                              onerror="
+                                this.src =
+                                  'https://placehold.co/80x80/FFEDD5/C2410C?text=Menu'
+                              "
+                              class="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                              alt="Foto produk"
+                            />
+                            <div class="flex-1 min-w-0">
+                              <p
+                                class="font-semibold text-slate-800 break-words"
+                                x-text="it.name"
+                              ></p>
+                              <p
+                                class="text-xs text-slate-400"
+                                x-text="it.category || 'Menu'"
+                              ></p>
+
+                              <div class="grid grid-cols-2 gap-2 mt-3 text-sm">
+                                <div>
+                                  <p class="text-slate-400 text-xs">Qty</p>
+                                  <p
+                                    class="font-medium text-slate-700"
+                                    x-text="it.qty"
+                                  ></p>
+                                </div>
+                                <div class="text-right">
+                                  <p class="text-slate-400 text-xs">Subtotal</p>
+                                  <p
+                                    class="font-semibold text-slate-800"
+                                    x-text="formatRp(it.price * it.qty)"
+                                  ></p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
+
+                    <div
+                      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-gray-100 pt-4 mt-4"
+                    >
+                      <div class="text-sm text-slate-500">
+                        <p>
+                          <span class="font-medium text-slate-700"
+                            >ID Transaksi:</span
+                          >
+                          <span x-text="selectedOrder.id"></span>
+                        </p>
+                        <p>
+                          <span class="font-medium text-slate-700"
+                            >Status:</span
+                          >
+                          <span x-text="selectedOrder.status"></span>
+                        </p>
+                      </div>
+                      <div
+                        class="flex items-end sm:items-center gap-2 sm:gap-3 justify-between sm:justify-end"
+                      >
+                        <span class="text-sm text-slate-500"
+                          >Total Pembayaran</span
+                        >
+                        <span
+                          class="text-xl sm:text-2xl font-display font-bold text-orange-600 break-words"
+                          x-text="formatRp(selectedOrder.total)"
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div
+                      class="mt-5"
+                      x-show="canCancelOrder(selectedOrder.status)"
+                    >
+                      <button
+                        @click="cancelSelectedOrder()"
+                        class="btn-primary !bg-gradient-to-r !from-red-500 !to-rose-600 !shadow-none w-full sm:w-auto"
+                      >
+                        <i class="fa-solid fa-ban"></i> Batalkan Pesanan
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-4 sm:space-y-6">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 map-isolate"
+                  >
+                    <h3 class="font-display font-semibold text-lg mb-1">
+                      Peta Logistik
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                      Peta terkunci pada tujuan pesanan, tetapi Anda masih bisa
+                      pan dan zoom.
+                    </p>
+                    <div
+                      id="orderDetailMap"
+                      class="w-full h-64 sm:h-72 rounded-xl border border-gray-200 relative z-0"
+                    ></div>
+                    <div class="flex flex-wrap gap-3 sm:gap-4 mt-4 text-sm">
+                      <span class="badge bg-blue-50 text-blue-600">
+                        <i class="fa-solid fa-route"></i> Jarak:
+                        <span
+                          x-text="selectedOrder.distanceKm ? selectedOrder.distanceKm.toFixed(1) : '0.0'"
+                        ></span>
+                        km
+                      </span>
+                      <span class="badge bg-green-50 text-green-600">
+                        <i class="fa-solid fa-truck"></i> Ongkir:
+                        <span
+                          x-text="formatRp(selectedOrder.ongkir || 0)"
+                        ></span>
+                      </span>
+                    </div>
+                    <div class="mt-4">
+                      <label class="label-field"
+                        >Alamat Lengkap / Patokan</label
+                      >
+                      <div
+                        class="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm text-slate-600 leading-relaxed break-words"
+                        x-text="selectedOrder.deliveryAddressNote || user.address"
+                      ></div>
+                      <p
+                        class="text-xs text-slate-400 mt-2"
+                        x-text="selectedOrder.deliveryLocationLabel || 'Lokasi tersimpan dari checkout'"
+                      ></p>
+                    </div>
+                  </div>
+
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6"
+                    x-show="selectedOrder.proofPreview && selectedOrder.paymentMethod !== 'cod'"
+                  >
+                    <h3 class="font-display font-semibold text-lg mb-1">
+                      Bukti Pembayaran
+                    </h3>
+                    <p class="text-sm text-slate-500 mb-4">
+                      Klik gambar untuk melihat ukuran besar.
+                    </p>
+                    <button
+                      type="button"
+                      @click="openProofModal(selectedOrder.proofPreview)"
+                      class="block w-full"
+                    >
+                      <img
+                        :src="selectedOrder.proofPreview"
+                        class="proof-thumb w-full object-cover rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                        alt="Bukti pembayaran"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
 
           <!-- ===== PROFIL ===== -->
@@ -1554,6 +2126,44 @@
       </div>
     </div>
 
+    <div
+      x-show="showProofModal"
+      x-cloak
+      class="fixed inset-0 z-[75] flex items-center justify-center p-4"
+    >
+      <div
+        @click="closeProofModal()"
+        class="absolute inset-0 bg-slate-900/70"
+      ></div>
+      <div
+        x-transition
+        class="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 sm:p-6 max-h-[92vh] overflow-y-auto"
+      >
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h3 class="font-display font-bold text-2xl text-slate-800">
+              Pratinjau Bukti Pembayaran
+            </h3>
+            <p class="text-slate-500 text-sm mt-1">
+              Klik area luar untuk menutup, atau gunakan tombol close.
+            </p>
+          </div>
+          <button
+            type="button"
+            @click="closeProofModal()"
+            class="btn-icon flex-shrink-0"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <img
+          :src="proofModalImage"
+          class="w-full max-h-[78vh] object-contain rounded-2xl bg-gray-50 border border-gray-100"
+          alt="Bukti pembayaran"
+        />
+      </div>
+    </div>
+
     <!-- ============ TOAST ============ -->
     <div
       x-show="toast.show"
@@ -1577,6 +2187,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script>
       function pelangganApp() {
         return {
@@ -1608,6 +2219,7 @@
             cart: "Keranjang",
             checkout: "Checkout",
             orders: "Pesanan Saya",
+            orderDetail: "Detail Pesanan",
             profile: "Profil",
           },
           sidebarCollapsed: false,
@@ -1772,6 +2384,8 @@
             deliveryDateTime: "",
             paymentMethod: "transfer",
             proofPreview: null,
+            mapSearchQuery: "",
+            addressNote: "",
           },
           todayLabel: "",
           minDateTime: "",
@@ -1789,41 +2403,152 @@
             {
               id: "ORD1001",
               date: "15 Juni 2026",
-              items: [
-                { name: "Nasi Ayam Bakar Madu", qty: 2 },
-                { name: "Es Teh Manis Segar", qty: 2 },
-              ],
+              customerName: "Andi Saputra",
+              customerPhone: "0812-3456-7890",
+              deliveryDateTime: "2026-06-15T11:30",
+              paymentMethod: "transfer",
+              proofPreview:
+                "https://placehold.co/900x700/fef3c7/b45309?text=Bukti+Transfer",
+              deliveryAddressNote:
+                "Rumah cat hijau, pagar besi hitam dekat masjid.",
+              deliveryLocationLabel: "Jl. Merdeka No. 45, Medan",
+              deliveryLatLng: [3.5978, 98.6761],
+              distanceKm: 1.2,
               subtotal: 68000,
               ongkir: 10000,
               total: 78000,
-              status: "Diproses",
+              status: "Menunggu Verifikasi",
+              items: [
+                {
+                  name: "Nasi Ayam Bakar Madu",
+                  qty: 2,
+                  price: 28000,
+                  image:
+                    "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=500&q=80",
+                },
+                {
+                  name: "Es Teh Manis Segar",
+                  qty: 2,
+                  price: 6000,
+                  image:
+                    "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=500&q=80",
+                },
+              ],
             },
             {
               id: "ORD1000",
               date: "10 Juni 2026",
-              items: [{ name: "Nasi Rendang Sapi Premium", qty: 3 }],
+              customerName: "Andi Saputra",
+              customerPhone: "0812-3456-7890",
+              deliveryDateTime: "2026-06-10T13:00",
+              paymentMethod: "cod",
+              proofPreview: null,
+              deliveryAddressNote:
+                "Rumah cat krem, samping minimarket, gang masuk kedua.",
+              deliveryLocationLabel: "Jl. Setia Budi No. 8, Medan",
+              deliveryLatLng: [3.5745, 98.6651],
+              distanceKm: 4.6,
               subtotal: 105000,
               ongkir: 12000,
               total: 117000,
               status: "Selesai",
+              items: [
+                {
+                  name: "Nasi Rendang Sapi Premium",
+                  qty: 3,
+                  price: 35000,
+                  image:
+                    "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80",
+                },
+              ],
             },
             {
               id: "ORD0999",
               date: "2 Juni 2026",
-              items: [
-                { name: "Mie Goreng Seafood Spesial", qty: 1 },
-                { name: "Jus Alpukat Kocok", qty: 1 },
-              ],
+              customerName: "Andi Saputra",
+              customerPhone: "0812-3456-7890",
+              deliveryDateTime: "2026-06-02T10:00",
+              paymentMethod: "qris",
+              proofPreview:
+                "https://placehold.co/900x700/e0f2fe/075985?text=Bukti+QRIS",
+              deliveryAddressNote:
+                "Pintu rumah coklat, tepat di depan warung kopi.",
+              deliveryLocationLabel: "Jl. Asia No. 20, Medan",
+              deliveryLatLng: [3.5909, 98.6808],
+              distanceKm: 2.8,
               subtotal: 41000,
               ongkir: 9000,
               total: 50000,
               status: "Selesai",
+              items: [
+                {
+                  name: "Mie Goreng Seafood Spesial",
+                  qty: 1,
+                  price: 27000,
+                  image:
+                    "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=500&q=80",
+                },
+                {
+                  name: "Jus Alpukat Kocok",
+                  qty: 1,
+                  price: 14000,
+                  image:
+                    "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=500&q=80",
+                },
+              ],
             },
           ],
           activeOrderTab: "aktif",
 
           // ---------- TOAST ----------
           toast: { show: false, message: "", type: "success" },
+          openGuideIndex: 0,
+          userGuides: [
+            {
+              icon: "fa-user-plus",
+              title: "Cara Registrasi Akun",
+              short: "Isi data dasar untuk membuat akun baru.",
+              detail:
+                "Isi nama, email, nomor telepon, username, dan password pada form registrasi agar akun pelanggan dapat digunakan untuk masuk ke portal.",
+            },
+            {
+              icon: "fa-cart-shopping",
+              title: "Cara Melakukan Pemesanan",
+              short:
+                "Pilih menu, tentukan kuantitas, lalu simpan ke keranjang.",
+              detail:
+                "Buka katalog menu, klik item yang diinginkan, atur jumlah pesanan, lalu masukkan ke keranjang belanja sebelum menuju checkout.",
+            },
+            {
+              icon: "fa-money-bill-wave",
+              title: "Cara Pembayaran",
+              short: "Transfer ke rekening resmi atau pilih COD.",
+              detail:
+                "Saat checkout, pelanggan dapat memilih transfer bank atau QRIS, lalu mengunggah bukti pembayaran. Untuk pesanan tertentu, metode COD juga tersedia.",
+            },
+            {
+              icon: "fa-receipt",
+              title: "Cara Melihat Status Pesanan",
+              short: "Pantau progres pesanan di halaman Pesanan Saya.",
+              detail:
+                "Buka halaman Pesanan Saya untuk melihat pembaruan status secara real-time, mulai dari menunggu verifikasi hingga pesanan selesai.",
+            },
+            {
+              icon: "fa-whatsapp",
+              title: "Cara Menghubungi Admin",
+              short: "Gunakan tombol WhatsApp di pojok kanan bawah.",
+              detail:
+                "Klik Floating Action Button WhatsApp untuk meminta bantuan cepat, bertanya tentang menu, atau menanyakan status pesanan kepada admin.",
+            },
+          ],
+          selectedOrder: null,
+          showProofModal: false,
+          proofModalImage: "",
+          checkoutRouteControl: null,
+          checkoutDestinationMarker: null,
+          detailMap: null,
+          detailRouteControl: null,
+          detailDestinationMarker: null,
 
           // ---------- INIT ----------
           init() {
@@ -1836,6 +2561,7 @@
             });
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60);
             this.minDateTime = now.toISOString().slice(0, 16);
+            this.checkoutForm.addressNote = this.user.address;
           },
 
           // ---------- AUTH ACTIONS ----------
@@ -1932,8 +2658,16 @@
             this.$nextTick(() => window.scrollTo(0, 0));
             if (view === "checkout") {
               this.$nextTick(() => {
-                if (!this.map) this.initMap();
+                if (!this.map) this.initCheckoutMap();
                 else this.map.invalidateSize();
+              });
+            }
+            if (view === "orderDetail") {
+              this.$nextTick(() => {
+                if (this.selectedOrder) {
+                  if (!this.detailMap) this.initDetailMap();
+                  else this.detailMap.invalidateSize();
+                }
               });
             }
           },
@@ -1950,6 +2684,10 @@
             this.selectedMenuItem = item;
             this.detailQty = 1;
             this.navigate("menuDetail");
+          },
+          openOrderDetail(order) {
+            this.selectedOrder = this.cloneOrder(order);
+            this.navigate("orderDetail");
           },
 
           // ---------- CART ----------
@@ -1980,8 +2718,15 @@
           },
 
           // ---------- MAP / ONGKIR ----------
-          initMap() {
-            this.map = L.map("checkoutMap").setView(this.restaurantLatLng, 13);
+          initCheckoutMap() {
+            if (this.map) {
+              this.map.remove();
+              this.map = null;
+            }
+            this.map = L.map("checkoutMap", {
+              zoomControl: true,
+            }).setView(this.restaurantLatLng, 13);
+
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
               attribution: "&copy; OpenStreetMap contributors",
               maxZoom: 19,
@@ -2001,7 +2746,8 @@
               className: "",
               iconSize: [18, 18],
             });
-            this.marker = L.marker(this.deliveryLatLng, {
+
+            this.checkoutDestinationMarker = L.marker(this.deliveryLatLng, {
               draggable: true,
               icon: homeIcon,
             })
@@ -2009,23 +2755,201 @@
               .bindPopup("Lokasi Pengiriman Anda")
               .openPopup();
 
-            this.map.on("click", (e) => this.setDeliveryLocation(e.latlng));
-            this.marker.on("dragend", () =>
-              this.setDeliveryLocation(this.marker.getLatLng()),
+            this.checkoutDestinationMarker.on("dragend", () =>
+              this.setCheckoutDestination(
+                this.checkoutDestinationMarker.getLatLng(),
+                true,
+              ),
             );
-            setTimeout(() => this.map.invalidateSize(), 200);
+            this.map.on("click", (e) =>
+              this.setCheckoutDestination(e.latlng, true),
+            );
+
+            this.checkoutRouteControl = L.Routing.control({
+              waypoints: [
+                L.latLng(this.restaurantLatLng[0], this.restaurantLatLng[1]),
+                L.latLng(this.deliveryLatLng[0], this.deliveryLatLng[1]),
+              ],
+              router: L.Routing.osrmv1({
+                serviceUrl: "https://router.project-osrm.org/route/v1",
+                profile: "driving",
+              }),
+              addWaypoints: false,
+              draggableWaypoints: false,
+              routeWhileDragging: false,
+              fitSelectedRoutes: false,
+              showAlternatives: false,
+              createMarker: () => null,
+              lineOptions: {
+                styles: [{ color: "#2563eb", opacity: 0.9, weight: 5 }],
+                extendToWaypoints: true,
+                missingRouteTolerance: 0,
+              },
+            }).addTo(this.map);
+
+            this.checkoutRouteControl.on("routesfound", (e) => {
+              const route = e.routes && e.routes[0];
+              if (!route) return;
+              this.updateCheckoutCost(route.summary.totalDistance / 1000);
+            });
+
+            this.checkoutRouteControl.on("routingerror", () => {
+              this.updateCheckoutCost(
+                this.haversine(this.restaurantLatLng, this.deliveryLatLng),
+              );
+            });
+
+            setTimeout(() => {
+              this.map.invalidateSize();
+              this.refreshCheckoutRoute();
+            }, 200);
           },
-          setDeliveryLocation(latlng) {
+          refreshCheckoutRoute() {
+            if (!this.checkoutRouteControl) return;
+            this.checkoutRouteControl.setWaypoints([
+              L.latLng(this.restaurantLatLng[0], this.restaurantLatLng[1]),
+              L.latLng(this.deliveryLatLng[0], this.deliveryLatLng[1]),
+            ]);
+          },
+          async searchCheckoutLocation() {
+            const query = this.checkoutForm.mapSearchQuery.trim();
+            if (!query) {
+              this.showToast("Masukkan alamat yang ingin dicari.", "error");
+              return;
+            }
+            try {
+              const url =
+                "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=" +
+                encodeURIComponent(query);
+              const res = await fetch(url, {
+                headers: {
+                  Accept: "application/json",
+                },
+              });
+              if (!res.ok) throw new Error("Geocoding gagal");
+              const data = await res.json();
+              if (!data.length) {
+                this.showToast("Alamat tidak ditemukan.", "error");
+                return;
+              }
+              const place = data[0];
+              const latlng = L.latLng(
+                parseFloat(place.lat),
+                parseFloat(place.lon),
+              );
+              this.map.flyTo(latlng, 16, { duration: 0.8 });
+              this.setCheckoutDestination(latlng, true);
+              if (place.display_name) {
+                if (
+                  !this.checkoutForm.addressNote.trim() ||
+                  this.checkoutForm.addressNote === this.user.address
+                ) {
+                  this.checkoutForm.addressNote = place.display_name;
+                }
+              }
+              this.showToast("Lokasi berhasil ditemukan.");
+            } catch (err) {
+              this.showToast("Gagal mencari lokasi di peta.", "error");
+            }
+          },
+          setCheckoutDestination(latlng, updateInput = false) {
             this.deliveryLatLng = [latlng.lat, latlng.lng];
-            this.marker.setLatLng(latlng);
-            this.distanceKm = this.haversine(
-              this.restaurantLatLng,
-              this.deliveryLatLng,
-            );
+            if (this.checkoutDestinationMarker) {
+              this.checkoutDestinationMarker.setLatLng(latlng);
+            }
+            if (updateInput && !this.checkoutForm.addressNote.trim()) {
+              this.checkoutForm.addressNote = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
+            }
+            this.refreshCheckoutRoute();
+          },
+          updateCheckoutCost(distanceKm) {
+            const distance = Math.max(0, Number(distanceKm) || 0);
+            this.distanceKm = distance;
             this.ongkir = Math.max(
               5000,
-              Math.round((8000 + this.distanceKm * 2500) / 500) * 500,
+              Math.round((8000 + distance * 2500) / 500) * 500,
             );
+          },
+          initDetailMap() {
+            if (this.detailMap) {
+              this.detailMap.remove();
+              this.detailMap = null;
+            }
+            if (!this.selectedOrder) return;
+            this.detailMap = L.map("orderDetailMap", {
+              zoomControl: true,
+            }).setView(
+              this.selectedOrder.deliveryLatLng || this.restaurantLatLng,
+              13,
+            );
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: "&copy; OpenStreetMap contributors",
+              maxZoom: 19,
+            }).addTo(this.detailMap);
+
+            const restIcon = L.divIcon({
+              html: '<div style="background:#1F2937;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 0 0 2px #1F2937"></div>',
+              className: "",
+              iconSize: [14, 14],
+            });
+            L.marker(this.restaurantLatLng, { icon: restIcon })
+              .addTo(this.detailMap)
+              .bindPopup("Dapur Pusat — Dapur Nusantara");
+
+            const homeIcon = L.divIcon({
+              html: '<div style="background:#EA580C;width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)"></div>',
+              className: "",
+              iconSize: [18, 18],
+            });
+            const dest =
+              this.selectedOrder.deliveryLatLng || this.restaurantLatLng;
+            this.detailDestinationMarker = L.marker(dest, {
+              draggable: false,
+              icon: homeIcon,
+            })
+              .addTo(this.detailMap)
+              .bindPopup("Lokasi Pengiriman");
+
+            this.detailRouteControl = L.Routing.control({
+              waypoints: [
+                L.latLng(this.restaurantLatLng[0], this.restaurantLatLng[1]),
+                L.latLng(dest[0], dest[1]),
+              ],
+              router: L.Routing.osrmv1({
+                serviceUrl: "https://router.project-osrm.org/route/v1",
+                profile: "driving",
+              }),
+              addWaypoints: false,
+              draggableWaypoints: false,
+              routeWhileDragging: false,
+              fitSelectedRoutes: true,
+              showAlternatives: false,
+              createMarker: () => null,
+              lineOptions: {
+                styles: [{ color: "#2563eb", opacity: 0.9, weight: 5 }],
+                extendToWaypoints: true,
+                missingRouteTolerance: 0,
+              },
+            }).addTo(this.detailMap);
+
+            this.detailRouteControl.on("routesfound", (e) => {
+              const route = e.routes && e.routes[0];
+              if (!route || !this.selectedOrder) return;
+              this.selectedOrder.distanceKm =
+                route.summary.totalDistance / 1000;
+            });
+
+            setTimeout(() => this.detailMap.invalidateSize(), 200);
+          },
+          refreshDetailRoute() {
+            if (!this.detailRouteControl || !this.selectedOrder) return;
+            const dest =
+              this.selectedOrder.deliveryLatLng || this.restaurantLatLng;
+            this.detailRouteControl.setWaypoints([
+              L.latLng(this.restaurantLatLng[0], this.restaurantLatLng[1]),
+              L.latLng(dest[0], dest[1]),
+            ]);
           },
           haversine(a, b) {
             const R = 6371;
@@ -2044,6 +2968,10 @@
 
           // ---------- CHECKOUT ACTIONS ----------
           copyRekening() {
+            const text = "BCA — 1234567890 a.n. Dapur Nusantara Catering";
+            if (navigator.clipboard?.writeText) {
+              navigator.clipboard.writeText(text).catch(() => {});
+            }
             this.copied = true;
             setTimeout(() => (this.copied = false), 1500);
           },
@@ -2059,6 +2987,7 @@
           canPlaceOrder() {
             if (this.cart.length === 0) return false;
             if (!this.checkoutForm.deliveryDateTime) return false;
+            if (!this.checkoutForm.addressNote.trim()) return false;
             if (
               this.checkoutForm.paymentMethod !== "cod" &&
               !this.checkoutForm.proofPreview
@@ -2071,6 +3000,7 @@
               this.showToast("Lengkapi data terlebih dahulu", "error");
               return;
             }
+            const paymentMethod = this.checkoutForm.paymentMethod;
             const newOrder = {
               id: "ORD" + this.orderIdCounter++,
               date: new Date().toLocaleDateString("id-ID", {
@@ -2078,11 +3008,32 @@
                 month: "long",
                 year: "numeric",
               }),
-              items: this.cart.map((i) => ({ name: i.name, qty: i.qty })),
+              customerName: this.user.name,
+              customerPhone: this.user.phone,
+              deliveryDateTime: this.checkoutForm.deliveryDateTime,
+              paymentMethod,
+              proofPreview: this.checkoutForm.proofPreview,
+              deliveryAddressNote: this.checkoutForm.addressNote,
+              deliveryLocationLabel:
+                this.checkoutForm.mapSearchQuery.trim() ||
+                "Titik lokasi dari peta",
+              deliveryLatLng: [...this.deliveryLatLng],
+              distanceKm: this.distanceKm,
+              items: this.cart.map((i) => ({
+                id: i.id,
+                name: i.name,
+                qty: i.qty,
+                price: i.price,
+                image: i.image,
+                category: i.category,
+              })),
               subtotal: this.cartSubtotal(),
               ongkir: this.ongkir,
               total: this.grandTotal(),
-              status: "Menunggu Konfirmasi",
+              status:
+                paymentMethod === "cod"
+                  ? "Menunggu Konfirmasi"
+                  : "Menunggu Verifikasi",
             };
             this.orders.unshift(newOrder);
             this.cart = [];
@@ -2090,7 +3041,18 @@
               deliveryDateTime: "",
               paymentMethod: "transfer",
               proofPreview: null,
+              mapSearchQuery: "",
+              addressNote: this.user.address,
             };
+            this.deliveryLatLng = [...this.restaurantLatLng];
+            this.distanceKm = 0;
+            this.ongkir = 8000;
+            if (this.checkoutDestinationMarker) {
+              this.checkoutDestinationMarker.setLatLng(this.restaurantLatLng);
+            }
+            if (this.map) {
+              this.map.setView(this.restaurantLatLng, 13);
+            }
             this.activeOrderTab = "aktif";
             this.showToast("Pesanan berhasil dibuat!");
             this.navigate("orders");
@@ -2103,12 +3065,29 @@
           completedOrders() {
             return this.orders.filter((o) => o.status === "Selesai");
           },
+          canCancelOrder(status) {
+            return (
+              status === "Menunggu Konfirmasi" ||
+              status === "Menunggu Verifikasi"
+            );
+          },
+          cancelSelectedOrder() {
+            if (!this.selectedOrder) return;
+            if (!confirm("Batalkan pesanan ini?")) return;
+            const id = this.selectedOrder.id;
+            this.orders = this.orders.filter((o) => o.id !== id);
+            this.selectedOrder = null;
+            this.showToast("Pesanan berhasil dibatalkan.");
+            this.navigate("orders");
+          },
           statusColor(status) {
             const map = {
               "Menunggu Konfirmasi": "bg-yellow-100 text-yellow-700",
+              "Menunggu Verifikasi": "bg-amber-100 text-amber-700",
               Diproses: "bg-blue-100 text-blue-700",
               Dikirim: "bg-purple-100 text-purple-700",
               Selesai: "bg-green-100 text-green-700",
+              Dibatalkan: "bg-red-100 text-red-700",
             };
             return map[status] || "bg-gray-100 text-gray-700";
           },
@@ -2145,6 +3124,50 @@
                 bg: "bg-green-50",
               },
             ];
+          },
+          formatDateTime(value) {
+            if (!value) return "-";
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return value;
+            return d.toLocaleString("id-ID", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            });
+          },
+          paymentLabel(method) {
+            const map = {
+              transfer: "Transfer Bank",
+              qris: "QRIS",
+              cod: "Cash On Delivery (COD)",
+            };
+            return map[method] || method || "-";
+          },
+          cloneOrder(order) {
+            return JSON.parse(JSON.stringify(order));
+          },
+          orderDisplayItems(order) {
+            return (order?.items || []).map((item) => {
+              const menu =
+                this.menuItems.find((m) => m.name === item.name) || {};
+              return {
+                name: item.name,
+                qty: item.qty || 1,
+                price: item.price ?? menu.price ?? 0,
+                image:
+                  item.image ||
+                  menu.image ||
+                  "https://placehold.co/80x80/FFEDD5/C2410C?text=Menu",
+                category: item.category || menu.category || "Menu",
+              };
+            });
+          },
+          openProofModal(image) {
+            this.proofModalImage = image;
+            this.showProofModal = true;
+          },
+          closeProofModal() {
+            this.showProofModal = false;
+            this.proofModalImage = "";
           },
 
           // ---------- PROFILE ----------
