@@ -7,28 +7,25 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzXVaomK7S2m1M6Q4jELW4oL0s="
-      crossorigin=""
     />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
-    />
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -49,262 +46,486 @@
     <style type="text/tailwindcss">
       @layer components {
         .btn-primary {
-          @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-5 py-2.5 font-semibold text-white shadow-warm transition-all duration-200 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 disabled:pointer-events-none disabled:opacity-40;
+          @apply inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold rounded-xl px-5 py-2.5 shadow-warm hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none transition-all duration-200;
         }
         .btn-secondary {
-          @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-medium text-slate-700 transition-colors duration-200 hover:border-gray-300 hover:bg-gray-50;
+          @apply inline-flex items-center justify-center gap-2 bg-white border border-gray-200 text-slate-700 font-medium rounded-xl px-4 py-2.5 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200;
         }
-        .btn-soft {
-          @apply inline-flex items-center justify-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-4 py-2.5 font-semibold text-orange-700 transition-colors duration-200 hover:bg-orange-100;
+        .btn-icon {
+          @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:bg-gray-100 hover:text-slate-600 transition-colors duration-200;
         }
         .btn-sm {
           @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors duration-200;
         }
-        .btn-pill {
-          @apply inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-200;
-        }
-        .btn-icon {
-          @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors duration-200 hover:bg-slate-800 hover:text-white;
-        }
         .input-field {
-          @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[15px] text-slate-800 placeholder:text-gray-400 transition focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:bg-gray-100 disabled:text-gray-500;
+          @apply w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-[15px] text-slate-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition disabled:bg-gray-100 disabled:text-gray-500;
         }
         .label-field {
-          @apply mb-1.5 block text-sm font-medium text-slate-600;
+          @apply block text-sm font-medium text-slate-600 mb-1.5;
         }
         .nav-link {
-          @apply flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium text-slate-400 transition-colors duration-200 hover:bg-slate-800 hover:text-white;
+          @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors duration-200 cursor-pointer;
         }
         .nav-link-active {
-          @apply bg-slate-800 font-semibold text-orange-400;
+          @apply bg-slate-800 text-orange-400 font-semibold;
         }
         .badge {
-          @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold;
+          @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap;
         }
         .section-title {
-          @apply font-display text-xl font-semibold text-slate-800;
+          @apply font-display font-semibold text-xl text-slate-800;
         }
         .th-cell {
-          @apply whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-400;
+          @apply text-left text-xs font-semibold text-slate-400 uppercase tracking-wide px-4 py-3 whitespace-nowrap;
         }
         .td-cell {
-          @apply align-middle px-4 py-3.5 text-sm text-slate-700;
+          @apply px-4 py-3.5 text-sm text-slate-700 align-middle;
         }
       }
-      [x-cloak] { display: none !important; }
-      ::-webkit-scrollbar { width: 8px; height: 8px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 999px; }
-      #order-route-map { z-index: 0; }
-      .swal2-popup { border-radius: 20px !important; }
-      .swal2-confirm, .swal2-cancel, .swal2-deny { border-radius: 14px !important; }
+      .leaflet-routing-container {
+        display: none !important;
+      }
+      .proof-zoom-img {
+        transition: transform 0.2s ease;
+        transform-origin: center center;
+      }
+      [data-pill-active="true"] {
+        box-shadow: 0 8px 20px -10px rgba(249, 115, 22, 0.55);
+      }
+      [x-cloak] {
+        display: none !important;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #63666d;
+        border-radius: 999px;
+      }
       @media print {
-        .no-print { display: none !important; }
-        body { background: white !important; }
-        .print-area { box-shadow: none !important; border: none !important; }
+        .no-print {
+          display: none !important;
+        }
+        body {
+          background: white !important;
+        }
+        .print-area {
+          box-shadow: none !important;
+          border: none !important;
+        }
       }
     </style>
-
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
-
   <body
     x-data="adminApp()"
     x-init="init()"
     class="bg-gray-50 font-sans text-slate-800 antialiased"
   >
-    <!-- LOGIN -->
+    <!-- ============ LOGIN PAGE ============ -->
     <div x-show="!loggedIn" x-cloak class="min-h-screen flex">
       <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div
           class="absolute inset-0 bg-cover bg-center"
-          style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80');"
+          style="
+            background-image: url(&quot;https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80&quot;);
+          "
         ></div>
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95"></div>
-        <div class="relative z-10 flex flex-col justify-between p-12 text-white">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95"
+        ></div>
+        <div
+          class="relative z-10 flex flex-col justify-between p-12 text-white"
+        >
           <div class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-red-500">
+            <div
+              class="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"
+            >
               <i class="fa-solid fa-bowl-food text-xl"></i>
             </div>
-            <span class="font-display text-2xl font-bold">Dapur Nusantara</span>
+            <span class="font-display font-bold text-2xl">Dapur Nusantara</span>
           </div>
           <div>
-            <span class="badge mb-4 bg-white/10 text-orange-300"><i class="fa-solid fa-shield-halved"></i> Akses Khusus Tim Internal</span>
-            <h1 class="font-display mb-4 text-4xl font-bold leading-tight xl:text-5xl">
+            <span class="badge bg-white/10 text-orange-300 mb-4"
+              ><i class="fa-solid fa-shield-halved"></i> Akses Khusus Tim
+              Internal</span
+            >
+            <h1
+              class="font-display font-bold text-4xl xl:text-5xl leading-tight mb-4"
+            >
               Kelola operasional<br />catering dari satu tempat.
             </h1>
-            <p class="max-w-md text-lg text-white/70">
-              Pantau pesanan masuk, kelola pelanggan, dan lakukan verifikasi transaksi dengan tampilan yang rapi.
+            <p class="text-white/70 text-lg max-w-md">
+              Pantau pesanan masuk, kelola menu, dan verifikasi pembayaran
+              pelanggan dengan mudah.
             </p>
           </div>
           <div class="flex items-center gap-8 text-sm text-white/70">
-            <div><span class="block font-display text-2xl font-bold text-white">Real-time</span>Status Pesanan</div>
-            <div><span class="block font-display text-2xl font-bold text-white">Terpusat</span>Manajemen Data</div>
-            <div><span class="block font-display text-2xl font-bold text-white">Akurat</span>Laporan Operasional</div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Real-time</span
+              >Status Pesanan
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Terpusat</span
+              >Manajemen Menu
+            </div>
+            <div>
+              <span class="block text-2xl font-display font-bold text-white"
+                >Akurat</span
+              >Laporan Keuangan
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="flex w-full items-center justify-center bg-gray-50 p-6 sm:p-10 lg:w-1/2">
+      <div
+        class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-gray-50"
+      >
         <div class="w-full max-w-sm">
-          <div class="mb-8 flex justify-center gap-3 lg:hidden">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 text-white">
+          <div class="lg:hidden flex items-center gap-3 mb-8 justify-center">
+            <div
+              class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-white"
+            >
               <i class="fa-solid fa-bowl-food text-xl"></i>
             </div>
-            <span class="font-display text-2xl font-bold text-slate-800">Dapur Nusantara</span>
+            <span class="font-display font-bold text-2xl text-slate-800"
+              >Dapur Nusantara</span
+            >
           </div>
 
-          <h2 class="font-display mb-1 text-2xl font-bold text-slate-800">Portal Admin</h2>
-          <p class="mb-8 text-slate-500">Masuk untuk mengelola sistem catering.</p>
+          <h2 class="font-display font-bold text-2xl text-slate-800 mb-1">
+            Portal Admin
+          </h2>
+          <p class="text-slate-500 mb-8">
+            Masuk untuk mengelola sistem catering.
+          </p>
 
           <form @submit.prevent="login()" class="space-y-4">
             <div>
               <label class="label-field">Username</label>
               <div class="relative">
-                <i class="fa-solid fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" x-model="loginForm.username" placeholder="contoh: admin" class="input-field pl-11" />
+                <i
+                  class="fa-solid fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  type="text"
+                  x-model="loginForm.username"
+                  placeholder="contoh: admin"
+                  class="input-field pl-11"
+                />
               </div>
             </div>
             <div>
               <label class="label-field">Password</label>
               <div class="relative">
-                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input :type="showPassword ? 'text' : 'password'" x-model="loginForm.password" placeholder="••••••••" class="input-field pl-11 pr-11" />
-                <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600">
-                  <i :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" class="fa-solid"></i>
+                <i
+                  class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                ></i>
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  x-model="loginForm.password"
+                  placeholder="••••••••"
+                  class="input-field pl-11 pr-11"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-slate-600"
+                >
+                  <i
+                    :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+                    class="fa-solid"
+                  ></i>
                 </button>
               </div>
             </div>
 
-            <p x-show="loginError" x-cloak x-text="loginError" class="text-sm text-red-500"></p>
+            <p
+              x-show="loginError"
+              x-cloak
+              x-text="loginError"
+              class="text-sm text-red-500"
+            ></p>
 
             <button type="submit" class="btn-primary w-full mt-2">
               <i class="fa-solid fa-right-to-bracket"></i> Login
             </button>
 
-            <div class="rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-600">
-              Demo: isi username &amp; password apa saja lalu klik Login.
+            <div class="flex items-center justify-between text-sm pt-1">
+              <button
+                type="button"
+                @click="openRegisterModal()"
+                class="font-medium text-orange-600 hover:underline"
+              >
+                Registrasi akun
+              </button>
+              <button
+                type="button"
+                @click="openForgotPasswordModal()"
+                class="font-medium text-slate-500 hover:text-slate-700 hover:underline"
+              >
+                Lupa password?
+              </button>
+            </div>
+
+            <div
+              class="bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-600 flex gap-2.5 items-start"
+            >
+              <i class="fa-solid fa-circle-info mt-0.5"></i>
+              <span
+                >Demo: isi username &amp; password apa saja lalu klik Login.
+                Akun registrasi tersimpan di browser ini.</span
+              >
             </div>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- APP -->
+    <!-- ============ MAIN APP ============ -->
     <div x-show="loggedIn" x-cloak class="flex h-screen overflow-hidden">
       <div
         x-show="mobileMenuOpen"
         x-cloak
-        @click="mobileMenuOpen = false"
+        @click="mobileMenuOpen=false"
         x-transition.opacity
-        class="fixed inset-0 z-40 bg-slate-900/60 md:hidden no-print"
+        class="fixed inset-0 bg-slate-900/60 z-40 md:hidden no-print"
       ></div>
 
+      <!-- Sidebar -->
       <aside
         :class="[sidebarCollapsed ? 'md:w-20' : 'md:w-64', mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']"
-        class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-slate-900 transition-all duration-300 md:static md:h-screen no-print"
+        class="fixed md:static inset-y-0 left-0 z-50 w-72 md:h-screen bg-slate-900 flex flex-col flex-shrink-0 transition-all duration-300 no-print"
       >
-        <div class="flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-800 px-4">
+        <div
+          class="flex items-center justify-between px-4 h-16 border-b border-slate-800 flex-shrink-0"
+        >
           <div class="flex items-center gap-2.5 overflow-hidden">
-            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-red-500 text-white">
+            <div
+              class="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white flex-shrink-0"
+            >
               <i class="fa-solid fa-bowl-food"></i>
             </div>
-            <span x-show="!sidebarCollapsed" class="font-display text-lg font-bold whitespace-nowrap text-white">Dapur Nusantara</span>
+            <span
+              x-show="!sidebarCollapsed"
+              class="font-display font-bold text-lg text-white whitespace-nowrap"
+              >Dapur Nusantara</span
+            >
           </div>
-          <button @click="mobileMenuOpen = false" class="btn-icon md:hidden">
+          <button
+            @click="mobileMenuOpen=false"
+            class="md:hidden btn-icon !text-slate-400"
+          >
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           <template x-for="item in navItems" :key="item.id">
-            <div
-              @click="navigate(item.id)"
-              class="nav-link"
-              :class="currentView === item.id ? 'nav-link-active' : ''"
-              :title="sidebarCollapsed ? item.label : ''"
-            >
-              <i :class="item.icon" class="fa-solid w-5 text-center flex-shrink-0"></i>
-              <span x-show="!sidebarCollapsed" class="whitespace-nowrap" x-text="item.label"></span>
+            <div>
+              <template x-if="!item.children">
+                <div
+                  @click="navigate(item.id)"
+                  class="nav-link"
+                  :class="currentView===item.id ? 'nav-link-active' : ''"
+                  :title="sidebarCollapsed ? item.label : ''"
+                >
+                  <i
+                    :class="item.icon"
+                    class="fa-solid w-5 text-center flex-shrink-0"
+                  ></i>
+                  <span
+                    x-show="!sidebarCollapsed"
+                    class="whitespace-nowrap"
+                    x-text="item.label"
+                  ></span>
+                </div>
+              </template>
+              <template x-if="item.children">
+                <div>
+                  <div
+                    @click="sidebarCollapsed ? navigate('dataMenu') : (menuManagementOpen = !menuManagementOpen)"
+                    class="nav-link justify-between"
+                    :class="(currentView==='kategoriMenu'||currentView==='dataMenu') ? 'nav-link-active' : ''"
+                  >
+                    <span class="flex items-center gap-3">
+                      <i
+                        :class="item.icon"
+                        class="fa-solid w-5 text-center flex-shrink-0"
+                      ></i>
+                      <span
+                        x-show="!sidebarCollapsed"
+                        class="whitespace-nowrap"
+                        x-text="item.label"
+                      ></span>
+                    </span>
+                    <i
+                      x-show="!sidebarCollapsed"
+                      class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+                      :class="menuManagementOpen ? 'rotate-180' : ''"
+                    ></i>
+                  </div>
+                  <div
+                    x-show="menuManagementOpen && !sidebarCollapsed"
+                    x-cloak
+                    class="pl-8 space-y-1 mt-1"
+                  >
+                    <template x-for="child in item.children" :key="child.id">
+                      <div
+                        @click="navigate(child.id)"
+                        class="nav-link !py-2 text-sm"
+                        :class="currentView===child.id ? 'nav-link-active' : ''"
+                        x-text="child.label"
+                      ></div>
+                    </template>
+                  </div>
+                </div>
+              </template>
             </div>
           </template>
         </nav>
 
-        <div class="flex-shrink-0 border-t border-slate-800 p-3">
-          <div class="mb-1 flex items-center gap-3 px-2 py-2">
-            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white" x-text="initials(admin.name)"></div>
+        <div class="border-t border-slate-800 p-3 flex-shrink-0">
+          <div class="flex items-center gap-3 px-2 py-2 mb-1">
+            <img
+              :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(admin.name) + '&background=1e293b&color=fb923c&bold=true'"
+              class="w-9 h-9 rounded-full flex-shrink-0"
+              alt="avatar"
+            />
             <div x-show="!sidebarCollapsed" class="overflow-hidden">
-              <p class="truncate text-sm font-semibold text-white" x-text="admin.name"></p>
-              <p class="truncate text-xs text-slate-400" x-text="admin.role"></p>
+              <p
+                class="text-sm font-semibold text-white truncate"
+                x-text="admin.name"
+              ></p>
+              <p
+                class="text-xs text-slate-400 truncate"
+                x-text="admin.role"
+              ></p>
             </div>
           </div>
-          <div @click="logout()" class="nav-link text-red-400 hover:bg-red-500/10 hover:text-red-400">
+          <div
+            @click="logout()"
+            class="nav-link text-red-400 hover:bg-red-500/10 hover:text-red-400"
+          >
             <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
             <span x-show="!sidebarCollapsed">Logout</span>
           </div>
-          <button @click="sidebarCollapsed = !sidebarCollapsed" class="mt-2 hidden w-full items-center justify-center py-1.5 text-slate-500 hover:text-orange-400 md:flex">
-            <i class="fa-solid" :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+          <button
+            @click="sidebarCollapsed = !sidebarCollapsed"
+            class="hidden md:flex items-center justify-center w-full mt-2 py-1.5 text-slate-500 hover:text-orange-400"
+          >
+            <i
+              class="fa-solid"
+              :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"
+            ></i>
           </button>
         </div>
       </aside>
 
-      <div class="flex min-w-0 flex-1 flex-col h-screen overflow-hidden">
-        <header class="sticky top-0 z-20 flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 md:hidden no-print">
-          <button @click="mobileMenuOpen = true" class="btn-icon text-slate-700 hover:text-slate-900">
+      <!-- Main column -->
+      <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        <header
+          class="md:hidden flex items-center justify-between bg-white border-b border-gray-100 px-4 h-16 flex-shrink-0 sticky top-0 z-20 no-print"
+        >
+          <button @click="mobileMenuOpen=true" class="btn-icon">
             <i class="fa-solid fa-bars text-lg"></i>
           </button>
-          <span class="font-display font-semibold text-slate-800" x-text="pageTitle[currentView] || 'Dapur Nusantara'"></span>
+          <span
+            class="font-display font-semibold text-slate-800"
+            x-text="pageTitle[currentView] || 'Dapur Nusantara'"
+          ></span>
           <span class="w-9"></span>
         </header>
 
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <!-- DASHBOARD -->
-          <section x-show="currentView === 'dashboard'">
-            <h1 class="font-display mb-1 text-2xl font-bold text-slate-800">Dashboard</h1>
-            <p class="mb-6 text-slate-500">Ringkasan operasional Dapur Nusantara.</p>
+          <!-- ===== DASHBOARD ===== -->
+          <div x-show="currentView==='dashboard'">
+            <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+              Dashboard
+            </h1>
+            <p class="text-slate-500 mb-6">
+              Ringkasan operasional Dapur Nusantara hari ini.
+            </p>
 
-            <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
-                  <i class="fa-solid fa-receipt"></i>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-receipt text-orange-500"></i>
                 </div>
-                <p class="font-display text-2xl font-bold text-slate-800" x-text="orders.length"></p>
-                <p class="text-sm text-slate-500">Total Pesanan</p>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="orders.length"
+                ></p>
+                <p class="text-sm text-slate-500">Total Pesanan Masuk</p>
               </div>
-              <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-500">
-                  <i class="fa-solid fa-sack-dollar"></i>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-sack-dollar text-green-500"></i>
                 </div>
-                <p class="font-display text-2xl font-bold text-slate-800" x-text="formatRp(totalRevenue())"></p>
-                <p class="text-sm text-slate-500">Pendapatan Total</p>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800 break-words"
+                  x-text="formatRp(todayRevenue)"
+                ></p>
+                <p class="text-sm text-slate-500">Pendapatan Hari Ini</p>
               </div>
-              <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-50 text-yellow-500">
-                  <i class="fa-solid fa-clock"></i>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-clock text-yellow-500"></i>
                 </div>
-                <p class="font-display text-2xl font-bold text-slate-800" x-text="orders.filter(o => o.status === 'Menunggu Verifikasi').length"></p>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="orders.filter(o => o.status==='Menunggu Verifikasi').length"
+                ></p>
                 <p class="text-sm text-slate-500">Menunggu Verifikasi</p>
               </div>
-              <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-500">
-                  <i class="fa-solid fa-users"></i>
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+              >
+                <div
+                  class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-3"
+                >
+                  <i class="fa-solid fa-users text-blue-500"></i>
                 </div>
-                <p class="font-display text-2xl font-bold text-slate-800" x-text="customers.length"></p>
+                <p
+                  class="text-2xl font-display font-bold text-slate-800"
+                  x-text="customers.length"
+                ></p>
                 <p class="text-sm text-slate-500">Total Pelanggan</p>
               </div>
             </div>
 
-            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-              <div class="flex items-center justify-between border-b border-gray-100 p-5">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div
+                class="flex items-center justify-between p-5 border-b border-gray-100"
+              >
                 <h2 class="section-title">Pesanan Terbaru</h2>
-                <button @click="navigate('transaksi')" class="text-sm font-medium text-orange-600 hover:underline">Lihat Semua</button>
+                <span
+                  @click="navigate('transaksi')"
+                  class="text-orange-600 font-medium text-sm cursor-pointer hover:underline"
+                  >Lihat Semua</span
+                >
               </div>
               <div class="overflow-x-auto">
                 <table class="w-full">
                   <thead>
-                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                    <tr class="border-b border-gray-100">
                       <th class="th-cell">ID</th>
                       <th class="th-cell">Pelanggan</th>
                       <th class="th-cell">Tanggal</th>
@@ -313,14 +534,32 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <template x-for="order in orders.slice(0, 5)" :key="order.id">
-                      <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
-                        <td class="td-cell font-semibold text-slate-800" x-text="order.id"></td>
-                        <td class="td-cell" x-text="customerById(order.customerId)?.name"></td>
-                        <td class="td-cell text-slate-500" x-text="order.date"></td>
-                        <td class="td-cell font-medium" x-text="formatRp(grandTotal(order))"></td>
+                    <template
+                      x-for="order in orders.slice(0,5)"
+                      :key="order.id"
+                    >
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
+                        <td class="td-cell" x-text="order.customer"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
                         <td class="td-cell">
-                          <span class="badge" :class="statusColor(order.status)" x-text="order.status"></span>
+                          <span
+                            class="badge"
+                            :class="statusColor(order.status)"
+                            x-text="order.status"
+                          ></span>
                         </td>
                       </tr>
                     </template>
@@ -328,49 +567,82 @@
                 </table>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- DATA PELANGGAN -->
-          <section x-show="currentView === 'pelanggan'">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <!-- ===== DATA PELANGGAN ===== -->
+          <div x-show="currentView==='pelanggan'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div>
-                <h1 class="font-display mb-1 text-2xl font-bold text-slate-800">Data Pelanggan</h1>
-                <p class="text-slate-500">Daftar pelanggan terdaftar. Admin hanya bisa melihat.</p>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Data Pelanggan
+                </h1>
+                <p class="text-slate-500">
+                  Daftar pelanggan terdaftar (hanya lihat).
+                </p>
               </div>
               <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                <input type="text" x-model="customerSearch" placeholder="Cari pelanggan..." class="input-field w-56 pl-10 !py-2" />
+                <i
+                  class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
+                ></i>
+                <input
+                  type="text"
+                  x-model="customerSearch"
+                  placeholder="Cari pelanggan..."
+                  class="input-field pl-10 !py-2 w-56"
+                />
               </div>
             </div>
 
-            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
               <div class="overflow-x-auto">
                 <table class="w-full">
                   <thead>
                     <tr class="border-b border-gray-100 bg-gray-50/50">
                       <th class="th-cell">Pelanggan</th>
-                      <th class="th-cell">No. HP</th>
+                      <th class="th-cell">No. Telp</th>
                       <th class="th-cell">Email</th>
+                      <th class="th-cell">Alamat</th>
                       <th class="th-cell">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
                     <template x-for="c in filteredCustomers()" :key="c.id">
-                      <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
                         <td class="td-cell">
                           <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 text-sm font-bold text-orange-700" x-text="initials(c.name)"></div>
-                            <div>
-                              <p class="font-semibold text-slate-800" x-text="c.name"></p>
-                              <p class="text-xs text-slate-400" x-text="c.joinedAt"></p>
-                            </div>
+                            <img
+                              :src="avatarUrl(c.name)"
+                              class="w-9 h-9 rounded-full"
+                            />
+                            <span
+                              class="font-medium text-slate-800"
+                              x-text="c.name"
+                            ></span>
                           </div>
                         </td>
-                        <td class="td-cell text-slate-500" x-text="c.phone"></td>
-                        <td class="td-cell text-slate-500" x-text="c.email"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="c.phone"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500 break-all"
+                          x-text="c.email"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500 max-w-[280px]"
+                          x-text="c.address"
+                        ></td>
                         <td class="td-cell">
-                          <button @click="openCustomerDetail(c)" class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200">
-                            <i class="fa-solid fa-id-card"></i> Detail Pelanggan
+                          <button
+                            @click="openCustomerDetail(c)"
+                            class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          >
+                            <i class="fa-solid fa-address-card"></i> Detail
+                            Pelanggan
                           </button>
                         </td>
                       </tr>
@@ -378,106 +650,366 @@
                   </tbody>
                 </table>
               </div>
-              <div x-show="filteredCustomers().length === 0" class="py-12 text-center text-slate-400">Tidak ada pelanggan yang cocok.</div>
+              <div
+                x-show="filteredCustomers().length === 0"
+                class="text-center py-12 text-slate-400"
+              >
+                Tidak ada pelanggan yang cocok.
+              </div>
             </div>
-          </section>
+          </div>
 
-          <!-- DETAIL PELANGGAN -->
-          <section x-show="currentView === 'pelangganDetail'">
-            <button @click="navigate('pelanggan')" class="mb-5 inline-flex items-center gap-2 font-medium text-slate-500 hover:text-orange-600">
+          <!-- ===== DETAIL PELANGGAN ===== -->
+          <div
+            x-show="currentView==='detailPelanggan' && selectedCustomer"
+            x-cloak
+          >
+            <button
+              @click="navigate('pelanggan')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-5 inline-flex items-center gap-2"
+            >
               <i class="fa-solid fa-arrow-left"></i> Kembali ke Data Pelanggan
             </button>
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <div class="space-y-6">
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <div class="flex items-center gap-4">
-                    <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 text-2xl font-bold text-white" x-text="initials(selectedCustomer()?.name || '')"></div>
-                    <div>
-                      <p class="font-display text-xl font-bold text-slate-800" x-text="selectedCustomer()?.name"></p>
-                      <p class="text-slate-500" x-text="selectedCustomer()?.email"></p>
-                    </div>
-                  </div>
-
-                  <div class="mt-5 space-y-3 border-t border-gray-100 pt-5 text-sm">
-                    <div class="flex justify-between gap-4">
-                      <span class="text-slate-400">No. HP</span>
-                      <span class="font-medium text-slate-700" x-text="selectedCustomer()?.phone"></span>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                      <span class="text-slate-400">Alamat Lengkap</span>
-                      <span class="max-w-[60%] text-right font-medium text-slate-700" x-text="selectedCustomer()?.address"></span>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                      <span class="text-slate-400">Tanggal Bergabung</span>
-                      <span class="font-medium text-slate-700" x-text="selectedCustomer()?.joinedAt"></span>
-                    </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div
+                class="xl:col-span-1 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
+                <div class="flex items-center gap-4">
+                  <img
+                    :src="avatarUrl(selectedCustomer.name)"
+                    class="w-20 h-20 rounded-2xl"
+                    alt="avatar"
+                  />
+                  <div>
+                    <p
+                      class="font-display font-bold text-xl text-slate-800"
+                      x-text="selectedCustomer.name"
+                    ></p>
+                    <p
+                      class="text-slate-500"
+                      x-text="selectedCustomer.email"
+                    ></p>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4">
-                  <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                    <p class="text-sm text-slate-400">Total Pesanan</p>
-                    <p class="font-display mt-1 text-3xl font-bold text-slate-800" x-text="customerStats(selectedCustomerId).count"></p>
+                <div
+                  class="mt-5 pt-5 border-t border-gray-100 space-y-3 text-sm"
+                >
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">No. HP</span
+                    ><span
+                      class="font-medium text-slate-700 text-right"
+                      x-text="selectedCustomer.phone"
+                    ></span>
                   </div>
-                  <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                    <p class="text-sm text-slate-400">Total Pengeluaran</p>
-                    <p class="font-display mt-1 text-3xl font-bold text-slate-800" x-text="formatRp(customerStats(selectedCustomerId).total)"></p>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Email</span
+                    ><span
+                      class="font-medium text-slate-700 text-right break-all"
+                      x-text="selectedCustomer.email"
+                    ></span>
+                  </div>
+                  <div>
+                    <p class="text-slate-400 mb-1">Alamat Lengkap</p>
+                    <p
+                      class="font-medium text-slate-700 leading-relaxed"
+                      x-text="selectedCustomer.address"
+                    ></p>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Tanggal Bergabung</span
+                    ><span
+                      class="font-medium text-slate-700 text-right"
+                      x-text="selectedCustomer.joinedAt"
+                    ></span>
+                  </div>
+                </div>
+
+                <div
+                  class="mt-6 rounded-2xl bg-slate-50 border border-slate-100 p-4"
+                >
+                  <p class="text-sm font-semibold text-slate-700 mb-3">
+                    Statistik Loyalitas
+                  </p>
+                  <div class="grid grid-cols-1 gap-3">
+                    <div class="rounded-xl bg-white border border-gray-100 p-4">
+                      <p
+                        class="text-xs uppercase tracking-wide text-slate-400 mb-1"
+                      >
+                        Total Pesanan
+                      </p>
+                      <p
+                        class="font-display font-bold text-2xl text-slate-800"
+                        x-text="customerStats(selectedCustomer.id).count"
+                      ></p>
+                    </div>
+                    <div class="rounded-xl bg-white border border-gray-100 p-4">
+                      <p
+                        class="text-xs uppercase tracking-wide text-slate-400 mb-1"
+                      >
+                        Total Spent
+                      </p>
+                      <p
+                        class="font-display font-bold text-2xl text-slate-800"
+                        x-text="formatRp(customerStats(selectedCustomer.id).spent)"
+                      ></p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="lg:col-span-2">
-                <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                  <div class="border-b border-gray-100 p-5">
-                    <h2 class="section-title">Riwayat Transaksi</h2>
-                    <p class="mt-1 text-sm text-slate-500">Hanya pesanan milik pelanggan ini.</p>
-                  </div>
-                  <div class="overflow-x-auto">
-                    <table class="w-full">
-                      <thead>
-                        <tr class="border-b border-gray-100 bg-gray-50/50">
-                          <th class="th-cell">ID</th>
-                          <th class="th-cell">Tanggal</th>
-                          <th class="th-cell">Total</th>
-                          <th class="th-cell">Status</th>
+              <div
+                class="xl:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              >
+                <div
+                  class="p-5 border-b border-gray-100 flex items-center justify-between gap-3"
+                >
+                  <h2 class="section-title">Riwayat Pesanan Pelanggan</h2>
+                  <span
+                    class="badge bg-orange-50 text-orange-600"
+                    x-text="customerOrders(selectedCustomer.id).length + ' transaksi'"
+                  ></span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                      <tr class="border-b border-gray-100 bg-gray-50/50">
+                        <th class="th-cell">ID Pesanan</th>
+                        <th class="th-cell">Tanggal</th>
+                        <th class="th-cell">Status</th>
+                        <th class="th-cell">Total</th>
+                        <th class="th-cell">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template
+                        x-for="order in customerOrders(selectedCustomer.id)"
+                        :key="order.id"
+                      >
+                        <tr
+                          class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                        >
+                          <td
+                            class="td-cell font-semibold text-slate-800"
+                            x-text="order.id"
+                          ></td>
+                          <td
+                            class="td-cell text-slate-500"
+                            x-text="order.date"
+                          ></td>
+                          <td class="td-cell">
+                            <span
+                              class="badge"
+                              :class="statusColor(order.status)"
+                              x-text="order.status"
+                            ></span>
+                          </td>
+                          <td
+                            class="td-cell font-medium"
+                            x-text="formatRp(order.total)"
+                          ></td>
+                          <td class="td-cell">
+                            <button
+                              @click="openOrderDetail(order)"
+                              class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            >
+                              <i class="fa-solid fa-receipt"></i> Detail Pesanan
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <template x-for="order in customerOrderHistory(selectedCustomerId)" :key="order.id">
-                          <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
-                            <td class="td-cell font-semibold text-slate-800" x-text="order.id"></td>
-                            <td class="td-cell text-slate-500" x-text="order.date"></td>
-                            <td class="td-cell font-medium" x-text="formatRp(grandTotal(order))"></td>
-                            <td class="td-cell"><span class="badge" :class="statusColor(order.status)" x-text="order.status"></span></td>
-                          </tr>
-                        </template>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div x-show="customerOrderHistory(selectedCustomerId).length === 0" class="py-12 text-center text-slate-400">Belum ada transaksi.</div>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+                <div
+                  x-show="customerOrders(selectedCustomer.id).length === 0"
+                  x-cloak
+                  class="text-center py-12 text-slate-400"
+                >
+                  Belum ada riwayat pesanan.
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- TRANSAKSI -->
-          <section x-show="currentView === 'transaksi'">
-            <h1 class="font-display mb-1 text-2xl font-bold text-slate-800">Transaksi &amp; Pesanan</h1>
-            <p class="mb-5 text-slate-500">Filter status dan buka detail pesanan untuk tindakan lanjutan.</p>
+          <!-- ===== KATEGORI MENU ===== -->
+          <div x-show="currentView==='kategoriMenu'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Kategori Menu
+                </h1>
+                <p class="text-slate-500">
+                  Kelola jenis kategori makanan &amp; minuman.
+                </p>
+              </div>
+              <button @click="openAddCategory()" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> Tambah Kategori
+              </button>
+            </div>
 
-            <div class="mb-5 flex flex-wrap gap-2">
-              <template x-for="status in transactionStatuses" :key="status">
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">Nama Kategori</th>
+                      <th class="th-cell">Jumlah Menu</th>
+                      <th class="th-cell">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="cat in categories" :key="cat.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-medium text-slate-800"
+                          x-text="cat.name"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="categoryCount(cat.name) + ' menu'"
+                        ></td>
+                        <td class="td-cell">
+                          <div class="flex gap-2">
+                            <button
+                              @click="openEditCategory(cat)"
+                              class="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            >
+                              <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button
+                              @click="deleteCategory(cat)"
+                              class="btn-sm bg-red-50 text-red-600 hover:bg-red-100"
+                            >
+                              <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== DATA MENU ===== -->
+          <div x-show="currentView==='dataMenu'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Data Menu
+                </h1>
+                <p class="text-slate-500">
+                  Kelola daftar menu makanan &amp; minuman.
+                </p>
+              </div>
+              <button @click="openAddMenu()" class="btn-primary">
+                <i class="fa-solid fa-plus"></i> Tambah Menu
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div class="overflow-x-auto">
+                <table class="w-full">
+                  <thead>
+                    <tr class="border-b border-gray-100 bg-gray-50/50">
+                      <th class="th-cell">Gambar</th>
+                      <th class="th-cell">Nama Menu</th>
+                      <th class="th-cell">Kategori</th>
+                      <th class="th-cell">Harga</th>
+                      <th class="th-cell">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <template x-for="item in menuItems" :key="item.id">
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td class="td-cell">
+                          <img
+                            :src="item.image"
+                            onerror="
+                              this.src =
+                                'https://placehold.co/100x100/FFEDD5/C2410C?text=Menu'
+                            "
+                            class="w-12 h-12 rounded-lg object-cover"
+                          />
+                        </td>
+                        <td
+                          class="td-cell font-medium text-slate-800"
+                          x-text="item.name"
+                        ></td>
+                        <td class="td-cell">
+                          <span
+                            class="badge bg-orange-50 text-orange-600"
+                            x-text="item.category"
+                          ></span>
+                        </td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(item.price)"
+                        ></td>
+                        <td class="td-cell">
+                          <div class="flex gap-2">
+                            <button
+                              @click="openEditMenu(item)"
+                              class="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            >
+                              <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button
+                              @click="deleteMenu(item)"
+                              class="btn-sm bg-red-50 text-red-600 hover:bg-red-100"
+                            >
+                              <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </template>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== TRANSAKSI & PESANAN ===== -->
+          <div x-show="currentView==='transaksi'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Transaksi &amp; Pesanan
+                </h1>
+                <p class="text-slate-500">
+                  Verifikasi pembayaran dan kelola status pesanan masuk.
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-5">
+              <template x-for="status in transactionFilters" :key="status">
                 <button
-                  @click="transactionStatusFilter = status"
-                  class="btn-pill"
-                  :class="transactionStatusFilter === status ? 'border-orange-500 bg-orange-500 text-white shadow-warm' : 'border-gray-200 bg-white text-slate-600 hover:bg-gray-50'"
-                  x-text="status"
-                ></button>
+                  @click="orderStatusFilter = status"
+                  class="px-4 py-2 rounded-full text-sm font-semibold border transition-colors duration-200"
+                  :class="orderStatusFilter===status ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-slate-600 border-gray-200 hover:border-orange-300 hover:text-orange-600'"
+                  :data-pill-active="orderStatusFilter===status"
+                >
+                  <span x-text="status"></span>
+                </button>
               </template>
             </div>
 
-            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
               <div class="overflow-x-auto">
                 <table class="w-full">
                   <thead>
@@ -492,15 +1024,46 @@
                   </thead>
                   <tbody>
                     <template x-for="order in filteredOrders()" :key="order.id">
-                      <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
-                        <td class="td-cell font-semibold text-slate-800" x-text="order.id"></td>
-                        <td class="td-cell" x-text="customerById(order.customerId)?.name"></td>
-                        <td class="td-cell text-slate-500" x-text="order.date"></td>
-                        <td class="td-cell font-medium" x-text="formatRp(grandTotal(order))"></td>
-                        <td class="td-cell"><span class="badge" :class="statusColor(order.status)" x-text="order.status"></span></td>
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
                         <td class="td-cell">
-                          <button @click="openOrderDetail(order.id)" class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200">
-                            <i class="fa-solid fa-file-lines"></i> Detail Pesanan
+                          <div class="flex flex-col">
+                            <span
+                              class="font-medium text-slate-700"
+                              x-text="customerById(order.customerId)?.name || order.customer"
+                            ></span>
+                            <span
+                              class="text-xs text-slate-400"
+                              x-text="customerById(order.customerId)?.phone || order.customerPhone"
+                            ></span>
+                          </div>
+                        </td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
+                        <td class="td-cell">
+                          <span
+                            class="badge"
+                            :class="statusColor(order.status)"
+                            x-text="order.status"
+                          ></span>
+                        </td>
+                        <td class="td-cell">
+                          <button
+                            @click="openOrderDetail(order)"
+                            class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          >
+                            <i class="fa-solid fa-receipt"></i> Detail Pesanan
                           </button>
                         </td>
                       </tr>
@@ -508,212 +1071,341 @@
                   </tbody>
                 </table>
               </div>
-              <div x-show="filteredOrders().length === 0" class="py-12 text-center text-slate-400">Tidak ada pesanan pada status ini.</div>
+              <div
+                x-show="filteredOrders().length === 0"
+                x-cloak
+                class="text-center py-12 text-slate-400"
+              >
+                Tidak ada pesanan pada filter ini.
+              </div>
             </div>
-          </section>
+          </div>
 
-          <!-- DETAIL PESANAN -->
-          <section x-show="currentView === 'detailPesanan'">
-            <button @click="navigate('transaksi')" class="mb-5 inline-flex items-center gap-2 font-medium text-slate-500 hover:text-orange-600">
-              <i class="fa-solid fa-arrow-left"></i> Kembali ke Transaksi &amp; Pesanan
+          <!-- ===== DETAIL PESANAN ===== -->
+          <div x-show="currentView==='detailPesanan' && selectedOrder" x-cloak>
+            <button
+              @click="navigate('transaksi')"
+              class="text-slate-500 hover:text-orange-600 font-medium mb-5 inline-flex items-center gap-2"
+            >
+              <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Pesanan
             </button>
 
-            <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <div class="xl:col-span-2 space-y-6">
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm print-area">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                >
                   <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <p class="text-sm text-slate-400">ID Transaksi</p>
-                      <h1 class="font-display text-2xl font-bold text-slate-800" x-text="selectedOrder()?.id"></h1>
-                      <div class="mt-2 flex flex-wrap items-center gap-2">
-                        <span class="badge" :class="statusColor(selectedOrder()?.status)" x-text="selectedOrder()?.status"></span>
-                        <span class="badge bg-slate-100 text-slate-600" x-text="selectedOrder()?.paymentMethod"></span>
-                      </div>
+                      <span
+                        class="badge bg-slate-100 text-slate-600 mb-3"
+                        x-text="selectedOrder.id"
+                      ></span>
+                      <h2
+                        class="font-display font-bold text-2xl text-slate-800 mb-1"
+                      >
+                        Detail Pesanan
+                      </h2>
+                      <p
+                        class="text-slate-500"
+                        x-text="customerById(selectedOrder.customerId)?.name || selectedOrder.customer"
+                      ></p>
                     </div>
-                    <div class="text-right">
-                      <p class="text-sm text-slate-400">Grand Total</p>
-                      <p class="font-display text-2xl font-bold text-slate-800" x-text="formatRp(grandTotal(selectedOrder()))"></p>
-                    </div>
+                    <span
+                      class="badge"
+                      :class="statusColor(selectedOrder.status)"
+                      x-text="selectedOrder.status"
+                    ></span>
                   </div>
+                </div>
 
-                  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-                      <p class="text-slate-400 text-sm mb-1">Pelanggan</p>
-                      <p class="font-medium text-slate-800" x-text="selectedCustomer()?.name"></p>
-                      <p class="text-sm text-slate-500" x-text="selectedCustomer()?.phone"></p>
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                >
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="section-title">Data Kontak Pelanggan</h3>
+                    <button
+                      @click="openCustomerDetail(customerById(selectedOrder.customerId))"
+                      class="btn-sm bg-orange-50 text-orange-600 hover:bg-orange-100"
+                    >
+                      <i class="fa-solid fa-user"></i> Detail Pelanggan
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div
+                      class="rounded-xl bg-gray-50 border border-gray-100 p-4"
+                    >
+                      <p class="text-slate-400 mb-1">Nama</p>
+                      <p
+                        class="font-medium text-slate-800"
+                        x-text="customerById(selectedOrder.customerId)?.name || selectedOrder.customer"
+                      ></p>
                     </div>
-                    <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-                      <p class="text-slate-400 text-sm mb-1">Alamat Kirim</p>
-                      <p class="font-medium text-slate-800" x-text="selectedCustomer()?.address"></p>
-                      <p class="text-sm text-slate-500" x-text="selectedOrder()?.deliveryNote"></p>
+                    <div
+                      class="rounded-xl bg-gray-50 border border-gray-100 p-4"
+                    >
+                      <p class="text-slate-400 mb-1">No. HP</p>
+                      <p
+                        class="font-medium text-slate-800"
+                        x-text="customerById(selectedOrder.customerId)?.phone || selectedOrder.customerPhone"
+                      ></p>
                     </div>
-                    <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-                      <p class="text-slate-400 text-sm mb-1">Tanggal Order</p>
-                      <p class="font-medium text-slate-800" x-text="selectedOrder()?.date"></p>
+                    <div
+                      class="rounded-xl bg-gray-50 border border-gray-100 p-4"
+                    >
+                      <p class="text-slate-400 mb-1">Email</p>
+                      <p
+                        class="font-medium text-slate-800 break-all"
+                        x-text="customerById(selectedOrder.customerId)?.email"
+                      ></p>
                     </div>
-                    <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-                      <p class="text-slate-400 text-sm mb-1">Titik Pengiriman</p>
-                      <p class="font-medium text-slate-800" x-text="selectedOrder()?.deliveryLabel"></p>
+                    <div
+                      class="rounded-xl bg-gray-50 border border-gray-100 p-4"
+                    >
+                      <p class="text-slate-400 mb-1">Alamat Antar</p>
+                      <p
+                        class="font-medium text-slate-800 leading-relaxed"
+                        x-text="customerById(selectedOrder.customerId)?.address"
+                      ></p>
                     </div>
                   </div>
                 </div>
 
-                <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm print-area">
-                  <div class="border-b border-gray-100 p-5">
-                    <h2 class="section-title">Detail Menu Pesanan</h2>
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                >
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="section-title">Daftar Item Pesanan</h3>
+                    <span
+                      class="text-sm text-slate-500"
+                      x-text="selectedOrder.paymentMethod"
+                    ></span>
                   </div>
-                  <div class="overflow-x-auto">
+                  <div
+                    class="overflow-x-auto rounded-xl border border-gray-100"
+                  >
                     <table class="w-full">
                       <thead>
-                        <tr class="border-b border-gray-100 bg-gray-50/50">
+                        <tr class="bg-gray-50/70 border-b border-gray-100">
                           <th class="th-cell">Menu</th>
                           <th class="th-cell">Qty</th>
-                          <th class="th-cell">Harga</th>
                           <th class="th-cell">Subtotal</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <template x-for="item in selectedOrder()?.items || []" :key="item.name">
-                          <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
-                            <td class="td-cell font-medium text-slate-800" x-text="item.name"></td>
-                            <td class="td-cell" x-text="item.qty"></td>
-                            <td class="td-cell" x-text="formatRp(item.price)"></td>
-                            <td class="td-cell font-medium" x-text="formatRp(item.qty * item.price)"></td>
+                        <template
+                          x-for="item in selectedOrder.items"
+                          :key="item.name"
+                        >
+                          <tr class="border-b border-gray-50 last:border-0">
+                            <td
+                              class="td-cell font-medium text-slate-800"
+                              x-text="item.name"
+                            ></td>
+                            <td
+                              class="td-cell text-slate-500"
+                              x-text="item.qty"
+                            ></td>
+                            <td
+                              class="td-cell font-medium"
+                              x-text="formatRp(item.subtotal)"
+                            ></td>
                           </tr>
                         </template>
                       </tbody>
                     </table>
                   </div>
-                  <div class="grid grid-cols-1 gap-3 border-t border-gray-100 p-5 sm:grid-cols-3">
-                    <div class="rounded-xl bg-gray-50 p-4">
-                      <p class="text-sm text-slate-400">Subtotal Menu</p>
-                      <p class="mt-1 font-display text-xl font-bold text-slate-800" x-text="formatRp(menuSubtotal(selectedOrder()))"></p>
-                    </div>
-                    <div class="rounded-xl bg-gray-50 p-4">
-                      <p class="text-sm text-slate-400">Ongkir</p>
-                      <p class="mt-1 font-display text-xl font-bold text-slate-800" x-text="formatRp(selectedOrder()?.shippingCost || 0)"></p>
-                    </div>
-                    <div class="rounded-xl bg-orange-50 p-4">
-                      <p class="text-sm text-orange-700/70">Grand Total</p>
-                      <p class="mt-1 font-display text-xl font-bold text-orange-700" x-text="formatRp(grandTotal(selectedOrder()))"></p>
-                    </div>
-                  </div>
                 </div>
 
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm print-area">
-                  <div class="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 class="section-title">Peta Rute Logistik</h2>
-                      <p class="mt-1 text-sm text-slate-500">Rute dari dapur ke titik pengiriman pelanggan.</p>
-                    </div>
-                    <span class="badge bg-blue-50 text-blue-700"><i class="fa-solid fa-location-dot"></i> Leaflet Routing Machine</span>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                  >
+                    <h3 class="section-title mb-4">Bukti Pembayaran</h3>
+                    <button
+                      @click="openPaymentLightbox(selectedOrder)"
+                      class="block w-full text-left group"
+                    >
+                      <img
+                        :src="paymentProofSrc(selectedOrder)"
+                        alt="Bukti pembayaran"
+                        class="w-full h-56 object-cover rounded-2xl border border-gray-200 shadow-sm group-hover:scale-[1.01] transition-transform duration-200 cursor-zoom-in"
+                      />
+                    </button>
+                    <p class="text-sm text-slate-500 mt-3">
+                      Klik gambar untuk membuka lightbox dan melihat bukti
+                      dengan lebih jelas.
+                    </p>
                   </div>
-                  <div id="order-route-map" class="mt-4 h-72 w-full overflow-hidden rounded-2xl border border-gray-100"></div>
-                  <p class="mt-3 text-sm text-slate-500">
-                    Patokan alamat: <span class="font-medium text-slate-700" x-text="selectedOrder()?.deliveryNote"></span>
-                  </p>
-                </div>
 
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm print-area">
-                  <div class="flex items-center justify-between gap-3">
-                    <div>
-                      <h2 class="section-title">Bukti Pembayaran</h2>
-                      <p class="mt-1 text-sm text-slate-500">Klik gambar untuk memperbesar.</p>
-                    </div>
-                    <span class="badge bg-emerald-50 text-emerald-700"><i class="fa-solid fa-circle-check"></i> Siap Ditinjau</span>
-                  </div>
-                  <div class="mt-4 flex flex-col gap-4 md:flex-row md:items-start">
-                    <img
-                      @click="openProofLightbox(selectedOrder())"
-                      :src="paymentProofImage(selectedOrder())"
-                      alt="Bukti pembayaran"
-                      class="w-full cursor-zoom-in rounded-2xl border border-gray-100 object-contain shadow-sm md:max-w-md"
-                    />
-                    <div class="flex-1 rounded-2xl bg-gray-50 p-4 text-sm text-slate-600">
-                      <p class="mb-2 font-semibold text-slate-800">Info Referensi</p>
-                      <div class="space-y-2">
-                        <div class="flex justify-between gap-4"><span class="text-slate-400">Metode</span><span class="font-medium" x-text="selectedOrder()?.paymentMethod"></span></div>
-                        <div class="flex justify-between gap-4"><span class="text-slate-400">Nomor Referensi</span><span class="font-medium" x-text="selectedOrder()?.paymentReference"></span></div>
-                        <div class="flex justify-between gap-4"><span class="text-slate-400">Status</span><span class="font-medium" x-text="selectedOrder()?.status"></span></div>
-                        <div class="flex justify-between gap-4"><span class="text-slate-400">Tanggal</span><span class="font-medium" x-text="selectedOrder()?.date"></span></div>
+                  <div
+                    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                  >
+                    <h3 class="section-title mb-4">Ringkasan Biaya</h3>
+                    <div class="space-y-3 text-sm">
+                      <div class="flex justify-between gap-4">
+                        <span class="text-slate-500">Subtotal Item</span
+                        ><span
+                          class="font-medium text-slate-800"
+                          x-text="formatRp(orderItemsTotal(selectedOrder))"
+                        ></span>
+                      </div>
+                      <div class="flex justify-between gap-4">
+                        <span class="text-slate-500">Ongkos Kirim</span
+                        ><span
+                          class="font-medium text-slate-800"
+                          x-text="formatRp(selectedOrder.shippingCost)"
+                        ></span>
+                      </div>
+                      <div
+                        class="border-t border-dashed border-gray-200 pt-3 flex justify-between gap-4"
+                      >
+                        <span class="text-slate-500">Grand Total</span
+                        ><span
+                          class="font-display font-bold text-xl text-slate-800"
+                          x-text="formatRp(selectedOrder.grandTotal)"
+                        ></span>
                       </div>
                     </div>
                   </div>
                 </div>
+
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+                  :class="showPaymentLightbox ? 'pointer-events-none' : ''"
+                >
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="section-title">Peta Rute Pengiriman</h3>
+                    <span class="text-sm text-slate-500">Leaflet + OSRM</span>
+                  </div>
+                  <div
+                    id="detailMap"
+                    class="w-full h-80 rounded-2xl border border-gray-200 overflow-hidden bg-slate-100"
+                  ></div>
+                  <p class="text-sm text-slate-500 mt-3">
+                    Pin pelanggan terkunci dan tidak bisa dipindah, namun peta
+                    tetap bisa digeser dan di-zoom.
+                  </p>
+                </div>
               </div>
 
-              <div class="space-y-6">
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <h2 class="section-title mb-4">Panel Kendali</h2>
-
+              <div class="xl:col-span-1 space-y-6">
+                <div
+                  class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-0"
+                >
+                  <h3 class="section-title mb-4">Panel Aksi</h3>
                   <div class="space-y-3">
-                    <template x-if="selectedOrder()?.status === 'Menunggu Verifikasi'">
-                      <div class="grid grid-cols-1 gap-3">
-                        <button @click="verifyOrder()" class="btn-primary w-full">
-                          <i class="fa-solid fa-circle-check"></i> Verifikasi Pesanan
+                    <template
+                      x-if="selectedOrder.status==='Menunggu Verifikasi'"
+                    >
+                      <div class="space-y-3">
+                        <button
+                          @click="advanceStatus(selectedOrder)"
+                          class="btn-primary w-full"
+                        >
+                          <i class="fa-solid fa-check"></i> Verifikasi (Proses)
                         </button>
-                        <button @click="rejectOrder()" class="btn-sm w-full bg-red-50 px-4 py-3 text-sm text-red-700 hover:bg-red-100">
+                        <button
+                          @click="rejectOrder(selectedOrder)"
+                          class="btn-secondary w-full !border-red-200 !text-red-600 hover:!bg-red-50"
+                        >
                           <i class="fa-solid fa-ban"></i> Tolak Pesanan
                         </button>
                       </div>
                     </template>
 
-                    <template x-if="selectedOrder()?.status === 'Diproses'">
-                      <button @click="advanceSelectedOrder()" class="btn-primary w-full">
-                        <i class="fa-solid fa-truck-fast"></i> Tandai Dikirim
+                    <template
+                      x-if="selectedOrder.status==='Diproses' || selectedOrder.status==='Dikirim'"
+                    >
+                      <button
+                        @click="advanceStatus(selectedOrder)"
+                        class="btn-primary w-full"
+                      >
+                        <i class="fa-solid fa-arrow-right"></i
+                        ><span
+                          x-text="nextStatusLabel(selectedOrder.status)"
+                        ></span>
                       </button>
                     </template>
 
-                    <template x-if="selectedOrder()?.status === 'Dikirim'">
-                      <button @click="advanceSelectedOrder()" class="btn-primary w-full">
-                        <i class="fa-solid fa-flag-checkered"></i> Tandai Selesai
-                      </button>
-                    </template>
-
-                    <template x-if="selectedOrder()?.status === 'Ditolak'">
-                      <div class="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
-                        Pesanan sudah ditolak dan tidak dapat diubah lagi.
-                      </div>
-                    </template>
-
-                    <template x-if="selectedOrder()?.status === 'Selesai'">
-                      <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-700">
-                        Pesanan telah selesai.
-                      </div>
-                    </template>
-
-                    <button @click="contactCustomerWA(selectedOrder())" class="btn-secondary w-full !border-green-200 !text-green-700 hover:!bg-green-50">
-                      <i class="fa-brands fa-whatsapp text-green-600"></i> Hubungi Pelanggan (WhatsApp)
+                    <button
+                      @click="contactWA(selectedOrder)"
+                      class="btn-secondary w-full !border-green-200 !text-green-700 hover:!bg-green-50"
+                    >
+                      <i class="fa-brands fa-whatsapp"></i> Hubungi via WhatsApp
                     </button>
                   </div>
                 </div>
 
-                <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                  <h3 class="font-display mb-3 text-lg font-semibold text-slate-800">Ringkasan Pesanan</h3>
-                  <div class="space-y-3 text-sm">
-                    <div class="flex justify-between gap-4"><span class="text-slate-400">ID Transaksi</span><span class="font-medium text-slate-700" x-text="selectedOrder()?.id"></span></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-400">Pelanggan</span><span class="font-medium text-slate-700" x-text="selectedCustomer()?.name"></span></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-400">Menu</span><span class="font-medium text-slate-700" x-text="(selectedOrder()?.items || []).length + ' item'"></span></div>
-                    <div class="flex justify-between gap-4"><span class="text-slate-400">Ongkir</span><span class="font-medium text-slate-700" x-text="formatRp(selectedOrder()?.shippingCost || 0)"></span></div>
-                    <div class="flex justify-between gap-4 border-t border-gray-100 pt-3"><span class="text-slate-500">Grand Total</span><span class="font-bold text-slate-800" x-text="formatRp(grandTotal(selectedOrder()))"></span></div>
+                <div
+                  class="bg-slate-50 rounded-2xl border border-slate-100 p-5"
+                >
+                  <h4 class="font-semibold text-slate-700 mb-3">
+                    Informasi Pengiriman
+                  </h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between gap-4">
+                      <span class="text-slate-400">Koordinat Dapur</span
+                      ><span
+                        class="font-medium text-slate-700 text-right"
+                        x-text="kitchenPointLabel()"
+                      ></span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                      <span class="text-slate-400">Koordinat Pelanggan</span
+                      ><span
+                        class="font-medium text-slate-700 text-right"
+                        x-text="selectedCustomerPointLabel()"
+                      ></span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
 
-          <!-- LAPORAN -->
-          <section x-show="currentView === 'laporan'">
-            <h1 class="font-display mb-1 text-2xl font-bold text-slate-800">Laporan Keuangan</h1>
-            <p class="mb-6 text-slate-500">Rekap pesanan yang sudah selesai.</p>
+          <!-- ===== LAPORAN KEUANGAN ===== -->
+          <div x-show="currentView==='laporan'">
+            <h1
+              class="font-display font-bold text-2xl text-slate-800 mb-1 print-area"
+            >
+              Laporan Keuangan
+            </h1>
+            <p class="text-slate-500 mb-6 no-print">
+              Rekap pesanan yang telah selesai diantar.
+            </p>
 
-            <div class="mb-6 max-w-sm rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 p-6 text-white shadow-sm">
-              <p class="text-sm text-white/80">Total Pendapatan (Selesai)</p>
-              <p class="font-display mt-1 text-3xl font-bold" x-text="formatRp(totalRevenue())"></p>
-              <p class="mt-1 text-sm text-white/70" x-text="completedOrders().length + ' pesanan selesai'"></p>
+            <div
+              class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-6 text-white mb-6 max-w-sm print-area"
+            >
+              <p class="text-white/80 text-sm mb-1">
+                Total Pendapatan (Selesai)
+              </p>
+              <p
+                class="font-display font-bold text-3xl"
+                x-text="formatRp(totalRevenue())"
+              ></p>
+              <p
+                class="text-white/70 text-sm mt-1"
+                x-text="completedOrders().length + ' pesanan selesai'"
+              ></p>
             </div>
 
-            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div class="flex flex-wrap gap-3 mb-5 no-print">
+              <button @click="printReport()" class="btn-secondary">
+                <i class="fa-solid fa-file-pdf"></i> Cetak PDF
+              </button>
+              <button @click="exportExcel()" class="btn-secondary">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+              </button>
+              <button @click="printReport()" class="btn-secondary">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+            </div>
+
+            <div
+              class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden print-area"
+            >
               <div class="overflow-x-auto">
                 <table class="w-full">
                   <thead>
@@ -721,111 +1413,554 @@
                       <th class="th-cell">ID Pesanan</th>
                       <th class="th-cell">Pelanggan</th>
                       <th class="th-cell">Tanggal</th>
+                      <th class="th-cell">Metode Bayar</th>
                       <th class="th-cell">Total</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <template x-for="order in completedOrders()" :key="order.id">
-                      <tr class="border-b border-gray-50 hover:bg-gray-50 last:border-0">
-                        <td class="td-cell font-semibold text-slate-800" x-text="order.id"></td>
-                        <td class="td-cell" x-text="customerById(order.customerId)?.name"></td>
-                        <td class="td-cell text-slate-500" x-text="order.date"></td>
-                        <td class="td-cell font-medium" x-text="formatRp(grandTotal(order))"></td>
+                    <template
+                      x-for="order in completedOrders()"
+                      :key="order.id"
+                    >
+                      <tr
+                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      >
+                        <td
+                          class="td-cell font-semibold text-slate-800"
+                          x-text="order.id"
+                        ></td>
+                        <td class="td-cell" x-text="order.customer"></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.date"
+                        ></td>
+                        <td
+                          class="td-cell text-slate-500"
+                          x-text="order.payment"
+                        ></td>
+                        <td
+                          class="td-cell font-medium"
+                          x-text="formatRp(order.total)"
+                        ></td>
                       </tr>
                     </template>
                   </tbody>
                 </table>
               </div>
-              <div x-show="completedOrders().length === 0" class="py-12 text-center text-slate-400">Belum ada pesanan selesai.</div>
+              <div
+                x-show="completedOrders().length === 0"
+                class="text-center py-12 text-slate-400"
+              >
+                Belum ada pesanan yang selesai.
+              </div>
             </div>
-          </section>
+          </div>
 
-          <!-- PROFIL -->
-          <section x-show="currentView === 'profilAkun'">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <!-- ===== PROFIL AKUN ===== -->
+          <div x-show="currentView==='profilAkun'">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div>
-                <h1 class="font-display mb-1 text-2xl font-bold text-slate-800">Profil Akun</h1>
-                <p class="text-slate-500">Data profil admin yang sedang aktif.</p>
+                <h1 class="font-display font-bold text-2xl text-slate-800 mb-1">
+                  Profil Akun
+                </h1>
+                <p class="text-slate-500">
+                  Data profil admin yang aktif saat ini.
+                </p>
               </div>
+              <button @click="openEditProfile()" class="btn-primary">
+                <i class="fa-solid fa-pen"></i> Edit Profil
+              </button>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div
+                class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
                 <div class="flex items-center gap-4">
-                  <div class="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 text-2xl font-bold text-white" x-text="initials(admin.name)"></div>
+                  <img
+                    :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent(admin.name) + '&background=FFEDD5&color=C2410C&bold=true'"
+                    class="w-20 h-20 rounded-2xl"
+                    alt="avatar"
+                  />
                   <div>
-                    <p class="font-display text-xl font-bold text-slate-800" x-text="admin.name"></p>
+                    <p
+                      class="font-display font-bold text-xl text-slate-800"
+                      x-text="admin.name"
+                    ></p>
                     <p class="text-slate-500" x-text="admin.role"></p>
-                    <p class="mt-1 text-sm text-slate-400" x-text="admin.username"></p>
+                    <p
+                      class="text-sm text-slate-400 mt-1"
+                      x-text="admin.username"
+                    ></p>
                   </div>
                 </div>
-                <div class="mt-5 space-y-2 border-t border-gray-100 pt-5 text-sm">
-                  <div class="flex justify-between gap-4"><span class="text-slate-400">Email</span><span class="font-medium text-slate-700 text-right" x-text="admin.email"></span></div>
-                  <div class="flex justify-between gap-4"><span class="text-slate-400">No. HP</span><span class="font-medium text-slate-700" x-text="admin.phone"></span></div>
-                  <div class="flex justify-between gap-4"><span class="text-slate-400">Alamat</span><span class="max-w-[60%] text-right font-medium text-slate-700" x-text="admin.address"></span></div>
-                  <div class="flex justify-between gap-4"><span class="text-slate-400">Bergabung</span><span class="font-medium text-slate-700" x-text="admin.joinedAt"></span></div>
+                <div
+                  class="mt-5 pt-5 border-t border-gray-100 space-y-2 text-sm"
+                >
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Username</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.username"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Email</span
+                    ><span
+                      class="font-medium text-slate-700 text-right"
+                      x-text="admin.email"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">No. HP</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.phone"
+                    ></span>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <span class="text-slate-400">Bergabung</span
+                    ><span
+                      class="font-medium text-slate-700"
+                      x-text="admin.joinedAt"
+                    ></span>
+                  </div>
                 </div>
               </div>
 
-              <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-2">
+              <div
+                class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
                 <h2 class="section-title mb-4">Detail Profil</h2>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">Nama Lengkap</p>
-                    <p class="font-medium text-slate-800" x-text="admin.name"></p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Nama Lengkap</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.name"
+                    ></p>
                   </div>
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">Username</p>
-                    <p class="font-medium text-slate-800" x-text="admin.username"></p>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Username</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.username"
+                    ></p>
                   </div>
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">Email</p>
-                    <p class="font-medium text-slate-800 break-all" x-text="admin.email"></p>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Email</p>
+                    <p
+                      class="font-medium text-slate-800 break-all"
+                      x-text="admin.email"
+                    ></p>
                   </div>
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">No. HP</p>
-                    <p class="font-medium text-slate-800" x-text="admin.phone"></p>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">No. HP</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.phone"
+                    ></p>
                   </div>
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">Role</p>
-                    <p class="font-medium text-slate-800" x-text="admin.role"></p>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Role</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.role"
+                    ></p>
                   </div>
-                  <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="mb-1 text-slate-400">Alamat</p>
-                    <p class="font-medium text-slate-800" x-text="admin.address"></p>
+                  <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
+                    <p class="text-slate-400 mb-1">Alamat</p>
+                    <p
+                      class="font-medium text-slate-800"
+                      x-text="admin.address"
+                    ></p>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
         </main>
       </div>
     </div>
 
-    <!-- LIGHTBOX BUKTI -->
+    <!-- ============ MODAL: KATEGORI ============ -->
     <div
-      x-show="proofLightbox.show"
+      x-show="categoryModal.show"
       x-cloak
-      @click.self="closeProofLightbox()"
-      class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/70 p-4"
+      @click.self="categoryModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
     >
-      <div class="w-full max-w-4xl rounded-2xl bg-white shadow-2xl overflow-hidden" x-transition>
-        <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-          <div>
-            <h3 class="font-display text-lg font-semibold text-slate-800">Bukti Pembayaran</h3>
-            <p class="text-sm text-slate-500" x-text="proofLightbox.order ? proofLightbox.order.paymentReference : ''"></p>
-          </div>
-          <button @click="closeProofLightbox()" class="btn-icon text-slate-500 hover:text-slate-900">
-            <i class="fa-solid fa-xmark"></i>
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3
+          class="font-display font-semibold text-lg mb-4"
+          x-text="categoryModal.mode==='add' ? 'Tambah Kategori' : 'Edit Kategori'"
+        ></h3>
+        <label class="label-field">Nama Kategori</label>
+        <input
+          type="text"
+          x-model="categoryModal.name"
+          placeholder="Contoh: Paket Hemat"
+          class="input-field mb-5"
+        />
+        <div class="flex gap-3">
+          <button @click="saveCategory()" class="btn-primary flex-1">
+            Simpan
           </button>
-        </div>
-        <div class="bg-gray-50 p-5">
-          <img :src="paymentProofImage(proofLightbox.order)" alt="Bukti pembayaran besar" class="mx-auto max-h-[80vh] w-full rounded-2xl border border-gray-100 object-contain shadow-sm" />
+          <button
+            @click="categoryModal.show=false"
+            class="btn-secondary flex-1"
+          >
+            Batal
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- TOAST -->
+    <!-- ============ MODAL: MENU ============ -->
+    <div
+      x-show="menuModal.show"
+      x-cloak
+      @click.self="menuModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3
+          class="font-display font-semibold text-lg mb-4"
+          x-text="menuModal.mode==='add' ? 'Tambah Menu' : 'Edit Menu'"
+        ></h3>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Nama Menu</label>
+            <input
+              type="text"
+              x-model="menuModal.name"
+              placeholder="Contoh: Nasi Ayam Bakar"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Kategori</label>
+            <select x-model="menuModal.category" class="input-field">
+              <template x-for="cat in categories" :key="cat.id">
+                <option :value="cat.name" x-text="cat.name"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="label-field">Harga (Rp)</label>
+            <input
+              type="number"
+              x-model.number="menuModal.price"
+              placeholder="25000"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">URL Gambar (opsional)</label>
+            <input
+              type="text"
+              x-model="menuModal.image"
+              placeholder="https://..."
+              class="input-field"
+            />
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="saveMenu()" class="btn-primary flex-1">Simpan</button>
+          <button @click="menuModal.show=false" class="btn-secondary flex-1">
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: BUKTI BAYAR ============ -->
+    <div
+      x-show="lightbox.show"
+      x-cloak
+      @click.self="closeLightbox()"
+      class="fixed inset-0 bg-slate-900/80 z-[9999] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden"
+        x-transition
+      >
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-gray-100"
+        >
+          <div>
+            <h3 class="font-display font-semibold text-lg text-slate-800">
+              Lightbox Bukti Pembayaran
+            </h3>
+            <p
+              class="text-sm text-slate-500"
+              x-text="lightbox.order ? lightbox.order.id : ''"
+            ></p>
+          </div>
+          <button @click="closeLightbox()" class="btn-icon">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-5 bg-slate-100">
+          <div class="flex items-center gap-2 mb-4">
+            <button
+              @click="lightboxZoom = Math.max(1, lightboxZoom - 0.25)"
+              class="btn-secondary"
+            >
+              <i class="fa-solid fa-magnifying-glass-minus"></i>
+            </button>
+            <button
+              @click="lightboxZoom = Math.min(2.5, lightboxZoom + 0.25)"
+              class="btn-secondary"
+            >
+              <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </button>
+            <button @click="lightboxZoom = 1" class="btn-secondary">
+              Reset Zoom
+            </button>
+          </div>
+          <div
+            class="max-h-[75vh] overflow-auto rounded-2xl bg-white border border-gray-200 p-4 flex items-center justify-center"
+          >
+            <img
+              :src="lightbox.src"
+              alt="Bukti pembayaran"
+              class="proof-zoom-img max-w-full origin-center select-none cursor-zoom-in"
+              :style="'transform: scale(' + lightboxZoom + ')'"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: REGISTRASI ============ -->
+    <div
+      x-show="registerModal.show"
+      x-cloak
+      @click.self="registerModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">Registrasi Akun</h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Buat akun admin baru tanpa mengubah tampilan yang sudah ada. Tentu
+          saja, drama tetap tidak terhindarkan.
+        </p>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Nama Lengkap</label>
+            <input
+              type="text"
+              x-model="registerModal.name"
+              placeholder="Contoh: Siti Rahma"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Username</label>
+            <input
+              type="text"
+              x-model="registerModal.username"
+              placeholder="Contoh: sitirahma"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="registerModal.email"
+              placeholder="contoh@email.com"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Password</label>
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              x-model="registerModal.password"
+              placeholder="Buat password baru"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Konfirmasi Password</label>
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              x-model="registerModal.confirmPassword"
+              placeholder="Ulangi password"
+              class="input-field"
+            />
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="registerUser()" class="btn-primary flex-1">
+            Daftar
+          </button>
+          <button
+            @click="registerModal.show=false"
+            class="btn-secondary flex-1"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: LUPA PASSWORD ============ -->
+    <div
+      x-show="forgotModal.show"
+      x-cloak
+      @click.self="forgotModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">Lupa Password</h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Masukkan username atau email akun yang sudah didaftarkan. Nanti
+          password sementara dibuat otomatis. Sungguh solusi elegan untuk
+          problem yang seharusnya dicegah dari awal.
+        </p>
+        <div class="space-y-4">
+          <div>
+            <label class="label-field">Username / Email</label>
+            <input
+              type="text"
+              x-model="forgotModal.identifier"
+              placeholder="username atau email"
+              class="input-field"
+            />
+          </div>
+          <div
+            x-show="forgotModal.message"
+            x-cloak
+            class="rounded-xl bg-slate-100 border border-slate-200 px-4 py-3 text-sm text-slate-700"
+          >
+            <span x-text="forgotModal.message"></span>
+          </div>
+          <div
+            x-show="forgotModal.tempPassword"
+            x-cloak
+            class="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm text-orange-700"
+          >
+            Password sementara:
+            <span
+              class="font-semibold"
+              x-text="forgotModal.tempPassword"
+            ></span>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="resetPassword()" class="btn-primary flex-1">
+            Reset Password
+          </button>
+          <button @click="forgotModal.show=false" class="btn-secondary flex-1">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MODAL: EDIT PROFIL ============ -->
+    <div
+      x-show="profileModal.show"
+      x-cloak
+      @click.self="profileModal.show=false"
+      class="fixed inset-0 bg-slate-900/60 z-[70] flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6"
+        x-transition
+      >
+        <h3 class="font-display font-semibold text-lg mb-1">
+          Edit Profil Akun
+        </h3>
+        <p class="text-sm text-slate-500 mb-4">
+          Ubah data profil admin. Iya, akhirnya ada fitur yang benar-benar
+          menyimpan perubahan.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label-field">Nama Lengkap</label>
+            <input
+              type="text"
+              x-model="profileModal.name"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Username</label>
+            <input
+              type="text"
+              x-model="profileModal.username"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Email</label>
+            <input
+              type="email"
+              x-model="profileModal.email"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">No. HP</label>
+            <input
+              type="text"
+              x-model="profileModal.phone"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Role</label>
+            <input
+              type="text"
+              x-model="profileModal.role"
+              class="input-field"
+            />
+          </div>
+          <div>
+            <label class="label-field">Tanggal Bergabung</label>
+            <input
+              type="text"
+              x-model="profileModal.joinedAt"
+              class="input-field"
+            />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="label-field">Alamat</label>
+            <textarea
+              x-model="profileModal.address"
+              rows="3"
+              class="input-field"
+            ></textarea>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <button @click="saveProfile()" class="btn-primary flex-1">
+            Simpan Perubahan
+          </button>
+          <button @click="profileModal.show=false" class="btn-secondary flex-1">
+            Batal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TOAST ============ -->
     <div
       x-show="toast.show"
       x-cloak
@@ -835,667 +1970,1164 @@
       x-transition:leave="transition ease-in duration-200"
       x-transition:leave-start="opacity-100"
       x-transition:leave-end="opacity-0"
-      class="fixed right-6 top-6 z-[80] flex max-w-xs items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5 shadow-2xl no-print"
+      class="fixed top-6 right-6 z-[80] bg-white rounded-xl shadow-2xl border border-gray-100 px-5 py-3.5 flex items-center gap-3 max-w-xs no-print"
     >
-      <i class="fa-solid text-lg" :class="toast.type === 'error' ? 'fa-circle-exclamation text-red-500' : 'fa-circle-check text-green-500'"></i>
-      <span class="text-sm font-medium text-slate-700" x-text="toast.message"></span>
+      <i
+        class="fa-solid text-lg"
+        :class="toast.type==='error' ? 'fa-circle-exclamation text-red-500' : 'fa-circle-check text-green-500'"
+      ></i>
+      <span
+        class="text-sm font-medium text-slate-700"
+        x-text="toast.message"
+      ></span>
     </div>
 
     <script>
       function adminApp() {
         return {
+          // ---------- AUTH ----------
           loggedIn: false,
-          loginForm: { username: '', password: '' },
-          loginError: '',
+          loginForm: { username: "", password: "" },
+          loginError: "",
           showPassword: false,
-
-          currentView: 'dashboard',
-          pageTitle: {
-            dashboard: 'Dashboard',
-            pelanggan: 'Data Pelanggan',
-            pelangganDetail: 'Detail Pelanggan',
-            transaksi: 'Transaksi & Pesanan',
-            detailPesanan: 'Detail Pesanan',
-            laporan: 'Laporan Keuangan',
-            profilAkun: 'Profil Akun',
+          registeredUsers: [],
+          registerModal: {
+            show: false,
+            name: "",
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
           },
-          navItems: [
-            { id: 'dashboard', label: 'Dashboard', icon: 'fa-grip' },
-            { id: 'pelanggan', label: 'Data Pelanggan', icon: 'fa-users' },
-            { id: 'transaksi', label: 'Transaksi & Pesanan', icon: 'fa-receipt' },
-            { id: 'laporan', label: 'Laporan Keuangan', icon: 'fa-chart-line' },
-            { id: 'profilAkun', label: 'Profil Akun', icon: 'fa-user-gear' },
-          ],
+          forgotModal: {
+            show: false,
+            identifier: "",
+            message: "",
+            tempPassword: "",
+          },
+          profileModal: {
+            show: false,
+            name: "",
+            username: "",
+            email: "",
+            phone: "",
+            role: "",
+            address: "",
+            joinedAt: "",
+          },
+
+          // ---------- NAVIGATION ----------
+          currentView: "dashboard",
+          pageTitle: {
+            dashboard: "Dashboard",
+            pelanggan: "Data Pelanggan",
+            detailPelanggan: "Detail Pelanggan",
+            kategoriMenu: "Kategori Menu",
+            dataMenu: "Data Menu",
+            transaksi: "Transaksi & Pesanan",
+            detailPesanan: "Detail Pesanan",
+            laporan: "Laporan Keuangan",
+            profilAkun: "Profil Akun",
+          },
           sidebarCollapsed: false,
           mobileMenuOpen: false,
+          menuManagementOpen: true,
+          navItems: [
+            { id: "dashboard", label: "Dashboard", icon: "fa-grip" },
+            { id: "pelanggan", label: "Data Pelanggan", icon: "fa-users" },
+            {
+              id: "menu",
+              label: "Manajemen Menu",
+              icon: "fa-utensils",
+              children: [
+                { id: "kategoriMenu", label: "Kategori Menu" },
+                { id: "dataMenu", label: "Data Menu" },
+              ],
+            },
+            {
+              id: "transaksi",
+              label: "Transaksi & Pesanan",
+              icon: "fa-receipt",
+            },
+            { id: "laporan", label: "Laporan Keuangan", icon: "fa-chart-line" },
+            { id: "profilAkun", label: "Profil Akun", icon: "fa-user-gear" },
+          ],
 
           admin: {
-            name: 'Siti Rahma',
-            username: 'siti.rahma',
-            email: 'siti.rahma@dapurnusantara.id',
-            phone: '0812-9000-1234',
-            role: 'Administrator',
-            address: 'Jl. Nusantara No. 12, Medan',
-            joinedAt: '1 Januari 2026',
+            name: "Siti Rahma",
+            username: "siti.rahma",
+            email: "siti.rahma@dapurnusantara.id",
+            phone: "0812-9000-1234",
+            role: "Administrator",
+            address: "Jl. Nusantara No. 12, Medan",
+            joinedAt: "1 Januari 2026",
           },
 
+          // ---------- DATA PELANGGAN ----------
+          customerSearch: "",
           customers: [
             {
               id: 1,
-              name: 'Budi Santoso',
-              phone: '0812-1111-2222',
-              email: 'budi.santoso@gmail.com',
-              address: 'Jl. Melati No. 12, Medan',
-              joinedAt: '12 Januari 2026',
-              lat: 3.5899,
-              lng: 98.6734,
-              deliveryLabel: 'Rumah pagar hitam, seberang Alfamidi',
+              name: "Budi Santoso",
+              phone: "0852-9679-5689",
+              email: "budi.santoso@gmail.com",
+              address: "Jl. Setia Budi No. 21, Medan Selayang, Kota Medan",
+              joinedAt: "4 Januari 2026",
+              latitude: 3.5712,
+              longitude: 98.6587,
             },
             {
               id: 2,
-              name: 'Citra Dewi',
-              phone: '0813-2222-3333',
-              email: 'citra.dewi@gmail.com',
-              address: 'Jl. Kenanga No. 5, Medan',
-              joinedAt: '18 Januari 2026',
-              lat: 3.6034,
-              lng: 98.6842,
-              deliveryLabel: 'Ruko hijau dekat kantor pos',
+              name: "Citra Dewi",
+              phone: "0813-2222-3333",
+              email: "citra.dewi@gmail.com",
+              address: "Jl. Sei Batang Hari No. 10, Medan Baru, Kota Medan",
+              joinedAt: "9 Januari 2026",
+              latitude: 3.5785,
+              longitude: 98.6668,
             },
             {
               id: 3,
-              name: 'Andi Saputra',
-              phone: '0812-3456-7890',
-              email: 'andi.saputra@gmail.com',
-              address: 'Jl. Mawar No. 18, Medan',
-              joinedAt: '21 Januari 2026',
-              lat: 3.5998,
-              lng: 98.6649,
-              deliveryLabel: 'Gang samping masjid besar',
+              name: "Andi Saputra",
+              phone: "0812-3456-7890",
+              email: "andi.saputra@gmail.com",
+              address: "Kompleks Taman Setia Budi Indah Blok C2, Medan",
+              joinedAt: "12 Januari 2026",
+              latitude: 3.5458,
+              longitude: 98.6979,
             },
             {
               id: 4,
-              name: 'Rina Wulandari',
-              phone: '0857-4444-5555',
-              email: 'rina.wulandari@gmail.com',
-              address: 'Komplek Griya Asri Blok C1, Medan',
-              joinedAt: '3 Februari 2026',
-              lat: 3.6116,
-              lng: 98.6768,
-              deliveryLabel: 'Rumah pojok dengan pagar putih',
+              name: "Rina Wulandari",
+              phone: "0857-4444-5555",
+              email: "rina.wulandari@gmail.com",
+              address: "Jl. Iskandar Muda No. 88, Medan Petisah, Kota Medan",
+              joinedAt: "20 Januari 2026",
+              latitude: 3.5894,
+              longitude: 98.6571,
             },
             {
               id: 5,
-              name: 'Dedi Kurniawan',
-              phone: '0822-5555-6666',
-              email: 'dedi.kurniawan@gmail.com',
-              address: 'Jl. Flamboyan Raya No. 77, Medan',
-              joinedAt: '5 Februari 2026',
-              lat: 3.5862,
-              lng: 98.6893,
-              deliveryLabel: 'Depan warung kopi keluarga',
+              name: "Dedi Kurniawan",
+              phone: "0822-5555-6666",
+              email: "dedi.kurniawan@gmail.com",
+              address: "Jl. Ring Road No. 5, Medan Sunggal, Kota Medan",
+              joinedAt: "2 Februari 2026",
+              latitude: 3.5914,
+              longitude: 98.6236,
             },
             {
               id: 6,
-              name: 'Maya Anggraini',
-              phone: '0838-6666-7777',
-              email: 'maya.anggraini@gmail.com',
-              address: 'Jl. Samanhudi No. 9, Medan',
-              joinedAt: '14 Februari 2026',
-              lat: 3.5812,
-              lng: 98.6814,
-              deliveryLabel: 'Apartemen lantai 7 unit B',
+              name: "Maya Anggraini",
+              phone: "0838-6666-7777",
+              email: "maya.anggraini@gmail.com",
+              address: "Jl. Gajah Mada No. 17, Medan Polonia, Kota Medan",
+              joinedAt: "15 Februari 2026",
+              latitude: 3.5606,
+              longitude: 98.6602,
+            },
+            {
+              id: 7,
+              name: "Fajar Ramadhan",
+              phone: "0813-7777-8888",
+              email: "fajar.ramadhan@gmail.com",
+              address: "Jl. Dr. Mansyur No. 45, Medan Baru, Kota Medan",
+              joinedAt: "1 Maret 2026",
+              latitude: 3.5689,
+              longitude: 98.6513,
             },
           ],
+
+          // ---------- MANAJEMEN MENU ----------
+          categories: [
+            { id: 1, name: "Makanan Berat" },
+            { id: 2, name: "Snack" },
+            { id: 3, name: "Minuman" },
+          ],
+          menuItems: [
+            {
+              id: 1,
+              name: "Nasi Ayam Bakar Madu",
+              category: "Makanan Berat",
+              price: 28000,
+              image:
+                "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 2,
+              name: "Nasi Rendang Sapi Premium",
+              category: "Makanan Berat",
+              price: 35000,
+              image:
+                "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 3,
+              name: "Nasi Ayam Geprek Sambal Matah",
+              category: "Makanan Berat",
+              price: 25000,
+              image:
+                "https://images.unsplash.com/photo-1626804475297-41608ea09aeb?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 4,
+              name: "Mie Goreng Seafood Spesial",
+              category: "Makanan Berat",
+              price: 27000,
+              image:
+                "https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 5,
+              name: "Nasi Goreng Kampung",
+              category: "Makanan Berat",
+              price: 22000,
+              image:
+                "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 6,
+              name: "Nasi Bebek Goreng Mercon",
+              category: "Makanan Berat",
+              price: 32000,
+              image:
+                "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 7,
+              name: "Pisang Goreng Keju Coklat",
+              category: "Snack",
+              price: 15000,
+              image:
+                "https://images.unsplash.com/photo-1631206753348-db44968fd440?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 8,
+              name: "Risoles Mayo Smoked Beef",
+              category: "Snack",
+              price: 12000,
+              image:
+                "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 9,
+              name: "Lumpia Semarang Isi 5",
+              category: "Snack",
+              price: 18000,
+              image:
+                "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 10,
+              name: "Tahu Crispy Saus Thai",
+              category: "Snack",
+              price: 13000,
+              image:
+                "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 11,
+              name: "Es Teh Manis Segar",
+              category: "Minuman",
+              price: 6000,
+              image:
+                "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 12,
+              name: "Jus Alpukat Kocok",
+              category: "Minuman",
+              price: 14000,
+              image:
+                "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 13,
+              name: "Es Jeruk Peras",
+              category: "Minuman",
+              price: 8000,
+              image:
+                "https://images.unsplash.com/photo-1621263764928-df1444c5e859?auto=format&fit=crop&w=300&q=80",
+            },
+            {
+              id: 14,
+              name: "Air Mineral Botol 600ml",
+              category: "Minuman",
+              price: 5000,
+              image:
+                "https://images.unsplash.com/photo-1560023907-5f339617ea30?auto=format&fit=crop&w=300&q=80",
+            },
+          ],
+          categoryModal: { show: false, mode: "add", id: null, name: "" },
+          menuModal: {
+            show: false,
+            mode: "add",
+            id: null,
+            name: "",
+            category: "",
+            price: 0,
+            image: "",
+          },
+
+          // ---------- TRANSAKSI & PESANAN ----------
 
           orders: [
             {
-              id: 'ORD-2026-001',
+              id: "ORD2010",
               customerId: 1,
-              date: '19 Juni 2026',
-              paymentMethod: 'Transfer Bank',
-              paymentReference: 'TRX-0912-ABCD',
-              status: 'Menunggu Verifikasi',
+              customer: "Budi Santoso",
+              customerPhone: "0852-9679-5689",
+              date: "19 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 2, subtotal: 56000 },
+                { name: "Es Teh Manis Segar", qty: 2, subtotal: 12000 },
+              ],
               shippingCost: 15000,
-              deliveryNote: 'Rumah pagar hitam, seberang Alfamidi',
-              items: [
-                { name: 'Nasi Ayam Bakar Madu', qty: 2, price: 28000 },
-                { name: 'Es Teh Manis Segar', qty: 2, price: 6000 },
-              ],
-              proofSeed: 'TRANSFER 0912',
+              total: 83000,
+              grandTotal: 83000,
+              paymentMethod: "Transfer Bank",
+              paymentProof: "transfer",
+              status: "Menunggu Verifikasi",
+              latitude: 3.5712,
+              longitude: 98.6587,
             },
             {
-              id: 'ORD-2026-002',
+              id: "ORD2009",
               customerId: 2,
-              date: '19 Juni 2026',
-              paymentMethod: 'QRIS',
-              paymentReference: 'QR-7748-ZXCV',
-              status: 'Menunggu Verifikasi',
-              shippingCost: 12000,
-              deliveryNote: 'Ruko hijau dekat kantor pos',
+              customer: "Citra Dewi",
+              customerPhone: "0813-2222-3333",
+              date: "19 Juni 2026",
               items: [
-                { name: 'Nasi Rendang Sapi Premium', qty: 3, price: 35000 },
-                { name: 'Jus Alpukat Kocok', qty: 2, price: 14000 },
+                { name: "Nasi Rendang Sapi Premium", qty: 3, subtotal: 105000 },
+                { name: "Jus Alpukat Kocok", qty: 2, subtotal: 28000 },
               ],
-              proofSeed: 'QRIS 7748',
+              shippingCost: 15000,
+              total: 148000,
+              grandTotal: 148000,
+              paymentMethod: "QRIS",
+              paymentProof: "qris",
+              status: "Menunggu Verifikasi",
+              latitude: 3.5785,
+              longitude: 98.6668,
             },
             {
-              id: 'ORD-2026-003',
+              id: "ORD2008",
               customerId: 3,
-              date: '18 Juni 2026',
-              paymentMethod: 'Transfer Bank',
-              paymentReference: 'TRX-1221-QWER',
-              status: 'Diproses',
-              shippingCost: 10000,
-              deliveryNote: 'Gang samping masjid besar',
+              customer: "Andi Saputra",
+              customerPhone: "0812-3456-7890",
+              date: "18 Juni 2026",
               items: [
-                { name: 'Nasi Ayam Bakar Madu', qty: 2, price: 28000 },
-                { name: 'Es Teh Manis Segar', qty: 2, price: 6000 },
+                { name: "Nasi Ayam Bakar Madu", qty: 2, subtotal: 56000 },
+                { name: "Es Teh Manis Segar", qty: 2, subtotal: 12000 },
               ],
-              proofSeed: 'TRANSFER 1221',
-            },
-            {
-              id: 'ORD-2026-004',
-              customerId: 4,
-              date: '18 Juni 2026',
-              paymentMethod: 'COD',
-              paymentReference: 'COD-3311-PLMN',
-              status: 'Dikirim',
-              shippingCost: 10000,
-              deliveryNote: 'Rumah pojok dengan pagar putih',
-              items: [
-                { name: 'Mie Goreng Seafood Spesial', qty: 2, price: 28000 },
-              ],
-              proofSeed: 'COD 3311',
-            },
-            {
-              id: 'ORD-2026-005',
-              customerId: 5,
-              date: '17 Juni 2026',
-              paymentMethod: 'Transfer Bank',
-              paymentReference: 'TRX-1987-AQWE',
-              status: 'Dikirim',
-              shippingCost: 18000,
-              deliveryNote: 'Depan warung kopi keluarga',
-              items: [
-                { name: 'Nasi Bebek Goreng Mercon', qty: 4, price: 32000 },
-                { name: 'Es Jeruk Peras', qty: 4, price: 8000 },
-              ],
-              proofSeed: 'TRANSFER 1987',
-            },
-            {
-              id: 'ORD-2026-006',
-              customerId: 6,
-              date: '15 Juni 2026',
-              paymentMethod: 'QRIS',
-              paymentReference: 'QR-5629-MNBV',
-              status: 'Selesai',
-              shippingCost: 10000,
-              deliveryNote: 'Apartemen lantai 7 unit B',
-              items: [
-                { name: 'Nasi Ayam Geprek Sambal Matah', qty: 3, price: 25000 },
-                { name: 'Lumpia Semarang Isi 5', qty: 1, price: 18000 },
-              ],
-              proofSeed: 'QRIS 5629',
-            },
-            {
-              id: 'ORD-2026-007',
-              customerId: 1,
-              date: '12 Juni 2026',
-              paymentMethod: 'Transfer Bank',
-              paymentReference: 'TRX-2241-POIU',
-              status: 'Selesai',
-              shippingCost: 10000,
-              deliveryNote: 'Rumah pagar hitam, seberang Alfamidi',
-              items: [
-                { name: 'Nasi Rendang Sapi Premium', qty: 3, price: 35000 },
-                { name: 'Pisang Goreng Keju Coklat', qty: 2, price: 15000 },
-              ],
-              proofSeed: 'TRANSFER 2241',
-            },
-            {
-              id: 'ORD-2026-008',
-              customerId: 2,
-              date: '9 Juni 2026',
-              paymentMethod: 'COD',
-              paymentReference: 'COD-9088-BNMK',
-              status: 'Ditolak',
               shippingCost: 12000,
-              deliveryNote: 'Ruko hijau dekat kantor pos',
+              total: 80000,
+              grandTotal: 80000,
+              paymentMethod: "Transfer Bank",
+              paymentProof: "transfer",
+              status: "Diproses",
+              latitude: 3.5458,
+              longitude: 98.6979,
+            },
+            {
+              id: "ORD2007",
+              customerId: 4,
+              customer: "Rina Wulandari",
+              customerPhone: "0857-4444-5555",
+              date: "18 Juni 2026",
               items: [
-                { name: 'Nasi Goreng Kampung', qty: 3, price: 22000 },
-                { name: 'Air Mineral Botol 600ml', qty: 3, price: 5000 },
+                { name: "Mie Goreng Seafood Spesial", qty: 2, subtotal: 54000 },
               ],
-              proofSeed: 'COD 9088',
+              shippingCost: 10000,
+              total: 64000,
+              grandTotal: 64000,
+              paymentMethod: "COD",
+              paymentProof: "cod",
+              status: "Dikirim",
+              latitude: 3.5894,
+              longitude: 98.6571,
+            },
+            {
+              id: "ORD2006",
+              customerId: 5,
+              customer: "Dedi Kurniawan",
+              customerPhone: "0822-5555-6666",
+              date: "17 Juni 2026",
+              items: [
+                { name: "Nasi Bebek Goreng Mercon", qty: 4, subtotal: 128000 },
+                { name: "Es Jeruk Peras", qty: 4, subtotal: 32000 },
+              ],
+              shippingCost: 15000,
+              total: 175000,
+              grandTotal: 175000,
+              paymentMethod: "Transfer Bank",
+              paymentProof: "transfer",
+              status: "Dikirim",
+              latitude: 3.5914,
+              longitude: 98.6236,
+            },
+            {
+              id: "ORD2005",
+              customerId: 6,
+              customer: "Maya Anggraini",
+              customerPhone: "0838-6666-7777",
+              date: "15 Juni 2026",
+              items: [
+                {
+                  name: "Nasi Ayam Geprek Sambal Matah",
+                  qty: 3,
+                  subtotal: 75000,
+                },
+                { name: "Lumpia Semarang Isi 5", qty: 1, subtotal: 18000 },
+              ],
+              shippingCost: 12000,
+              total: 105000,
+              grandTotal: 105000,
+              paymentMethod: "QRIS",
+              paymentProof: "qris",
+              status: "Selesai",
+              latitude: 3.5606,
+              longitude: 98.6602,
+            },
+            {
+              id: "ORD2004",
+              customerId: 7,
+              customer: "Fajar Ramadhan",
+              customerPhone: "0813-7777-8888",
+              date: "12 Juni 2026",
+              items: [
+                { name: "Nasi Rendang Sapi Premium", qty: 3, subtotal: 105000 },
+                { name: "Pisang Goreng Keju Coklat", qty: 2, subtotal: 30000 },
+              ],
+              shippingCost: 15000,
+              total: 150000,
+              grandTotal: 150000,
+              paymentMethod: "Transfer Bank",
+              paymentProof: "transfer",
+              status: "Selesai",
+              latitude: 3.5689,
+              longitude: 98.6513,
+            },
+            {
+              id: "ORD2003",
+              customerId: 1,
+              customer: "Budi Santoso",
+              customerPhone: "0852-9679-5689",
+              date: "8 Juni 2026",
+              items: [{ name: "Nasi Goreng Kampung", qty: 3, subtotal: 66000 }],
+              shippingCost: 10000,
+              total: 76000,
+              grandTotal: 76000,
+              paymentMethod: "COD",
+              paymentProof: "cod",
+              status: "Selesai",
+              latitude: 3.5712,
+              longitude: 98.6587,
+            },
+            {
+              id: "ORD2002",
+              customerId: 2,
+              customer: "Citra Dewi",
+              customerPhone: "0813-2222-3333",
+              date: "3 Juni 2026",
+              items: [
+                { name: "Nasi Ayam Bakar Madu", qty: 3, subtotal: 84000 },
+                { name: "Air Mineral Botol 600ml", qty: 3, subtotal: 15000 },
+              ],
+              shippingCost: 10000,
+              total: 109000,
+              grandTotal: 109000,
+              paymentMethod: "Transfer Bank",
+              paymentProof: "transfer",
+              status: "Ditolak",
+              latitude: 3.5785,
+              longitude: 98.6668,
             },
           ],
+          lightbox: { show: false, order: null, src: "" },
+          lightboxZoom: 1,
+          map: null,
+          routeControl: null,
+          selectedCustomer: null,
+          selectedOrder: null,
+          orderStatusFilter: "Semua",
+          transactionFilters: [
+            "Semua",
+            "Menunggu Verifikasi",
+            "Diproses",
+            "Dikirim",
+            "Selesai",
+            "Ditolak",
+          ],
+          kitchenLocation: { latitude: 3.5963, longitude: 98.6722 },
+          todayRevenue: 487000,
 
-          customerSearch: '',
-          transactionStatusFilter: 'Semua',
-          transactionStatuses: ['Semua', 'Menunggu Verifikasi', 'Diproses', 'Dikirim', 'Selesai', 'Ditolak'],
+          // ---------- TOAST ----------
+          toast: { show: false, message: "", type: "success" },
 
-          selectedCustomerId: null,
-          selectedOrderId: null,
-
-          proofLightbox: { show: false, order: null },
-
-          orderMap: null,
-          orderRoute: null,
-          kitchenCoords: [3.5952, 98.6722],
-
-          toast: { show: false, message: '', type: 'success' },
-
+          // ---------- INIT ----------
           init() {
-            this.$watch('currentView', (view) => {
-              if (view === 'detailPesanan') {
-                this.$nextTick(() => this.initOrderMap());
-              } else {
-                this.destroyOrderMap();
-              }
-            });
-
-            this.loadLoginState();
-            if (this.loggedIn && this.currentView === 'detailPesanan') {
-              this.$nextTick(() => this.initOrderMap());
-            }
+            this.loadRegisteredUsers();
+            this.loadAdminProfile();
           },
 
-          loadLoginState() {
+          // ---------- AUTH ACTIONS ----------
+          loadRegisteredUsers() {
             try {
-              const saved = localStorage.getItem('dn_admin_logged_in');
-              this.loggedIn = saved === '1';
+              const raw = localStorage.getItem("dapurNusantaraUsers");
+              this.registeredUsers = raw ? JSON.parse(raw) : [];
             } catch (e) {
-              this.loggedIn = false;
+              this.registeredUsers = [];
             }
           },
-
-          saveLoginState() {
-            try {
-              localStorage.setItem('dn_admin_logged_in', this.loggedIn ? '1' : '0');
-            } catch (e) {}
+          saveRegisteredUsers() {
+            localStorage.setItem(
+              "dapurNusantaraUsers",
+              JSON.stringify(this.registeredUsers),
+            );
           },
-
+          loadAdminProfile() {
+            try {
+              const raw = localStorage.getItem("dapurNusantaraAdminProfile");
+              if (raw) Object.assign(this.admin, JSON.parse(raw));
+            } catch (e) {
+              // ignore
+            }
+          },
+          saveAdminProfile() {
+            localStorage.setItem(
+              "dapurNusantaraAdminProfile",
+              JSON.stringify(this.admin),
+            );
+          },
+          openRegisterModal() {
+            this.registerModal = {
+              show: true,
+              name: "",
+              username: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
+            };
+            this.loginError = "";
+          },
+          openForgotPasswordModal() {
+            this.forgotModal = {
+              show: true,
+              identifier: "",
+              message: "",
+              tempPassword: "",
+            };
+            this.loginError = "";
+          },
           login() {
             const username = this.loginForm.username.trim();
             const password = this.loginForm.password.trim();
+
             if (!username || !password) {
-              this.loginError = 'Username dan password wajib diisi.';
+              this.loginError = "Username dan password wajib diisi.";
               return;
             }
-            this.loggedIn = true;
-            this.saveLoginState();
-            this.loginError = '';
-            this.showPassword = false;
-            this.showToast('Login berhasil.');
-          },
 
+            const registered = this.registeredUsers.find(
+              (u) => u.username.toLowerCase() === username.toLowerCase(),
+            );
+            if (registered) {
+              if (registered.password !== password) {
+                this.loginError = "Password salah untuk akun terdaftar.";
+                return;
+              }
+            }
+
+            this.loggedIn = true;
+            this.loginError = "";
+            this.showPassword = false;
+          },
+          registerUser() {
+            const name = this.registerModal.name.trim();
+            const username = this.registerModal.username.trim();
+            const email = this.registerModal.email.trim();
+            const password = this.registerModal.password.trim();
+            const confirmPassword = this.registerModal.confirmPassword.trim();
+
+            if (!name || !username || !email || !password || !confirmPassword) {
+              this.showToast("Semua field registrasi wajib diisi", "error");
+              return;
+            }
+            if (password !== confirmPassword) {
+              this.showToast("Password dan konfirmasi tidak sama", "error");
+              return;
+            }
+            const usernameTaken = this.registeredUsers.some(
+              (u) => u.username.toLowerCase() === username.toLowerCase(),
+            );
+            const emailTaken = this.registeredUsers.some(
+              (u) => u.email.toLowerCase() === email.toLowerCase(),
+            );
+            if (usernameTaken) {
+              this.showToast("Username sudah dipakai", "error");
+              return;
+            }
+            if (emailTaken) {
+              this.showToast("Email sudah terdaftar", "error");
+              return;
+            }
+
+            this.registeredUsers.push({
+              id: Date.now(),
+              name,
+              username,
+              email,
+              password,
+            });
+            this.saveRegisteredUsers();
+            this.loginForm.username = username;
+            this.loginForm.password = "";
+            this.registerModal.show = false;
+            this.showToast(
+              "Registrasi berhasil. Silakan login dengan akun baru.",
+            );
+          },
+          resetPassword() {
+            const identifier = this.forgotModal.identifier.trim().toLowerCase();
+            if (!identifier) {
+              this.showToast("Username atau email harus diisi", "error");
+              return;
+            }
+
+            const user = this.registeredUsers.find(
+              (u) =>
+                u.username.toLowerCase() === identifier ||
+                u.email.toLowerCase() === identifier,
+            );
+            if (!user) {
+              this.forgotModal.message =
+                "Akun tidak ditemukan. Daftar dulu, baru panik.";
+              this.forgotModal.tempPassword = "";
+              return;
+            }
+
+            const tempPassword =
+              "Temp" + Math.random().toString(36).slice(2, 8).toUpperCase();
+            user.password = tempPassword;
+            this.saveRegisteredUsers();
+            this.forgotModal.message =
+              "Password berhasil direset. Pakai password sementara di bawah ini untuk login.";
+            this.forgotModal.tempPassword = tempPassword;
+            this.loginForm.username = user.username;
+            this.loginForm.password = tempPassword;
+            this.showToast("Password sementara berhasil dibuat");
+          },
+          openEditProfile() {
+            this.profileModal = {
+              show: true,
+              name: this.admin.name || "",
+              username: this.admin.username || "",
+              email: this.admin.email || "",
+              phone: this.admin.phone || "",
+              role: this.admin.role || "",
+              address: this.admin.address || "",
+              joinedAt: this.admin.joinedAt || "",
+            };
+          },
+          saveProfile() {
+            const name = this.profileModal.name.trim();
+            const username = this.profileModal.username.trim();
+            const email = this.profileModal.email.trim();
+
+            if (!name || !username || !email) {
+              this.showToast("Nama, username, dan email wajib diisi", "error");
+              return;
+            }
+
+            Object.assign(this.admin, {
+              name,
+              username,
+              email,
+              phone: this.profileModal.phone.trim(),
+              role: this.profileModal.role.trim() || "Administrator",
+              address: this.profileModal.address.trim(),
+              joinedAt: this.profileModal.joinedAt.trim(),
+            });
+
+            this.saveAdminProfile();
+            this.profileModal.show = false;
+            this.showToast("Profil admin berhasil diperbarui");
+          },
           logout() {
             this.loggedIn = false;
-            this.saveLoginState();
-            this.currentView = 'dashboard';
+            this.currentView = "dashboard";
+            this.loginForm = { username: "", password: "" };
             this.mobileMenuOpen = false;
-            this.loginForm = { username: '', password: '' };
+            this.showPassword = false;
           },
 
+          // ---------- NAVIGATION ----------
           navigate(view) {
+            if (
+              this.currentView === "detailPesanan" &&
+              view !== "detailPesanan"
+            ) {
+              this.destroyMap();
+            }
             this.currentView = view;
             this.mobileMenuOpen = false;
-            this.$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            this.$nextTick(() => {
+              window.scrollTo(0, 0);
+              if (view === "detailPesanan") {
+                setTimeout(() => {
+                  this.initMap();
+                  if (this.map) {
+                    this.map.invalidateSize();
+                  }
+                }, 300);
+              }
+            });
           },
-
-          initials(name) {
-            if (!name) return '--';
-            return name
-              .split(' ')
-              .filter(Boolean)
-              .slice(0, 2)
-              .map((part) => part[0].toUpperCase())
-              .join('');
+          openCustomerDetail(customer) {
+            this.selectedCustomer = customer;
+            this.navigate("detailPelanggan");
           },
-
-          formatRp(num) {
-            return 'Rp' + Number(num || 0).toLocaleString('id-ID');
+          openOrderDetail(order) {
+            this.selectedOrder = order;
+            this.selectedCustomer =
+              this.customerById(order.customerId) || this.selectedCustomer;
+            this.navigate("detailPesanan");
           },
-
           customerById(id) {
             return this.customers.find((c) => c.id === id) || null;
           },
-
-          selectedCustomer() {
-            return this.customerById(this.selectedCustomerId);
+          customerOrders(customerId) {
+            return this.orders
+              .filter((o) => o.customerId === customerId)
+              .slice()
+              .sort((a, b) => b.id.localeCompare(a.id));
           },
-
-          selectedOrder() {
-            return this.orders.find((o) => o.id === this.selectedOrderId) || null;
-          },
-
-          filteredCustomers() {
-            const q = this.customerSearch.trim().toLowerCase();
-            if (!q) return this.customers;
-            return this.customers.filter((c) =>
-              [c.name, c.email, c.phone, c.address].some((field) =>
-                String(field).toLowerCase().includes(q),
-              ),
-            );
-          },
-
-          customerOrderHistory(customerId) {
-            if (!customerId) return [];
-            return this.orders.filter((o) => o.customerId === customerId);
-          },
-
           customerStats(customerId) {
-            const history = this.customerOrderHistory(customerId);
+            const orders = this.customerOrders(customerId).filter(
+              (o) => o.status !== "Ditolak",
+            );
             return {
-              count: history.length,
-              total: history.reduce((sum, order) => sum + this.grandTotal(order), 0),
+              count: orders.length,
+              spent: orders.reduce((sum, order) => sum + order.grandTotal, 0),
             };
           },
-
           filteredOrders() {
-            if (this.transactionStatusFilter === 'Semua') return this.orders;
-            return this.orders.filter((o) => o.status === this.transactionStatusFilter);
-          },
-
-          completedOrders() {
-            return this.orders.filter((o) => o.status === 'Selesai');
-          },
-
-          totalRevenue() {
-            return this.completedOrders().reduce((sum, order) => sum + this.grandTotal(order), 0);
-          },
-
-          menuSubtotal(order) {
-            if (!order || !Array.isArray(order.items)) return 0;
-            return order.items.reduce((sum, item) => sum + item.qty * item.price, 0);
-          },
-
-          grandTotal(order) {
-            if (!order) return 0;
-            return this.menuSubtotal(order) + Number(order.shippingCost || 0);
-          },
-
-          statusColor(status) {
-            const map = {
-              'Menunggu Verifikasi': 'bg-yellow-100 text-yellow-700',
-              'Diproses': 'bg-blue-100 text-blue-700',
-              'Dikirim': 'bg-indigo-100 text-indigo-700',
-              'Selesai': 'bg-emerald-100 text-emerald-700',
-              'Ditolak': 'bg-red-100 text-red-700',
-            };
-            return map[status] || 'bg-gray-100 text-gray-700';
-          },
-
-          nextStatus(status) {
-            const map = {
-              'Menunggu Verifikasi': 'Diproses',
-              'Diproses': 'Dikirim',
-              'Dikirim': 'Selesai',
-            };
-            return map[status] || status;
-          },
-
-          nextStatusLabel(status) {
-            const map = {
-              'Menunggu Verifikasi': 'Verifikasi Pesanan',
-              'Diproses': 'Tandai Dikirim',
-              'Dikirim': 'Tandai Selesai',
-            };
-            return map[status] || null;
-          },
-
-          openCustomerDetail(customer) {
-            this.selectedCustomerId = customer.id;
-            this.currentView = 'pelangganDetail';
-          },
-
-          openOrderDetail(orderId) {
-            this.selectedOrderId = orderId;
-            this.currentView = 'detailPesanan';
-          },
-
-          verifyOrder() {
-            const order = this.selectedOrder();
-            if (!order) return;
-            order.status = 'Diproses';
-            this.showToast(`Pesanan ${order.id} diverifikasi.`);
-          },
-
-          advanceSelectedOrder() {
-            const order = this.selectedOrder();
-            if (!order) return;
-            const next = this.nextStatus(order.status);
-            if (next !== order.status) {
-              order.status = next;
-              this.showToast(`Status ${order.id} diperbarui menjadi ${order.status}.`);
-            }
-          },
-
-          async rejectOrder() {
-            const order = this.selectedOrder();
-            if (!order) return;
-
-            const result = await Swal.fire({
-              title: 'Tolak pesanan ini?',
-              text: 'Yakin ingin menolak pesanan ini? Aksi ini tidak dapat dibatalkan.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Ya, Tolak',
-              cancelButtonText: 'Batal',
-              confirmButtonColor: '#ef4444',
-              cancelButtonColor: '#94a3b8',
-            });
-
-            if (!result.isConfirmed) return;
-
-            order.status = 'Ditolak';
-            this.showToast(`Pesanan ${order.id} berhasil ditolak.`);
-
-            await Swal.fire({
-              icon: 'success',
-              title: 'Pesanan Ditolak',
-              html: `
-                <p class="text-slate-600">Pesanan berhasil ditolak. Silakan hubungi pelanggan.</p>
-                <button
-                  id="waRejectBtn"
-                  class="mt-4 inline-flex items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 font-semibold text-white transition hover:bg-green-600"
-                >
-                  <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </button>
-              `,
-              showConfirmButton: false,
-              allowOutsideClick: true,
-              didOpen: () => {
-                const btn = Swal.getPopup().querySelector('#waRejectBtn');
-                if (btn) {
-                  btn.addEventListener('click', () => {
-                    Swal.close();
-                    this.openRejectWhatsApp(order);
-                  });
-                }
-              },
-            });
-          },
-
-          openRejectWhatsApp(order) {
-            const customer = this.customerById(order.customerId);
-            if (!customer) return;
-            let digits = String(customer.phone || '').replace(/\D/g, '');
-            if (digits.startsWith('0')) digits = '62' + digits.slice(1);
-            if (!digits.startsWith('62')) digits = '62' + digits;
-            const msg = encodeURIComponent(
-              `Halo ${customer.name}, kami dari admin Dapur Nusantara. Mohon maaf pesanan Anda dengan ID ${order.id} terpaksa kami tolak karena kendala operasional. Jika ada pertanyaan, silakan balas pesan ini.`,
+            if (this.orderStatusFilter === "Semua") return this.orders;
+            return this.orders.filter(
+              (o) => o.status === this.orderStatusFilter,
             );
-            window.open(`https://wa.me/${digits}?text=${msg}`, '_blank');
           },
-
-          contactCustomerWA(order) {
-            const customer = this.customerById(order?.customerId);
-            if (!customer) return;
-            let digits = String(customer.phone || '').replace(/\D/g, '');
-            if (digits.startsWith('0')) digits = '62' + digits.slice(1);
-            if (!digits.startsWith('62')) digits = '62' + digits;
-            const msg = encodeURIComponent(
-              `Halo ${customer.name}, kami dari admin Dapur Nusantara. Kami ingin menghubungi Anda terkait pesanan ${order.id}.`,
+          orderItemsTotal(order) {
+            return (order?.items || []).reduce(
+              (sum, item) => sum + item.subtotal,
+              0,
             );
-            window.open(`https://wa.me/${digits}?text=${msg}`, '_blank');
           },
-
-          paymentProofImage(order) {
-            if (!order) return '';
-            const total = this.formatRp(this.grandTotal(order));
-            const items = (order.items || [])
-              .map((item) => `${item.name} x${item.qty}`)
-              .join(' • ');
+          paymentProofSrc(order) {
+            if (!order) return "";
+            const amount = this.formatRp(order.grandTotal || order.total || 0);
+            const method = order.paymentMethod || "Transfer Bank";
+            const title =
+              order.paymentProof === "qris"
+                ? "QRIS PAYMENT"
+                : "TRANSFER RECEIPT";
             const svg = `
               <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
                 <defs>
-                  <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#fff7ed"/>
-                    <stop offset="100%" stop-color="#ffedd5"/>
-                  </linearGradient>
-                  <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+                  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#0f172a"/>
-                    <stop offset="100%" stop-color="#334155"/>
+                    <stop offset="100%" stop-color="#1e293b"/>
+                  </linearGradient>
+                  <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="100%" stop-color="#f8fafc"/>
                   </linearGradient>
                 </defs>
-                <rect width="1400" height="900" fill="url(#g1)"/>
-                <rect x="80" y="70" width="1240" height="760" rx="34" fill="#ffffff" stroke="#e5e7eb"/>
-                <rect x="80" y="70" width="1240" height="120" rx="34" fill="url(#g2)"/>
-                <text x="120" y="130" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#ffffff">Bukti Pembayaran - Dapur Nusantara</text>
-                <text x="120" y="168" font-family="Arial, sans-serif" font-size="20" fill="#cbd5e1">Nomor referensi: ${order.paymentReference}</text>
-
-                <rect x="120" y="240" width="520" height="540" rx="28" fill="#f8fafc" stroke="#e5e7eb"/>
-                <text x="160" y="300" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#0f172a">Detail Transaksi</text>
-                <text x="160" y="360" font-family="Arial, sans-serif" font-size="24" fill="#475569">ID Pesanan</text>
-                <text x="340" y="360" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">${order.id}</text>
-                <text x="160" y="415" font-family="Arial, sans-serif" font-size="24" fill="#475569">Pelanggan</text>
-                <text x="340" y="415" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">${this.customerById(order.customerId)?.name || ''}</text>
-                <text x="160" y="470" font-family="Arial, sans-serif" font-size="24" fill="#475569">Metode</text>
-                <text x="340" y="470" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">${order.paymentMethod}</text>
-                <text x="160" y="525" font-family="Arial, sans-serif" font-size="24" fill="#475569">Grand Total</text>
-                <text x="340" y="525" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">${total}</text>
-                <text x="160" y="580" font-family="Arial, sans-serif" font-size="24" fill="#475569">Menu</text>
-                <text x="160" y="625" font-family="Arial, sans-serif" font-size="21" fill="#0f172a">${items}</text>
-
-                <rect x="730" y="240" width="470" height="540" rx="28" fill="#fff7ed" stroke="#fed7aa"/>
-                <text x="790" y="300" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#7c2d12">QRIS / Transfer</text>
-                <rect x="800" y="340" width="330" height="330" rx="24" fill="#ffffff" stroke="#e5e7eb"/>
-                <g fill="#111827">
-                  <rect x="835" y="375" width="50" height="50"/>
-                  <rect x="895" y="375" width="50" height="50"/>
-                  <rect x="955" y="375" width="50" height="50"/>
-                  <rect x="1015" y="375" width="50" height="50"/>
-                  <rect x="835" y="435" width="50" height="50"/>
-                  <rect x="955" y="435" width="50" height="50"/>
-                  <rect x="1015" y="435" width="50" height="50"/>
-                  <rect x="835" y="495" width="110" height="50"/>
-                  <rect x="955" y="495" width="50" height="50"/>
-                  <rect x="1015" y="495" width="50" height="50"/>
-                  <rect x="835" y="555" width="50" height="50"/>
-                  <rect x="895" y="555" width="170" height="50"/>
+                <rect width="1400" height="900" rx="42" fill="url(#bg)"/>
+                <rect x="160" y="80" width="1080" height="740" rx="36" fill="url(#card)"/>
+                <text x="220" y="180" font-family="Inter, Arial" font-size="54" font-weight="700" fill="#0f172a">Dapur Nusantara</text>
+                <text x="220" y="235" font-family="Inter, Arial" font-size="28" fill="#64748b">Bukti Pembayaran ${title}</text>
+                <rect x="220" y="280" width="960" height="2" fill="#e2e8f0"/>
+                <text x="220" y="355" font-family="Inter, Arial" font-size="24" fill="#64748b">Order ID</text>
+                <text x="220" y="405" font-family="Inter, Arial" font-size="40" font-weight="700" fill="#0f172a">${order.id}</text>
+                <text x="220" y="485" font-family="Inter, Arial" font-size="24" fill="#64748b">Metode Bayar</text>
+                <text x="220" y="535" font-family="Inter, Arial" font-size="38" font-weight="700" fill="#0f172a">${method}</text>
+                <text x="220" y="615" font-family="Inter, Arial" font-size="24" fill="#64748b">Nominal</text>
+                <text x="220" y="670" font-family="Inter, Arial" font-size="56" font-weight="800" fill="#ea580c">${amount}</text>
+                <rect x="930" y="330" width="170" height="170" rx="18" fill="#ffffff" stroke="#cbd5e1"/>
+                <g transform="translate(953 353)">
+                  <rect width="22" height="22" fill="#0f172a"/><rect x="44" width="22" height="22" fill="#0f172a"/><rect x="88" width="22" height="22" fill="#0f172a"/>
+                  <rect y="44" width="22" height="22" fill="#0f172a"/><rect x="22" y="44" width="22" height="22" fill="#0f172a"/><rect x="66" y="44" width="22" height="22" fill="#0f172a"/><rect x="110" y="44" width="22" height="22" fill="#0f172a"/>
+                  <rect x="44" y="88" width="22" height="22" fill="#0f172a"/><rect x="88" y="88" width="22" height="22" fill="#0f172a"/>
                 </g>
-                <text x="790" y="735" font-family="Arial, sans-serif" font-size="20" fill="#7c2d12">Referensi: ${order.paymentReference}</text>
+                <text x="930" y="540" font-family="Inter, Arial" font-size="22" fill="#64748b">QR / Struk pembayaran</text>
+                <text x="930" y="572" font-family="Inter, Arial" font-size="22" fill="#64748b">Tersimpan dalam dummy data</text>
               </svg>`;
-            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+            return (
+              "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg)
+            );
           },
-
-          openProofLightbox(order) {
-            if (!order) return;
-            this.proofLightbox = { show: true, order };
+          openPaymentLightbox(order) {
+            this.lightbox = {
+              show: true,
+              order,
+              src: this.paymentProofSrc(order),
+            };
+            this.lightboxZoom = 1;
           },
-
-          closeProofLightbox() {
-            this.proofLightbox = { show: false, order: null };
+          closeLightbox() {
+            this.lightbox.show = false;
           },
-
-          destroyOrderMap() {
-            if (this.orderMap) {
-              this.orderMap.remove();
-              this.orderMap = null;
-            }
-            this.orderRoute = null;
+          kitchenPointLabel() {
+            return `${this.kitchenLocation.latitude.toFixed(4)}, ${this.kitchenLocation.longitude.toFixed(4)}`;
           },
+          selectedCustomerPointLabel() {
+            return this.selectedOrder
+              ? `${this.selectedOrder.latitude.toFixed(4)}, ${this.selectedOrder.longitude.toFixed(4)}`
+              : "-";
+          },
+          destroyMap() {
+            try {
+              if (this.routeControl) {
+                this.routeControl.remove();
+                this.routeControl = null;
+              }
+              if (this.map) {
+                this.map.remove();
+                this.map = null;
+              }
+            } catch (e) {}
+          },
+          initMap() {
+            if (!this.selectedOrder || !window.L) return;
+            const customer = this.customerById(this.selectedOrder.customerId);
+            if (!customer || !customer.latitude || !customer.longitude) return;
 
-          initOrderMap() {
-            const order = this.selectedOrder();
-            if (!order || !window.L) return;
-
-            const customer = this.selectedCustomer();
-            if (!customer) return;
-
-            this.destroyOrderMap();
-
-            const mapEl = document.getElementById('order-route-map');
-            if (!mapEl) return;
-
-            this.orderMap = L.map('order-route-map', {
+            this.destroyMap();
+            const map = L.map("detailMap", {
               zoomControl: true,
               scrollWheelZoom: true,
-            }).setView([customer.lat, customer.lng], 13);
+            }).setView([customer.latitude, customer.longitude], 13);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
               maxZoom: 19,
-              attribution: '&copy; OpenStreetMap contributors',
-            }).addTo(this.orderMap);
+              attribution: "&copy; OpenStreetMap contributors",
+            }).addTo(map);
 
-            const kitchenIcon = L.divIcon({
-              className: '',
-              html: '<div class="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white shadow-lg"><i class="fa-solid fa-kitchen-set"></i></div>',
-              iconSize: [40, 40],
-              iconAnchor: [20, 20],
-            });
-
-            const targetIcon = L.divIcon({
-              className: '',
-              html: '<div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg"><i class="fa-solid fa-location-dot"></i></div>',
-              iconSize: [40, 40],
-              iconAnchor: [20, 20],
-            });
-
-            const kitchenMarker = L.marker(this.kitchenCoords, { icon: kitchenIcon, draggable: false }).addTo(this.orderMap);
-            const targetMarker = L.marker([customer.lat, customer.lng], { icon: targetIcon, draggable: false }).addTo(this.orderMap);
-
-            kitchenMarker.bindPopup('Dapur Katering Dapur Nusantara');
-            targetMarker.bindPopup(customer.deliveryLabel || customer.address);
-
-            this.orderRoute = L.Routing.control({
+            const routeControl = L.Routing.control({
               waypoints: [
-                L.latLng(this.kitchenCoords[0], this.kitchenCoords[1]),
-                L.latLng(customer.lat, customer.lng),
+                L.latLng(
+                  this.kitchenLocation.latitude,
+                  this.kitchenLocation.longitude,
+                ),
+                L.latLng(customer.latitude, customer.longitude),
               ],
               routeWhileDragging: false,
-              addWaypoints: false,
               draggableWaypoints: false,
+              addWaypoints: false,
               showAlternatives: false,
-              fitSelectedRoutes: true,
+              createMarker: (i, wp) =>
+                L.marker(wp.latLng, {
+                  draggable: false,
+                }),
               lineOptions: {
-                styles: [{ color: '#2563eb', opacity: 0.9, weight: 5 }],
+                styles: [{ color: "#2563eb", opacity: 0.9, weight: 6 }],
               },
-              createMarker: () => null,
               router: L.Routing.osrmv1({
-                serviceUrl: 'https://router.project-osrm.org/route/v1',
+                serviceUrl: "https://router.project-osrm.org/route/v1",
               }),
-            }).addTo(this.orderMap);
+            }).addTo(map);
 
-            setTimeout(() => this.orderMap && this.orderMap.invalidateSize(), 200);
+            this.map = map;
+            this.routeControl = routeControl;
+            setTimeout(() => {
+              map.invalidateSize();
+            }, 300);
+          },
+          avatarUrl(name) {
+            return (
+              "https://ui-avatars.com/api/?name=" +
+              encodeURIComponent(name) +
+              "&background=FFEDD5&color=C2410C&bold=true"
+            );
+          },
+          openProofModal(order) {
+            this.openPaymentLightbox(order);
+          },
+          rejectOrder(order) {
+            Swal.fire({
+              title: "Yakin ingin menolak pesanan ini?",
+              text: "Aksi ini tidak dapat dibatalkan.",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Ya, Tolak",
+              cancelButtonText: "Batal",
+              confirmButtonColor: "#dc2626",
+              cancelButtonColor: "#64748b",
+            }).then((result) => {
+              if (!result.isConfirmed) return;
+              order.status = "Ditolak";
+              this.showToast("Pesanan ditolak.");
+              Swal.fire({
+                title: "Pesanan berhasil ditolak.",
+                text: "Silakan hubungi pelanggan via WhatsApp",
+                icon: "success",
+                confirmButtonText: "Hubungi WhatsApp",
+              }).then((res) => {
+                if (res.isConfirmed) {
+                  this.contactWA(order, true);
+                }
+              });
+            });
           },
 
-          async initOrderMapDeferred() {
-            await this.$nextTick();
-            this.initOrderMap();
+          // ---------- DATA PELANGGAN ----------
+          filteredCustomers() {
+            const q = this.customerSearch.trim().toLowerCase();
+            if (!q) return this.customers;
+            return this.customers.filter(
+              (c) =>
+                c.name.toLowerCase().includes(q) ||
+                c.email.toLowerCase().includes(q) ||
+                c.phone.includes(q) ||
+                c.address.toLowerCase().includes(q),
+            );
           },
 
-          showToast(message, type = 'success') {
+          // ---------- KATEGORI ----------
+          categoryCount(name) {
+            return this.menuItems.filter((m) => m.category === name).length;
+          },
+          openAddCategory() {
+            this.categoryModal = {
+              show: true,
+              mode: "add",
+              id: null,
+              name: "",
+            };
+          },
+          openEditCategory(cat) {
+            this.categoryModal = {
+              show: true,
+              mode: "edit",
+              id: cat.id,
+              name: cat.name,
+            };
+          },
+          saveCategory() {
+            if (!this.categoryModal.name.trim()) {
+              this.showToast("Nama kategori wajib diisi", "error");
+              return;
+            }
+            if (this.categoryModal.mode === "add") {
+              this.categories.push({
+                id: Date.now(),
+                name: this.categoryModal.name.trim(),
+              });
+              this.showToast("Kategori berhasil ditambahkan");
+            } else {
+              const cat = this.categories.find(
+                (c) => c.id === this.categoryModal.id,
+              );
+              if (cat) {
+                this.menuItems.forEach((m) => {
+                  if (m.category === cat.name)
+                    m.category = this.categoryModal.name.trim();
+                });
+                cat.name = this.categoryModal.name.trim();
+              }
+              this.showToast("Kategori berhasil diperbarui");
+            }
+            this.categoryModal.show = false;
+          },
+          deleteCategory(cat) {
+            if (confirm('Hapus kategori "' + cat.name + '"?')) {
+              this.categories = this.categories.filter((c) => c.id !== cat.id);
+              this.showToast("Kategori dihapus");
+            }
+          },
+
+          // ---------- DATA MENU ----------
+          openAddMenu() {
+            this.menuModal = {
+              show: true,
+              mode: "add",
+              id: null,
+              name: "",
+              category: this.categories[0] ? this.categories[0].name : "",
+              price: 0,
+              image: "",
+            };
+          },
+          openEditMenu(item) {
+            this.menuModal = {
+              show: true,
+              mode: "edit",
+              id: item.id,
+              name: item.name,
+              category: item.category,
+              price: item.price,
+              image: item.image,
+            };
+          },
+          saveMenu() {
+            if (!this.menuModal.name.trim() || !this.menuModal.price) {
+              this.showToast("Nama dan harga menu wajib diisi", "error");
+              return;
+            }
+            const image =
+              this.menuModal.image.trim() ||
+              "https://placehold.co/400x300/FFEDD5/C2410C?text=" +
+                encodeURIComponent(this.menuModal.name.trim());
+            if (this.menuModal.mode === "add") {
+              this.menuItems.push({
+                id: Date.now(),
+                name: this.menuModal.name.trim(),
+                category: this.menuModal.category,
+                price: this.menuModal.price,
+                image,
+              });
+              this.showToast("Menu berhasil ditambahkan");
+            } else {
+              const item = this.menuItems.find(
+                (m) => m.id === this.menuModal.id,
+              );
+              if (item)
+                Object.assign(item, {
+                  name: this.menuModal.name.trim(),
+                  category: this.menuModal.category,
+                  price: this.menuModal.price,
+                  image,
+                });
+              this.showToast("Menu berhasil diperbarui");
+            }
+            this.menuModal.show = false;
+          },
+          deleteMenu(item) {
+            if (confirm('Hapus menu "' + item.name + '"?')) {
+              this.menuItems = this.menuItems.filter((m) => m.id !== item.id);
+              this.showToast("Menu dihapus");
+            }
+          },
+
+          // ---------- TRANSAKSI & PESANAN ----------
+          statusColor(status) {
+            const map = {
+              "Menunggu Verifikasi": "bg-yellow-100 text-yellow-700",
+              Diproses: "bg-blue-100 text-blue-700",
+              Dikirim: "bg-purple-100 text-purple-700",
+              Selesai: "bg-green-100 text-green-700",
+              Ditolak: "bg-red-100 text-red-700",
+            };
+            return map[status] || "bg-gray-100 text-gray-700";
+          },
+          nextStatusLabel(status) {
+            const map = {
+              "Menunggu Verifikasi": "Verifikasi (Proses)",
+              Diproses: "Tandai Dikirim",
+              Dikirim: "Tandai Selesai",
+            };
+            return map[status] || null;
+          },
+          nextStatus(status) {
+            const map = {
+              "Menunggu Verifikasi": "Diproses",
+              Diproses: "Dikirim",
+              Dikirim: "Selesai",
+            };
+            return map[status] || status;
+          },
+          advanceStatus(order) {
+            order.status = this.nextStatus(order.status);
+            this.showToast(
+              "Status " +
+                order.id +
+                ' diperbarui menjadi "' +
+                order.status +
+                '"',
+            );
+          },
+          viewProof(order) {
+            this.openPaymentLightbox(order);
+          },
+          contactWA(order, isRejectFlow = false) {
+            const customer = this.customerById(order.customerId);
+            let digits = String(
+              (customer && customer.phone) || order.customerPhone || "",
+            ).replace(/\D/g, "");
+            if (digits.startsWith("0")) digits = "62" + digits.slice(1);
+            const message = isRejectFlow
+              ? "Halo " +
+                (customer?.name || order.customer) +
+                ", maaf pesanan Anda " +
+                order.id +
+                " ditolak."
+              : "Halo " +
+                (customer?.name || order.customer) +
+                ", kami dari Dapur Nusantara ingin mengonfirmasi pesanan " +
+                order.id +
+                ".";
+            const msg = encodeURIComponent(message);
+            window.open("https://wa.me/" + digits + "?text=" + msg, "_blank");
+          },
+
+          // ---------- LAPORAN ----------
+          completedOrders() {
+            return this.orders.filter((o) => o.status === "Selesai");
+          },
+          totalRevenue() {
+            return this.completedOrders().reduce((s, o) => s + o.total, 0);
+          },
+          exportExcel() {
+            const rows = [
+              ["ID Pesanan", "Pelanggan", "Tanggal", "Metode Bayar", "Total"],
+            ];
+            this.completedOrders().forEach((o) =>
+              rows.push([o.id, o.customer, o.date, o.payment, o.total]),
+            );
+            const csv = rows
+              .map((r) =>
+                r
+                  .map((v) => '"' + String(v).replace(/"/g, '""') + '"')
+                  .join(","),
+              )
+              .join("\n");
+            const blob = new Blob(["\uFEFF" + csv], {
+              type: "text/csv;charset=utf-8;",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "laporan-keuangan-dapur-nusantara.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.showToast("Laporan berhasil diexport (CSV)");
+          },
+          printReport() {
+            window.print();
+          },
+
+          // ---------- FORMAT ----------
+          formatRp(num) {
+            return "Rp" + Number(num).toLocaleString("id-ID");
+          },
+
+          // ---------- TOAST ----------
+          showToast(message, type = "success") {
             this.toast = { show: true, message, type };
             setTimeout(() => {
               this.toast.show = false;
-            }, 2800);
+            }, 3000);
           },
         };
       }
     </script>
-
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
   </body>
 </html>
