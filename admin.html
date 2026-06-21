@@ -596,63 +596,129 @@
             <div
               class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead>
-                    <tr class="border-b border-gray-100 bg-gray-50/50">
-                      <th class="th-cell">Pelanggan</th>
-                      <th class="th-cell">No. Telp</th>
-                      <th class="th-cell">Email</th>
-                      <th class="th-cell">Alamat</th>
-                      <th class="th-cell">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <template x-for="c in filteredCustomers()" :key="c.id">
-                      <tr
-                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
-                      >
-                        <td class="td-cell">
-                          <div class="flex items-center gap-3">
-                            <img
-                              :src="avatarUrl(c.name)"
-                              class="w-9 h-9 rounded-full"
-                            />
-                            <span
-                              class="font-medium text-slate-800"
-                              x-text="c.name"
-                            ></span>
-                          </div>
-                        </td>
-                        <td
-                          class="td-cell text-slate-500"
+              <div class="block md:hidden p-4 space-y-4">
+                <template x-for="c in filteredCustomers()" :key="c.id">
+                  <div
+                    class="rounded-2xl border border-gray-100 bg-white shadow-sm p-4"
+                  >
+                    <div class="flex items-center gap-3 mb-4">
+                      <img
+                        :src="avatarUrl(c.name)"
+                        class="w-10 h-10 rounded-full flex-shrink-0"
+                        alt="avatar"
+                      />
+                      <div class="min-w-0">
+                        <p
+                          class="font-medium text-slate-800 truncate"
+                          x-text="c.name"
+                        ></p>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 text-sm">
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">No. Telp:</span>
+                        <span
+                          class="font-medium text-slate-700 text-right"
                           x-text="c.phone"
-                        ></td>
-                        <td
-                          class="td-cell text-slate-500 break-all"
+                        ></span>
+                      </div>
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">Email:</span>
+                        <span
+                          class="font-medium text-slate-700 text-right break-all"
                           x-text="c.email"
-                        ></td>
-                        <td
-                          class="td-cell text-slate-500 max-w-[280px]"
+                        ></span>
+                      </div>
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">Alamat:</span>
+                        <span
+                          class="font-medium text-slate-700 text-right max-w-[65%] break-words"
                           x-text="c.address"
-                        ></td>
-                        <td class="td-cell">
-                          <button
-                            @click="openCustomerDetail(c)"
-                            class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
-                          >
-                            <i class="fa-solid fa-address-card"></i> Detail
-                            Pelanggan
-                          </button>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      <button
+                        @click="openCustomerDetail(c)"
+                        class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200 w-full"
+                      >
+                        <i class="fa-solid fa-address-card"></i> Detail
+                        Pelanggan
+                      </button>
+                    </div>
+                  </div>
+                </template>
+
+                <div
+                  x-show="filteredCustomers().length === 0"
+                  class="text-center py-12 text-slate-400"
+                >
+                  Tidak ada pelanggan yang cocok.
+                </div>
               </div>
+
+              <div class="hidden md:block">
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                      <tr class="border-b border-gray-100 bg-gray-50/50">
+                        <th class="th-cell">Pelanggan</th>
+                        <th class="th-cell">No. Telp</th>
+                        <th class="th-cell">Email</th>
+                        <th class="th-cell">Alamat</th>
+                        <th class="th-cell">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template x-for="c in filteredCustomers()" :key="c.id">
+                        <tr
+                          class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                        >
+                          <td class="td-cell">
+                            <div class="flex items-center gap-3">
+                              <img
+                                :src="avatarUrl(c.name)"
+                                class="w-9 h-9 rounded-full"
+                              />
+                              <span
+                                class="font-medium text-slate-800"
+                                x-text="c.name"
+                              ></span>
+                            </div>
+                          </td>
+                          <td
+                            class="td-cell text-slate-500"
+                            x-text="c.phone"
+                          ></td>
+                          <td
+                            class="td-cell text-slate-500 break-all"
+                            x-text="c.email"
+                          ></td>
+                          <td
+                            class="td-cell text-slate-500 max-w-[280px]"
+                            x-text="c.address"
+                          ></td>
+                          <td class="td-cell">
+                            <button
+                              @click="openCustomerDetail(c)"
+                              class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            >
+                              <i class="fa-solid fa-address-card"></i> Detail
+                              Pelanggan
+                            </button>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               <div
                 x-show="filteredCustomers().length === 0"
-                class="text-center py-12 text-slate-400"
+                class="hidden md:block text-center py-12 text-slate-400"
               >
                 Tidak ada pelanggan yang cocok.
               </div>
@@ -1010,71 +1076,146 @@
             <div
               class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead>
-                    <tr class="border-b border-gray-100 bg-gray-50/50">
-                      <th class="th-cell">ID Pesanan</th>
-                      <th class="th-cell">Pelanggan</th>
-                      <th class="th-cell">Tanggal</th>
-                      <th class="th-cell">Total</th>
-                      <th class="th-cell">Status</th>
-                      <th class="th-cell">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <template x-for="order in filteredOrders()" :key="order.id">
-                      <tr
-                        class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
-                      >
-                        <td
-                          class="td-cell font-semibold text-slate-800"
+              <div class="block md:hidden p-4 space-y-4">
+                <template x-for="order in filteredOrders()" :key="order.id">
+                  <div
+                    class="rounded-2xl border border-gray-100 bg-white shadow-sm p-4"
+                  >
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                      <div>
+                        <p
+                          class="font-semibold text-slate-800"
                           x-text="order.id"
-                        ></td>
-                        <td class="td-cell">
-                          <div class="flex flex-col">
-                            <span
-                              class="font-medium text-slate-700"
-                              x-text="customerById(order.customerId)?.name || order.customer"
-                            ></span>
-                            <span
-                              class="text-xs text-slate-400"
-                              x-text="customerById(order.customerId)?.phone || order.customerPhone"
-                            ></span>
-                          </div>
-                        </td>
-                        <td
-                          class="td-cell text-slate-500"
+                        ></p>
+                      </div>
+                      <span
+                        class="badge"
+                        :class="statusColor(order.status)"
+                        x-text="order.status"
+                      ></span>
+                    </div>
+
+                    <div class="space-y-3 text-sm">
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">Pelanggan:</span>
+                        <div class="text-right">
+                          <p
+                            class="font-medium text-slate-700"
+                            x-text="customerById(order.customerId)?.name || order.customer"
+                          ></p>
+                          <p
+                            class="text-xs text-slate-400"
+                            x-text="customerById(order.customerId)?.phone || order.customerPhone"
+                          ></p>
+                        </div>
+                      </div>
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">Tanggal:</span>
+                        <span
+                          class="font-medium text-slate-700 text-right"
                           x-text="order.date"
-                        ></td>
-                        <td
-                          class="td-cell font-medium"
+                        ></span>
+                      </div>
+                      <div class="flex items-start justify-between gap-4">
+                        <span class="text-xs text-slate-400">Total:</span>
+                        <span
+                          class="font-semibold text-slate-800 text-right"
                           x-text="formatRp(order.total)"
-                        ></td>
-                        <td class="td-cell">
-                          <span
-                            class="badge"
-                            :class="statusColor(order.status)"
-                            x-text="order.status"
-                          ></span>
-                        </td>
-                        <td class="td-cell">
-                          <button
-                            @click="openOrderDetail(order)"
-                            class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
-                          >
-                            <i class="fa-solid fa-receipt"></i> Detail Pesanan
-                          </button>
-                        </td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
+                        ></span>
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      <button
+                        @click="openOrderDetail(order)"
+                        class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200 w-full"
+                      >
+                        <i class="fa-solid fa-receipt"></i> Detail Pesanan
+                      </button>
+                    </div>
+                  </div>
+                </template>
+
+                <div
+                  x-show="filteredOrders().length === 0"
+                  x-cloak
+                  class="text-center py-12 text-slate-400"
+                >
+                  Tidak ada pesanan pada filter ini.
+                </div>
               </div>
+
+              <div class="hidden md:block">
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead>
+                      <tr class="border-b border-gray-100 bg-gray-50/50">
+                        <th class="th-cell">ID Pesanan</th>
+                        <th class="th-cell">Pelanggan</th>
+                        <th class="th-cell">Tanggal</th>
+                        <th class="th-cell">Total</th>
+                        <th class="th-cell">Status</th>
+                        <th class="th-cell">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template
+                        x-for="order in filteredOrders()"
+                        :key="order.id"
+                      >
+                        <tr
+                          class="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                        >
+                          <td
+                            class="td-cell font-semibold text-slate-800"
+                            x-text="order.id"
+                          ></td>
+                          <td class="td-cell">
+                            <div class="flex flex-col">
+                              <span
+                                class="font-medium text-slate-700"
+                                x-text="customerById(order.customerId)?.name || order.customer"
+                              ></span>
+                              <span
+                                class="text-xs text-slate-400"
+                                x-text="customerById(order.customerId)?.phone || order.customerPhone"
+                              ></span>
+                            </div>
+                          </td>
+                          <td
+                            class="td-cell text-slate-500"
+                            x-text="order.date"
+                          ></td>
+                          <td
+                            class="td-cell font-medium"
+                            x-text="formatRp(order.total)"
+                          ></td>
+                          <td class="td-cell">
+                            <span
+                              class="badge"
+                              :class="statusColor(order.status)"
+                              x-text="order.status"
+                            ></span>
+                          </td>
+                          <td class="td-cell">
+                            <button
+                              @click="openOrderDetail(order)"
+                              class="btn-sm bg-slate-100 text-slate-700 hover:bg-slate-200"
+                            >
+                              <i class="fa-solid fa-receipt"></i> Detail Pesanan
+                            </button>
+                          </td>
+                        </tr>
+                      </template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               <div
                 x-show="filteredOrders().length === 0"
                 x-cloak
-                class="text-center py-12 text-slate-400"
+                class="hidden md:block text-center py-12 text-slate-400"
               >
                 Tidak ada pesanan pada filter ini.
               </div>
@@ -2079,7 +2220,7 @@
             {
               id: 2,
               name: "Citra Dewi",
-              phone: "0813-2222-3333",
+              phone: "0852-9679-5689",
               email: "citra.dewi@gmail.com",
               address: "Jl. Sei Batang Hari No. 10, Medan Baru, Kota Medan",
               joinedAt: "9 Januari 2026",
@@ -2295,7 +2436,7 @@
               id: "ORD2009",
               customerId: 2,
               customer: "Citra Dewi",
-              customerPhone: "0813-2222-3333",
+              customerPhone: "0852-9679-5689",
               date: "19 Juni 2026",
               items: [
                 { name: "Nasi Rendang Sapi Premium", qty: 3, subtotal: 105000 },
@@ -2314,7 +2455,7 @@
               id: "ORD2008",
               customerId: 3,
               customer: "Andi Saputra",
-              customerPhone: "0812-3456-7890",
+              customerPhone: "0852-9679-5689",
               date: "18 Juni 2026",
               items: [
                 { name: "Nasi Ayam Bakar Madu", qty: 2, subtotal: 56000 },
@@ -2333,7 +2474,7 @@
               id: "ORD2007",
               customerId: 4,
               customer: "Rina Wulandari",
-              customerPhone: "0857-4444-5555",
+              customerPhone: "0852-9679-5689",
               date: "18 Juni 2026",
               items: [
                 { name: "Mie Goreng Seafood Spesial", qty: 2, subtotal: 54000 },
@@ -2351,7 +2492,7 @@
               id: "ORD2006",
               customerId: 5,
               customer: "Dedi Kurniawan",
-              customerPhone: "0822-5555-6666",
+              customerPhone: "0852-9679-5689",
               date: "17 Juni 2026",
               items: [
                 { name: "Nasi Bebek Goreng Mercon", qty: 4, subtotal: 128000 },
@@ -2370,7 +2511,7 @@
               id: "ORD2005",
               customerId: 6,
               customer: "Maya Anggraini",
-              customerPhone: "0838-6666-7777",
+              customerPhone: "0852-9679-5689",
               date: "15 Juni 2026",
               items: [
                 {
@@ -2393,7 +2534,7 @@
               id: "ORD2004",
               customerId: 7,
               customer: "Fajar Ramadhan",
-              customerPhone: "0813-7777-8888",
+              customerPhone: "0852-9679-5689",
               date: "12 Juni 2026",
               items: [
                 { name: "Nasi Rendang Sapi Premium", qty: 3, subtotal: 105000 },
@@ -2428,7 +2569,7 @@
               id: "ORD2002",
               customerId: 2,
               customer: "Citra Dewi",
-              customerPhone: "0813-2222-3333",
+              customerPhone: "0852-9679-5689",
               date: "3 Juni 2026",
               items: [
                 { name: "Nasi Ayam Bakar Madu", qty: 3, subtotal: 84000 },
